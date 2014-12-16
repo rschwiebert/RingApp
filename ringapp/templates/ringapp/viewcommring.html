@@ -1,0 +1,31 @@
+You are viewing the details of a ring.
+
+{% if r %}
+    <ul>
+        <li>Name: {{ r.name }}</li>
+        <li>Description: {{ r.description }}</li>
+        <li>Notes: {{ r.notes }}</li>
+        <li>Reference: {{ r.reference }}</li>
+    </ul>
+This ring has the following properties:
+    <ul>
+    {% for item in has_props %}
+        <li><a href="//localhost:8000/ringapp/commproperties/property/{{ item.property_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+The ring lacks the following properties:
+    <ul>
+    {% for item in lacks_props %}
+        <li><a href="//localhost:8000/ringapp/commproperties/property/{{ item.property_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+We don't know if the ring has or lacks the following properties:
+    <ul>
+    {% for item in other_props %}
+        <li><a href="//localhost:8000/ringapp/commproperties/property/{{ item.property_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+    
+{% else %}
+    <p>Nothing was retrieved.</p>
+{% endif %}

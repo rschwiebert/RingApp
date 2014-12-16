@@ -1,0 +1,11 @@
+You are now browsing commutative rings we have on record. 
+
+{% if ring_list %}
+    <ul>
+    {% for item in ring_list %}
+        <li><a href="ring/{{ item.ring_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No rings were retrieved.</p>
+{% endif %}

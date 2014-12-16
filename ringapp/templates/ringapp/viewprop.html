@@ -1,0 +1,32 @@
+You are now viewing the details of a property.
+
+{% if property_id %}
+    <ul>
+Property name: {{ prop.name }}<br>
+Definition: {{ prop.definition }}<br>
+Rings with property: {{ hasnum }}<br>
+Rings without property: {{ lacksnum }}<br>
+    </ul>
+    
+These rings have this property:
+    <ul>
+    {% for item in has_rings %}
+        <li><a href="//localhost:8000/ringapp/rings/ring/{{ item.ring_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+These rings lacks the property:
+    <ul>
+    {% for item in lacks_rings %}
+        <li><a href="//localhost:8000/ringapp/rings/ring/{{ item.ring_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+We don't know if these rings have or lacks the property:
+    <ul>
+    {% for item in other_rings %}
+        <li><a href="//localhost:8000/ringapp/rings/ring/{{ item.ring_id }}/">{{ item.name }}</a></li>
+    {% endfor %}
+    </ul>
+    
+{% else %}
+    <p>Nothing was retrieved.</p>
+{% endif %}

@@ -1,3 +1,5 @@
 venv
 *.pyc
 staticfiles
+local_config.py
+*.*~
