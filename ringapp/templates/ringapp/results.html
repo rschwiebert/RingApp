@@ -12,7 +12,7 @@ These rings are consistent with your criteria, but may not be after more informa
 
     <ul>
     {% for item in main_results %}
-        <li><a href="//localhost:8000/ringapp/rings/ring/{{ item.ring_id }}/">{{ item.name }}</a></li>
+        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
@@ -32,7 +32,7 @@ These rings are consistent with the mirror image of your criteria, but may not b
 
     <ul>
     {% for item in mirror_results %}
-        <li><a href="//localhost:8000/ringapp/rings/ring/{{ item.ring_id }}/">{{ item.name }}</a></li>
+        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

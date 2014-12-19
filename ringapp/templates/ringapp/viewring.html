@@ -10,19 +10,19 @@ You are viewing the details of a ring.
 This ring has the following properties:
     <ul>
     {% for item in has_props %}
-        <li><a href="//localhost:8000/ringapp/properties/property/{{ item.property_id }}/">{{ item.name }}</a></li>
+        <li><a href="{% url 'property' item.property_id %}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
 The ring lacks the following properties:
     <ul>
     {% for item in lacks_props %}
-        <li><a href="//localhost:8000/ringapp/properties/property/{{ item.property_id }}/">{{ item.name }}</a></li>
+        <li><a href="{% url 'property' item.property_id %}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
 We don't know if the ring has or lacks the following properties:
     <ul>
     {% for item in other_props %}
-        <li><a href="//localhost:8000/ringapp/properties/property/{{ item.property_id }}/">{{ item.name }}</a></li>
+        <li><a href="{% url 'property' item.property_id %}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
     

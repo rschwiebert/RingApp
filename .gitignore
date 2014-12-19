@@ -3,3 +3,4 @@ venv
 staticfiles
 local_config.py
 *.*~
+settings.py
