@@ -1,7 +1,44 @@
-Search page under construction<br>
-
+Search the full database of rings<br><br>
+The complied data is, naturally, incomplete. The status of a property for a given ring can be in three states: "has property," "doesn't have the property," and "unknown." Choosing narrow scope ensures that the results are known to match all inputs. Choosing wide scope excludes all rings that do not fit all inputs. So, there may be rings in wide scope results that aren't in narrow scope results, simply because the properties in question may have "unknown" status.<br>
+<br>
 
 <form action="results/" method="get">
-{{ form }}
-<input type="submit" value="Submit" />
+{{ form.non_field_errors }}
+    <div class="fieldWrapper">
+        {{ form.subject.errors }}
+        <label for="scope">Scope:</label>
+        {{ form.scope }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.has1.errors }}
+        <label for="has1">Is:</label>
+        {{ form.has1 }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.has2.errors }}
+        <label for="has2">Is:</label>
+        {{ form.has2 }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.has3.errors }}
+        <label for="has3">Is:</label>
+        {{ form.has3 }}
+    </div>
+<div class="fieldWrapper">
+        {{ form.lacks1.errors }}
+        <label for="lacks1">Is not:</label>
+        {{ form.lacks1 }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.lacks2.errors }}
+        <label for="lacks2">Is not:</label>
+        {{ form.lacks2 }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.lacks3.errors }}
+        <label for="lacks3">Is not:</label>
+        {{ form.lacks3 }}
+    </div>
+    <p><input type="submit" value="Search" /></p>
 </form>
+

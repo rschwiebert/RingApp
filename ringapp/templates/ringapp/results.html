@@ -1,13 +1,20 @@
+You searched for rings
+{% if has_string %}
+which ARE<br>
+{{ has_string }},<br>
+{% endif %}
+{% if lacks_string %}
+which ARE NOT<br>
+{{ lacks_string }}
+{% endif %}
+<br><br>
+
 Search results:<br>
-
-You searched for rings which ARE {{ has_string }},<br>
-but which ARE NOT {{ lacks_string }}<br>
-
 {% if main_results %}
 {% if scope == 'n' %}
-These rings definitely satisfy your criteria:
+These rings are known to satisfy all of your criteria:
 {% else %}
-These rings are consistent with your criteria, but may not be after more information is filled in
+These rings are consistent with your criteria, but may not satisfy your criteria when more data is supplied.
 {% endif %}
 
     <ul>
@@ -23,9 +30,9 @@ These rings are consistent with your criteria, but may not be after more informa
 Mirror search results:<br>
 {% if mirror_results %}
 {% if scope == 'n' %}
-These rings definitely satisfy the mirror image of your criteria:
+These rings are known to satisfy the mirror image of all your criteria:
 {% else %}
-These rings are consistent with the mirror image of your criteria, but may not be after more information is filled in
+These rings are consistent with the mirror version of your criteria, but may not satisfy your criteria when more data is supplied.
 {% endif %}
 <br>
 
