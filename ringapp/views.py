@@ -136,7 +136,15 @@ def browsecommprops(request):
     return HttpResponse(template.render(context))
     
 def browselogic(request):
-    return HttpResponse("View what logic is programmed in the database.")
+    template =  loader.get_template('ringapp/logic.html')
+    thing = RingProperty.objects.get(id=5)
+    context = RequestContext(request,{'things':[thing]})
+    return HttpResponse(template.render(context))
+
+def browsecommlogic(request):
+    template =  loader.get_template('ringapp/commlogic.html')
+    context = RequestContext(request,{})
+    return HttpResponse(template.render(context))
     
 def ring(request):
     return HttpResponse("View what logic is programmed in the database.")
@@ -273,4 +281,6 @@ def viewcommprop(request,property_id):
     
     
 def about(request):
-    return HttpResponse("Placeholder for future about page.")
+    context = RequestContext(request,{ })
+    template =  loader.get_template('ringapp/about.html')
+    return HttpResponse(template.render(context))

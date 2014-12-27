@@ -1,0 +1,13 @@
+This is a listing of the implications used by the commutative ring database.
+
+<br><br>
+
+{% if logic_list %}
+    <ul>
+    {% for item in logic_list %}
+        <li><a href="logic/{{ item.logic_id }}/">{{ item.name }}</a>  </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No theorems were retrieved.</p>
+{% endif %}

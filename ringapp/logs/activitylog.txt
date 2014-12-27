@@ -1,0 +1,4 @@
+2014-12-27-14h36m28s	FwdLogicAll completed run and added 6 entries to ring_property and encountered 0 errors.
+2014-12-27-14h50m57s	FwdLogicAll completed run and added 0 entries to ring_property and encountered 0 errors.
+2014-12-27-14h51m47s	FwdLogicAll completed run and added 0 entries to ring_property and encountered 0 errors.
+2014-12-27-14h53m19s	BkwdLogicAll completed run and inserted 6 entries and encountered 0 errors.
