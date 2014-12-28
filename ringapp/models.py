@@ -18,6 +18,7 @@ class Logic(models.Model):
     option = models.CharField(max_length=200, blank=True)
     citation = models.CharField(max_length=200, blank=True, null=True)
     poster = models.CharField(max_length=25,blank=True,null=True)
+    readable = models.CharField(max_length=120,blank=True,null=True)
     class Meta:
         #managed = False
         db_table = 'logic'
@@ -35,6 +36,7 @@ class CommLogic(models.Model):
     option = models.CharField(max_length=200, blank=True)
     citation = models.CharField(max_length=200, blank=True)
     poster = models.CharField(max_length=25,blank=True,null=True)
+    readable = models.CharField(max_length=120,blank=True,null=True)
     class Meta:
         #managed = False
         db_table = 'comm_logic'

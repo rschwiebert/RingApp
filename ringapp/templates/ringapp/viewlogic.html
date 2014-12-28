@@ -1,0 +1,12 @@
+Logic detail page
+
+{% if L %}
+    <ul>
+        <li>Description: {{ L.readable }}</li>
+        <li>Reference: {{ L.reference }}</li>
+    </ul>
+
+    
+{% else %}
+    <p>Nothing was retrieved.</p>
+{% endif %}

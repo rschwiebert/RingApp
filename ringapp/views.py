@@ -136,19 +136,34 @@ def browsecommprops(request):
     return HttpResponse(template.render(context))
     
 def browselogic(request):
-    template =  loader.get_template('ringapp/logic.html')
-    thing = RingProperty.objects.get(id=5)
-    context = RequestContext(request,{'things':[thing]})
+    template =  loader.get_template('ringapp/browselogics.html')
+    logics = Logic.objects.all().filter(option='on')
+    context = RequestContext(request,{'logics':logics})
     return HttpResponse(template.render(context))
 
 def browsecommlogic(request):
-    template =  loader.get_template('ringapp/commlogic.html')
-    context = RequestContext(request,{})
+    template =  loader.get_template('ringapp/browsecommlogics.html')
+    logics = CommLogic.objects.filter(option='on')
+    context = RequestContext(request,{
+          'logics':logics})
     return HttpResponse(template.render(context))
     
-def ring(request):
-    return HttpResponse("View what logic is programmed in the database.")
-    
+def viewlogic(request,logic_id):
+    L = Logic.objects.get(logic_id=logic_id)
+    context = RequestContext(request,{
+        'L':L
+    })
+    template =  loader.get_template('ringapp/viewlogic.html')
+    return HttpResponse(template.render(context))
+
+def viewcommlogic(request,logic_id):
+    L = CommLogic.objects.get(logic_id=logic_id)
+    context = RequestContext(request,{
+        'L':L
+    })
+    template =  loader.get_template('ringapp/viewlogic.html')
+    return HttpResponse(template.render(context))
+
 def viewring(request,ring_id):
     r=Ring.objects.get(ring_id=ring_id)
     has_props = []
@@ -283,4 +298,14 @@ def viewcommprop(request,property_id):
 def about(request):
     context = RequestContext(request,{ })
     template =  loader.get_template('ringapp/about.html')
+    return HttpResponse(template.render(context))
+
+def people(request):
+    template =  loader.get_template('ringapp/people.html')
+    context = RequestContext(request,{})
+    return HttpResponse(template.render(context))
+
+def resources(request):
+    template =  loader.get_template('ringapp/resources.html')
+    context = RequestContext(request,{})
     return HttpResponse(template.render(context))

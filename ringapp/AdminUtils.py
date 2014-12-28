@@ -43,6 +43,12 @@ def retire_log():
         print 'Failure of retire_log method!'
         log('retire_log method failed!')
 
+def rewriteName(st):
+    '''Makes database property names with (left)/(right) a little more readable.'''
+    if st[-7:] == ' (left)': return 'left %s'%st[:-7]
+    elif st[-8:] == ' (right)': return 'right %s'%st[:-8]
+    else: return st
+
 def view_logic(lid,comm=False):
     '''Retrieve readable contents of a logic entry'''
     if comm == True:
@@ -56,11 +62,40 @@ def view_logic(lid,comm=False):
     conds = filter(lambda x:x!=None, conds)
     conc = L.conc
     readable_conds = [PropSupply.objects.get(pk=i).name for i in conds]
-    output = " and ".join(readable_conds) + " implies %s." % PropSupply.objects.get(pk=conc).name 
-    print output
-    print L.citation
+    readable_conds = map(rewriteName,readable_conds)
+    readable_conc = rewriteName(PropSupply.objects.get(pk=conc).name)
+    output = " and ".join(readable_conds) + " implies %s." % readable_conc 
+    return output
+
+#def generate_readable_logic():
+#    logics = Logic.objects.all()
+#    with open('ringapp/generated/readable_logic.txt','w') as f:
+#        for logic in logics:
+#            f.write(str(logic.logic_id) +',' + view_logic(logic.logic_id)+'\r\n')
+#    logics = CommLogic.objects.all()
+#    with open('ringapp/generated/readable_comm_logic.txt','w') as f:
+#        for logic in logics:
+#            f.write(str(logic.logic_id) +',' + view_logic(logic.logic_id,comm=True)+'\r\n')
     
-    
+def generate_readable_logic(comm = False):
+    if comm == True:
+        LogSupply = CommLogic
+        PropSupply = CommProperty
+    else:
+        LogSupply = Logic
+        PropSupply = Property
+    logics = LogSupply.objects.filter(readable__isnull=True)
+    for L in logics:
+        conds = [L.cond_1, L.cond_2, L.cond_3, L.cond_4]
+        conds = filter(lambda x:x!=None, conds)
+        conc = L.conc
+        readable_conds = [PropSupply.objects.get(pk=i).name for i in conds]
+        readable_conds = map(rewriteName,readable_conds)
+        readable_conc = rewriteName(PropSupply.objects.get(pk=conc).name)
+        output = " and ".join(readable_conds) + " implies %s" % readable_conc 
+        L.readable = output
+        L.save()
+
     
 ### SEARCH SCRIPTS ###
 def find_rings(scope, has=[],lacks=[],comm=False):
@@ -488,7 +523,7 @@ def suggestions1():
             print 'Need a ring that is %s and not %s'%(Property.objects.get(pk=key).name,Property.objects.get(pk=mapping[key]).name)
             
 def suggestions2(comm=False):
-    '''Indicate wher examples are needed for simple implications'''
+    '''Indicate where examples are needed for simple implications'''
     mapping = mirror_map_2()
     if comm==True:
         LogSupply = CommLogic.objects.filter(entry_type=1,option='on')

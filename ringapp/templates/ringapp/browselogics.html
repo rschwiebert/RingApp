@@ -1,0 +1,18 @@
+This is a listing of the implications used by the database.
+<br><br>
+<a href="{% url 'commlogics' %}">Switch to list of commutative ring implications</a>
+
+<br><br>
+
+{% if logics %}
+    <ul>
+    {% for item in logics %}
+     <li><a href="logic/{{ item.logic_id }}/">{{item.readable}}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No implications were retrieved.</p>
+{% endif %}
+
+<br>
+
