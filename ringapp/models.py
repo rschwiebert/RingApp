@@ -23,7 +23,10 @@ class Logic(models.Model):
         #managed = False
         db_table = 'logic'
     def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.logic_id)
+        if self.readable is not None and self.readable != '':
+            return self.readable
+        else:
+            return "Set readable field for this entry!"
 
 class CommLogic(models.Model):
     logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True) # Field name made lowercase.
@@ -41,7 +44,10 @@ class CommLogic(models.Model):
         #managed = False
         db_table = 'comm_logic'
     def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.logic_id)
+        if self.readable is not None and self.readable != '':
+            return self.readable
+        else:
+            return "Set readable field for this entry!"
         
         
 class Ring(models.Model):
@@ -93,7 +99,12 @@ class RingProperty(models.Model):
         #managed = False
         db_table = 'ring_property'
     def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.ring.name)+"\t"+str(self.property.name)
+        if self.has_property == 1:        
+            return "%s is %s"%(self.ring.name,self.property.name)
+        elif self.has_property == 0:
+            return "%s is not %s"%(self.ring.name,self.property.name)
+        else:
+            return "A bug occurred in RingProperty unicode method."
 
 class CommRingProperty(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True) #get this to autoincrement properly
@@ -108,7 +119,12 @@ class CommRingProperty(models.Model):
         #managed = False
         db_table = 'comm_ring_property'
     def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.ring.name)+"\t"+str(self.property.name)
+        if self.has_property == 1:        
+            return "%s is %s"%(self.ring.name,self.property.name)
+        elif self.has_property == 0:
+            return "%s is not %s"%(self.ring.name,self.property.name)
+        else:
+            return "A bug occurred in CommRingProperty unicode method."
         
 class Equivalents(models.Model):
     id = models.AutoField(null=False, unique = True, primary_key=True)
@@ -135,3 +151,20 @@ class CommEquivalents(models.Model):
         db_table = 'comm_equivalents'
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.property.name)+"\t"+str(self.equivalent)
+
+class Theorem(models.Model):
+    theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True) # Field name made lowercase.
+    alias = models.CharField(max_length=100,null=True,blank = True)
+    statement = models.CharField(max_length=400)
+    reference = models.CharField(max_length=200, null=True, blank = True)
+    link = models.URLField(blank=True, null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    time = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        #managed = False
+        db_table = 'theorems'
+    def __unicode__(self):  # Python 3: def __str__(self):
+        if self.alias != None and self.alias != '':
+            return self.alias
+        else:
+            return self.statement[:30]+'...'
