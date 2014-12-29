@@ -4,7 +4,7 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty
 from ringapp.models import CommProperty,CommLogic,CommRingProperty
-from ringapp.forms import SearchForm, CommSearchForm
+from ringapp.forms import SearchForm, CommSearchForm, ContribSelector
 import re
 
 from AdminUtils import *
@@ -21,7 +21,7 @@ def searchpage(request):
             # Process the data in form.cleaned_data
             # ...
             template =  loader.get_template('ringapp/results.html')
-            datadict=form.cleaned_data
+            datadict = form.cleaned_data
             context = RequestContext(request,{'datadict':datadict})
             return HttpResponse(template.render(context))
     else:
@@ -308,4 +308,25 @@ def people(request):
 def resources(request):
     template =  loader.get_template('ringapp/resources.html')
     context = RequestContext(request,{})
+    return HttpResponse(template.render(context))
+
+def contribute(request):
+    if request.method == 'POST': # If the form has been submitted...
+        chooser = forms.ContribSelector(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            # Process the data in form.cleaned_data
+            # ...
+            template =  loader.get_template('ringapp/suggestions.html')
+            #choice = chooser.cleaned_data['option']
+            #context = RequestContext(request,{'choice':choice})
+            return HttpResponse(template.render(context))
+    else:
+        chooser = ContribSelector() # An unbound form    
+        template =  loader.get_template('ringapp/contribute.html')
+        context = RequestContext(request,{'chooser':chooser})
+        return HttpResponse(template.render(context))
+
+def suggestions(request):
+    template =  loader.get_template('ringapp/suggestions.html')
+    context = RequestContext(request,request.GET)
     return HttpResponse(template.render(context))

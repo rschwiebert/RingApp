@@ -3,9 +3,9 @@ The complied data is, naturally, incomplete. The status of a property for a give
 <br>
 
 <form action="results/" method="get">
-{{ form.non_field_errors }}
+    {{ form.non_field_errors }}
     <div class="fieldWrapper">
-        {{ form.subject.errors }}
+        {{ form.scope.errors }}
         <label for="scope">Scope:</label>
         {{ form.scope }}
     </div>
@@ -24,7 +24,7 @@ The complied data is, naturally, incomplete. The status of a property for a give
         <label for="has3">Is:</label>
         {{ form.has3 }}
     </div>
-<div class="fieldWrapper">
+    <div class="fieldWrapper">
         {{ form.lacks1.errors }}
         <label for="lacks1">Is not:</label>
         {{ form.lacks1 }}

@@ -1,0 +1,33 @@
+{% if option == "ring" %}
+SUGGEST A RING:<br>
+<a href="">Tool for seeing if your ring is already recorded.</a><br>
+<a href="">Tips</a><br>
+(form for collecting a ring.)
+
+{% elif option == "theorem" %}
+SUGGEST A THEOREM:<br>
+(form for collecting property.)
+
+{% elif option == "citation" %}
+SUGGEST A CITATION:<br>
+(form for collecting citations.)
+
+{% elif option == "randring" %}
+Get a randomly generated suggestion to help fill a gap in the example database.
+
+{% elif option == "randcite" %}
+Get a randomly generated citation that needs improvement.
+
+{% elif option == "property" %}
+SUGGEST A PROPERTY:<br>
+(form for collecting property.)
+
+{% else %}
+Derp derp something is wrong.
+
+{% endif %}
+
+
+
+
+

@@ -22,3 +22,11 @@ class CommSearchForm(forms.Form):
     lacks1 = forms.ChoiceField(choices=cprop_choices)
     lacks2 = forms.ChoiceField(choices=cprop_choices)
     lacks3 = forms.ChoiceField(choices=cprop_choices)
+
+class ContribSelector(forms.Form):
+    option = forms.ChoiceField(choices=[('ring','I want to suggest a ring.'),
+                                        ('theorem','I want to suggest a theorem.'),
+                                        ('citation','I want to suggest a citation.'),
+                                        ('randring','Give me an idea for a ring!'),
+                                        ('randcite','Give me an idea for a citation!'),
+                                        ('property','I want to suggest a property.')])
