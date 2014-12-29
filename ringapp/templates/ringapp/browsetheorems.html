@@ -1,0 +1,11 @@
+You are now browsing theorems we have on record. 
+
+{% if theorem_list %}
+    <ul>
+    {% for item in theorem_list %}
+        <li><a href="theorem/{{ item.theorem_id }}/">{{ item.statement }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No theorems were retrieved.</p>
+{% endif %}

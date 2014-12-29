@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404
 
 from django.template import RequestContext, loader
-from ringapp.models import Ring, Property, Logic, RingProperty
+from ringapp.models import Ring, Property, Logic, RingProperty, Theorem
 from ringapp.models import CommProperty,CommLogic,CommRingProperty
 from ringapp.forms import SearchForm, CommSearchForm, ContribSelector
-import re
+import re, random
 
 from AdminUtils import *
 
@@ -161,7 +161,7 @@ def viewcommlogic(request,logic_id):
     context = RequestContext(request,{
         'L':L
     })
-    template =  loader.get_template('ringapp/viewlogic.html')
+    template =  loader.get_template('ringapp/viewcommlogic.html')
     return HttpResponse(template.render(context))
 
 def viewring(request,ring_id):
@@ -328,5 +328,28 @@ def contribute(request):
 
 def suggestions(request):
     template =  loader.get_template('ringapp/suggestions.html')
-    context = RequestContext(request,request.GET)
+    data = dict(item for item in request.GET.items())
+    #cite_sugg = 
+    with open('ringapp/generated/ring_sugg.txt','r') as f:
+        ring_sugg = random.choice(f.readlines())
+    with open('ringapp/generated/cring_sugg.txt','r') as f:
+        cring_sugg = random.choice(f.readlines())
+    #data['cite_sugg'] = cite_sugg
+    data['ring_sugg'] = ring_sugg
+    data['cring_sugg'] = cring_sugg
+    context = RequestContext(request,data)
+    return HttpResponse(template.render(context))
+
+def browsetheorems(request):
+    template =  loader.get_template('ringapp/browsetheorems.html')
+    theorem_list = Theorem.objects.all()
+    context = RequestContext(request,{'theorem_list':theorem_list})
+    return HttpResponse(template.render(context))
+
+def viewtheorem(request,theorem_id):
+    T = Theorem.objects.get(theorem_id=theorem_id)
+    context = RequestContext(request,{
+        'T':T
+    })
+    template =  loader.get_template('ringapp/viewtheorem.html')
     return HttpResponse(template.render(context))

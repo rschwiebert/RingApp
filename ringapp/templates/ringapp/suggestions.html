@@ -1,19 +1,23 @@
 {% if option == "ring" %}
 SUGGEST A RING:<br>
-<a href="">Tool for seeing if your ring is already recorded.</a><br>
-<a href="">Tips</a><br>
-(form for collecting a ring.)
+(Sorry, still working on the submission form.)
 
 {% elif option == "theorem" %}
 SUGGEST A THEOREM:<br>
 (form for collecting property.)
+(Sorry, still working on the submission form.)
 
 {% elif option == "citation" %}
 SUGGEST A CITATION:<br>
 (form for collecting citations.)
+(Sorry, still working on the submission form.)
 
 {% elif option == "randring" %}
-Get a randomly generated suggestion to help fill a gap in the example database.
+The database says we could fill these gaps:
+<li>{{ ring_sugg }}</li>
+<li>{{ cring_sugg }}</li>
+<br>
+(There may be some latency between when these gaps get filled and these suggestions are made!)
 
 {% elif option == "randcite" %}
 Get a randomly generated citation that needs improvement.
@@ -21,9 +25,10 @@ Get a randomly generated citation that needs improvement.
 {% elif option == "property" %}
 SUGGEST A PROPERTY:<br>
 (form for collecting property.)
+(Sorry, still working on the submission form.)
 
 {% else %}
-Derp derp something is wrong.
+Something is wrong.
 
 {% endif %}
 

@@ -1,0 +1,41 @@
+Need a commutative ring that is Cohen-Macaulay but not Artinian
+Need a commutative ring that is semiprimary but not Artinian
+Need a commutative ring that is GCD domain but not Bezout domain
+Need a commutative ring that is semiregular but not continuous
+Need a commutative ring that is continuous but not dual
+Need a commutative ring that is Euclidean domain but not field
+Need a commutative ring that is regular local but not field
+Need a commutative ring that is Gorenstein but not Frobenius
+Need a commutative ring that is pseudo Frobenius but not Frobenius
+Need a commutative ring that is domain but not normal domain
+Need a commutative ring that is field but not perfect field
+Need a commutative ring that is unique factorization domain but not principal ideal domain
+Need a commutative ring that is dual but not pseudo Frobenius
+Need a commutative ring that is regular but not regular local
+Need a commutative ring that is continuous but not self-injective
+Need a commutative ring that is stable range 1 but not semilocal
+Need a commutative ring that is semilocal but not semiperfect
+Need a commutative ring that is perfect but not semiprimary
+Need a commutative ring that is clean but not semiregular
+Need a commutative ring that is rad-nil but not Jacobson
+Need a commutative ring that is reduced but not normal
+Need a commutative ring that is Gorenstein but not regular
+Need a commutative ring that is normal domain but not Prufer domain
+Need a commutative ring that is distributive but not Prufer domain
+Need a commutative ring that is rad-nil but not Jacobson
+Need a commutative ring that is Prufer domain but not Bezout domain
+Need a commutative ring that is Schreier domain but not GCD domain
+Need a commutative ring that is ACC principal but not Noetherian
+Need a commutative ring that is Dedekind domain but not principal ideal domain
+Need a commutative ring that is self-injective but not pseudo Frobenius
+Need a commutative ring that is unique factorization domain but not regular local
+Need a commutative ring that is normal domain but not Schreier domain
+Need a commutative ring that is finitely pseudo Frobenius but not self-injective
+Need a commutative ring that is semiregular but not semiperfect
+Need a commutative ring that is von Neumann regular but not semisimple
+Need a commutative ring that is strongly pi regular but not perfect
+Need a commutative ring that is local complete intersection ring but not regular local
+Need a commutative ring that is Krull domain but not Dedekind domain
+Need a commutative ring that is normal domain but not Krull domain
+Need a commutative ring that is Mori domain but not Krull domain
+Need a commutative ring that is domain but not Mori domain

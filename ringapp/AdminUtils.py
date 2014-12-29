@@ -533,11 +533,19 @@ def suggestions2(comm=False):
         lefts = [x.property_id for x in lefts]
         LogSupply = Logic.objects.filter(entry_type=1,option='on').exclude(cond_1__in=lefts)
         PropSupply = Property.objects
+    candidates = []
+    
+
     for item in LogSupply:
         #print item.logic_id
         if comm == True and not find_rings(scope='n',has=[item.conc],lacks=[item.cond_1],comm=True).exists():
-            print "Need a ring that is %s but not %s"%(PropSupply.get(pk=item.conc),PropSupply.get(pk=item.cond_1))
+            candidates.append("Need a commutative ring that is %s but not %s"%(PropSupply.get(pk=item.conc),PropSupply.get(pk=item.cond_1)))
         elif comm == False and not find_rings(scope='n', has=[item.conc],lacks=[item.cond_1]).exists() and not mirror_search(scope='n', has=[item.conc],lacks=[item.cond_1]).exists():
-            print "Need a ring that is %s but not %s"%(PropSupply.get(pk=item.conc),PropSupply.get(pk=item.cond_1))
+            candidates.append("Need a ring that is %s but not %s"%(PropSupply.get(pk=item.conc),PropSupply.get(pk=item.cond_1)))
         else:
             pass
+    if comm == True: outfile = 'ringapp/generated/cring_sugg.txt'
+    else: outfile = 'ringapp/generated/ring_sugg.txt'
+    with open(outfile,'w') as f:
+        for x in candidates: f.write(x+'\r\n')
+        

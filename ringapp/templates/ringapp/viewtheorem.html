@@ -1,0 +1,14 @@
+Theorem detail page
+
+{% if T %}
+    <ul>
+        <li>Alias: {{ T.alias }}</li>
+        <li>Statement: {{ T.statement }}</li>
+        <li>Reference: {{ T.reference }}</li>
+        <li>Link:<a href="{{ T.link }}"></a>{{ T.link }}</li>
+    </ul>
+
+    
+{% else %}
+    <p>Nothing was retrieved.</p>
+{% endif %}

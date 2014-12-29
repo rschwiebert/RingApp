@@ -1,0 +1,34 @@
+Need a ring that is V ring (left) but not semisimple
+Need a ring that is V ring (right) but not semisimple
+Need a ring that is Zorn but not pi regular
+Need a ring that is nonsingular (right) but not Rickart (right)
+Need a ring that is pseudo-Frobenius (left) but not quasi-Frobenius
+Need a ring that is semilocal but not semiperfect
+Need a ring that is exchange but not clean
+Need a ring that is IBN but not stably finite
+Need a ring that is I_0 but not exchange
+Need a ring that is I_0 but not Zorn
+Need a ring that is finitely pseudo-Frobenius (right) but not pseudo-Frobenius (right)
+Need a ring that is exchange but not semiregular
+Need a ring that is ACC annihilator (right) but not Goldie (right)
+Need a ring that is nonzero socle (right) but not essential socle (right)
+Need a ring that is cogenerator ring (right) but not pseudo-Frobenius (right)
+Need a ring that is finitely cogenerated (right) but not pseudo-Frobenius (right)
+Need a ring that is 2-primal but not reversible
+Need a ring that is semiregular but not continuous (right)
+Need a ring that is clean but not continuous (right)
+Need a ring that is top simple but not top simple Artinian
+Need a ring that is top regular but not semiregular
+Need a ring that is DCC annihilator (left) but not ACC annihilator (right)
+Need a ring that is ACC annihilator (left) but not DCC annihilator (right)
+Need a ring that is DCC annihilator (left) but not Goldie (right)
+Need a ring that is continuous (right) but not self-injective (right)
+Need a ring that is unit regular but not semisimple
+Need a ring that is quasi-Frobenius but not Frobenius
+Need a ring that is pseudo-Frobenius (right) but not quasi-Frobenius
+Need a ring that is Dedekind finite but not 2-primal
+Need a ring that is Dedekind finite but not orthogonally finite
+Need a ring that is finitely generated socle (right) but not finite uniform dimension (right)
+Need a ring that is essential socle (left) but not perfect (right)
+Need a ring that is free ideal ring (right) but not principal ideal domain (right)
+Need a ring that is polynomial identity but not commutative
