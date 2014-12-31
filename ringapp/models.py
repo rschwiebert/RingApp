@@ -152,11 +152,37 @@ class CommEquivalents(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.property.name)+"\t"+str(self.equivalent)
 
+class Publication(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    title = models.CharField(max_length=100)
+    authors = models.CharField(max_length=50)
+    details = models.CharField(max_length=100, null=True, blank = True)
+    pub_date = models.DateField()
+    poster = models.CharField(max_length=30)
+    time = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        #managed = False
+        db_table = 'publications'
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return "%s (%d)"%(self.title, self.pub_date.year)
+
+class Citation(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    publication = models.ForeignKey(Publication) # Field name made lowercase.
+    location = models.CharField(max_length=50)
+    poster = models.CharField(max_length=30)
+    time = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        #managed = False
+        db_table = 'citations'
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return str(self.publication.title)+","+str(self.location)
+
 class Theorem(models.Model):
     theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True) # Field name made lowercase.
     alias = models.CharField(max_length=100,null=True,blank = True)
     statement = models.CharField(max_length=400)
-    reference = models.CharField(max_length=200, null=True, blank = True)
+    reference = models.ManyToManyField(Citation, verbose_name="theorem reference")
     link = models.URLField(blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
@@ -167,4 +193,7 @@ class Theorem(models.Model):
         if self.alias != None and self.alias != '':
             return self.alias
         else:
-            return self.statement[:30]+'...'
+            if len(self.statement) < 30:
+                return self.statement
+            else:
+                return self.statement[:30]+'...'

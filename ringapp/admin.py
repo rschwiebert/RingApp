@@ -1,7 +1,7 @@
 from django.contrib import admin
 from ringapp.models import Ring, Property, RingProperty, Equivalents
 from ringapp.models import CommProperty, CommRingProperty, CommEquivalents
-from ringapp.models import Theorem
+from ringapp.models import Theorem, Publication, Citation
 
 class RingAdmin(admin.ModelAdmin):
     fields = ['name','description','notes','reference','keywords']
@@ -43,11 +43,23 @@ class CommEquivalentsAdmin(admin.ModelAdmin):
     # fields = ['logic_ID','name','description','notes','reference','keywords']
 
 class TheoremAdmin(admin.ModelAdmin):
-    fields = ['alias','statement','reference','link']
+    fields = ['alias', 'statement', 'reference', 'link']
     def save_model(self, request, obj, form, change):
         obj.poster = request.user
         obj.save()
 
+class CitationAdmin(admin.ModelAdmin):
+    fields = ['publication', 'location']
+    def save_model(self, request, obj, form, change):
+        obj.poster = request.user
+        obj.save()
+
+class PublicationAdmin(admin.ModelAdmin):
+    fields = ['title', 'authors', 'details', 'pub_date']
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.poster = request.user
+            obj.save()
     
 admin.site.register(Ring,RingAdmin)
 admin.site.register(Property,PropertyAdmin)
@@ -59,4 +71,6 @@ admin.site.register(CommEquivalents,CommEquivalentsAdmin)
 admin.site.register(CommProperty,CommPropertyAdmin)
 admin.site.register(CommRingProperty,CommRingPropertyAdmin)
 
-admin.site.register(Theorem,TheoremAdmin)
+admin.site.register(Theorem, TheoremAdmin)
+admin.site.register(Publication, PublicationAdmin)
+admin.site.register(Citation, CitationAdmin)
