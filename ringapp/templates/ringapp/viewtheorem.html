@@ -4,7 +4,17 @@ Theorem detail page
     <ul>
         <li>Alias: {{ T.alias }}</li>
         <li>Statement: {{ T.statement }}</li>
-        <li>Reference: {{ T.reference }}</li>
+        <li>Reference(s):
+            {% if ref_list %}
+            <ul>
+            {% for ref in ref_list %}
+            <li>{{ ref.title }}</li>
+            {% endfor %}
+            </ul>
+            {% else %}
+            <li>(Citation needed)</li>
+            {% endif %}
+        </li>
         <li>Link:<a href="{{ T.link }}"></a>{{ T.link }}</li>
     </ul>
 

@@ -4,6 +4,7 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Theorem
 from ringapp.models import CommProperty,CommLogic,CommRingProperty
+from ringapp.models import Publication
 from ringapp.forms import SearchForm, CommSearchForm, ContribSelector
 import re, random
 
@@ -15,37 +16,37 @@ def index(request):
     return HttpResponse(template.render(context))
 
 def searchpage(request):
-    if request.method == 'POST': # If the form has been submitted...
+    if request.method == 'POST':  # If the form has been submitted...
         form = SearchForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
             # ...
             template =  loader.get_template('ringapp/results.html')
             datadict = form.cleaned_data
-            context = RequestContext(request,{'datadict':datadict})
+            context = RequestContext(request,{'datadict': datadict})
             return HttpResponse(template.render(context))
     else:
         form = SearchForm() # An unbound form
 
     return render(request, 'ringapp/search.html', {
-        'form': form,
+        'form':  form,
     })   
     
 def commsearchpage(request):
-    if request.method == 'POST': # If the form has been submitted...
+    if request.method == 'POST':  # If the form has been submitted...
         form = CommSearchForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
             # ...
             template =  loader.get_template('ringapp/commresults.html')
             datadict=form.cleaned_data
-            context = RequestContext(request,{'datadict':datadict})
+            context = RequestContext(request,{'datadict': datadict})
             return HttpResponse(template.render(context))
     else:
         form = CommSearchForm() # An unbound form
 
     return render(request, 'ringapp/commsearch.html', {
-        'form': form,
+        'form':  form,
     })
     
 def results(request):
@@ -65,14 +66,14 @@ def results(request):
     main_results = find_rings(scope, has=has,lacks=lacks)
     mirror_results = mirror_search(scope,has=has,lacks=lacks)
     
-    context = RequestContext(request,{'values':values,
-                                      'has':has,
-                                      'lacks':lacks,
-                                      'scope':scope,
-                                      'main_results':main_results,
-                                      'mirror_results':mirror_results,
-                                      'has_string':has_string,
-                                      'lacks_string':lacks_string,
+    context = RequestContext(request,{'values': values,
+                                      'has': has,
+                                      'lacks': lacks,
+                                      'scope': scope,
+                                      'main_results': main_results,
+                                      'mirror_results': mirror_results,
+                                      'has_string': has_string,
+                                      'lacks_string': lacks_string,
                                       })
     return HttpResponse(template.render(context))
 
@@ -92,13 +93,13 @@ def commresults(request):
     
     main_results = find_rings(scope, has=has,lacks=lacks,comm=True)
     
-    context = RequestContext(request,{'values':values,
-                                      'has':has,
-                                      'lacks':lacks,
-                                      'scope':scope,
-                                      'main_results':main_results,
-                                      'has_string':has_string,
-                                      'lacks_string':lacks_string,
+    context = RequestContext(request,{'values': values,
+                                      'has': has,
+                                      'lacks': lacks,
+                                      'scope': scope,
+                                      'main_results': main_results,
+                                      'has_string': has_string,
+                                      'lacks_string': lacks_string,
                                       })
     return HttpResponse(template.render(context))
     
@@ -106,7 +107,7 @@ def browserings(request):
     ring_list = Ring.objects.order_by('ring_id')
     template =  loader.get_template('ringapp/browserings.html')
     context = RequestContext(request,{
-        'ring_list': ring_list,
+        'ring_list':  ring_list,
     })
     return HttpResponse(template.render(context))
 
@@ -114,7 +115,7 @@ def browsecommrings(request):
     ring_list = Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),ringproperty__has_property=1).order_by('ring_id')
     template =  loader.get_template('ringapp/browsecommrings.html')
     context = RequestContext(request,{
-        'ring_list': ring_list,
+        'ring_list':  ring_list,
     })
     return HttpResponse(template.render(context))
 
@@ -123,7 +124,7 @@ def browseprops(request):
     prop_list = Property.objects.order_by('name')
     template =  loader.get_template('ringapp/browseprops.html')
     context = RequestContext(request,{
-        'prop_list': prop_list,
+        'prop_list':  prop_list,
     })
     return HttpResponse(template.render(context))
     
@@ -131,27 +132,27 @@ def browsecommprops(request):
     prop_list = CommProperty.objects.order_by('name')
     template =  loader.get_template('ringapp/browsecommprops.html')
     context = RequestContext(request,{
-        'prop_list': prop_list,
+        'prop_list':  prop_list,
     })
     return HttpResponse(template.render(context))
     
 def browselogic(request):
     template =  loader.get_template('ringapp/browselogics.html')
     logics = Logic.objects.all().filter(option='on')
-    context = RequestContext(request,{'logics':logics})
+    context = RequestContext(request,{'logics': logics})
     return HttpResponse(template.render(context))
 
 def browsecommlogic(request):
     template =  loader.get_template('ringapp/browsecommlogics.html')
     logics = CommLogic.objects.filter(option='on')
     context = RequestContext(request,{
-          'logics':logics})
+          'logics': logics})
     return HttpResponse(template.render(context))
     
 def viewlogic(request,logic_id):
     L = Logic.objects.get(logic_id=logic_id)
     context = RequestContext(request,{
-        'L':L
+        'L': L
     })
     template =  loader.get_template('ringapp/viewlogic.html')
     return HttpResponse(template.render(context))
@@ -159,7 +160,7 @@ def viewlogic(request,logic_id):
 def viewcommlogic(request,logic_id):
     L = CommLogic.objects.get(logic_id=logic_id)
     context = RequestContext(request,{
-        'L':L
+        'L': L
     })
     template =  loader.get_template('ringapp/viewcommlogic.html')
     return HttpResponse(template.render(context))
@@ -186,10 +187,10 @@ def viewring(request,ring_id):
     if other_props:
         other_props = zip(*other_props)[1]
     context = RequestContext(request,{
-        'r':r,
-        'has_props':has_props,
-        'lacks_props':lacks_props,
-        'other_props':other_props
+        'r': r,
+        'has_props': has_props,
+        'lacks_props': lacks_props,
+        'other_props': other_props
     })
     template =  loader.get_template('ringapp/viewring.html')
     return HttpResponse(template.render(context))
@@ -216,10 +217,10 @@ def viewcommring(request,ring_id):
     if other_props:
         other_props = zip(*other_props)[1]
     context = RequestContext(request,{
-        'r':r,
-        'has_props':has_props,
-        'lacks_props':lacks_props,
-        'other_props':other_props
+        'r': r,
+        'has_props': has_props,
+        'lacks_props': lacks_props,
+        'other_props': other_props
     })
     template =  loader.get_template('ringapp/viewcommring.html')
     return HttpResponse(template.render(context))
@@ -248,13 +249,13 @@ def viewprop(request,property_id):
     
     
     context = RequestContext(request,{
-        'property_id': property_id,
-        'prop':prop,
-        'hasnum':hasnum,
-        'lacksnum':lacksnum,
-        'has_rings':has_rings,
-        'lacks_rings':lacks_rings,
-        'other_rings':other_rings
+        'property_id':  property_id,
+        'prop': prop,
+        'hasnum': hasnum,
+        'lacksnum': lacksnum,
+        'has_rings': has_rings,
+        'lacks_rings': lacks_rings,
+        'other_rings': other_rings
     })
     template =  loader.get_template('ringapp/viewprop.html')
     return HttpResponse(template.render(context))    
@@ -282,14 +283,14 @@ def viewcommprop(request,property_id):
     other_rings = zip(*other_rings)[1] if other_rings else []
     
     
-    context = RequestContext(request,{
-        'property_id': property_id,
-        'prop':prop,
-        'hasnum':hasnum,
-        'lacksnum':lacksnum,
-        'has_rings':has_rings,
-        'lacks_rings':lacks_rings,
-        'other_rings':other_rings
+    context = RequestContext(request, {
+        'property_id':  property_id,
+        'prop': prop,
+        'hasnum': hasnum,
+        'lacksnum': lacksnum,
+        'has_rings': has_rings,
+        'lacks_rings': lacks_rings,
+        'other_rings': other_rings
     })
     template =  loader.get_template('ringapp/viewcommprop.html')
     return HttpResponse(template.render(context))
@@ -311,19 +312,19 @@ def resources(request):
     return HttpResponse(template.render(context))
 
 def contribute(request):
-    if request.method == 'POST': # If the form has been submitted...
+    if request.method == 'POST':  # If the form has been submitted...
         chooser = forms.ContribSelector(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
             # ...
             template =  loader.get_template('ringapp/suggestions.html')
             #choice = chooser.cleaned_data['option']
-            #context = RequestContext(request,{'choice':choice})
+            #context = RequestContext(request,{'choice': choice})
             return HttpResponse(template.render(context))
     else:
         chooser = ContribSelector() # An unbound form    
         template =  loader.get_template('ringapp/contribute.html')
-        context = RequestContext(request,{'chooser':chooser})
+        context = RequestContext(request,{'chooser': chooser})
         return HttpResponse(template.render(context))
 
 def suggestions(request):
@@ -343,13 +344,29 @@ def suggestions(request):
 def browsetheorems(request):
     template =  loader.get_template('ringapp/browsetheorems.html')
     theorem_list = Theorem.objects.all()
-    context = RequestContext(request,{'theorem_list':theorem_list})
+    context = RequestContext(request,{'theorem_list': theorem_list})
     return HttpResponse(template.render(context))
 
-def viewtheorem(request,theorem_id):
+def viewtheorem(request, theorem_id):
     T = Theorem.objects.get(theorem_id=theorem_id)
+    ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
+                                    x.publication.title,
+                                    x.publication.details,
+                                    x.publication.pub_date.year,
+                                    x.location) for x in T.reference.all()]
     context = RequestContext(request,{
-        'T':T
+        'T': T,
+        'ref_list': ref_list,
     })
     template =  loader.get_template('ringapp/viewtheorem.html')
+    return HttpResponse(template.render(context))
+
+def bibliography(request):
+    template = loader.get_template('ringapp/bibliography.html')
+    bib = ['%s, %s, %s, (%d).' % (x.authors,
+                                  x.title,
+                                  x.details,
+                                  x.pub_date.year) for x in Publication.objects.exclude(id=6)]
+    bib.sort()
+    context = RequestContext(request, {'bibliography': bib})
     return HttpResponse(template.render(context))

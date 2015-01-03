@@ -32,4 +32,5 @@ urlpatterns = patterns('',
     url(r'^resources/$', views.resources, name='resources'),
     url(r'^contribute/$', views.contribute, name='contribute'),
     url(r'^suggestions/$', views.suggestions, name='suggestions'),
+    url(r'^bibliography/$', views.bibliography, name='bibliography'),
 )
