@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <meta name="google-site-verification" content="pu9Z0hUTJz2dQW9bBTzX1KIiqXrlxF8XvJbVJJLPKHE" />
-    <title>Database of Ring Theory</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
 
-Welcome to the Database of Ring Theory! (DaRT)<br>
+{% block title %}Home{% endblock %}
+
+{% block body_block %}
+
+<h1>Welcome to the Database of Ring Theory!</h1>
 <br>
 Ring example database:<br>
 (This database focuses on rings that are not necessarily commutative and some properties they can have.)
@@ -44,4 +41,4 @@ Other stuff:
 <li>FAQ</li>
 <li><a href="about">Contact</a></li>
 <li><a href="about">About</a></li>
-
+{% endblock %}

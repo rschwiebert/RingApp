@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Ring properties</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Ring properties{% endblock %}
+
+{% block body_block %}
+
+<h1>Ring properties</h1>
 
 Here is a list of all properties tracked for the ring database.<br>
 <br>
@@ -20,7 +20,4 @@ Here is a list of all properties tracked for the ring database.<br>
     <p>No properties were retrieved.</p>
 {% endif %}
 
-
-
-</body>
-</html>
+{% endblock %}

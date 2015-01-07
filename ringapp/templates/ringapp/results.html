@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Search results</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Ring search results{% endblock %}
+
+{% block body_block %}
+
+<h1>Ring search results</h1>
 
 You searched for rings
 {% if has_string %}
@@ -55,7 +55,4 @@ These rings are consistent with the mirror version of your criteria, but may not
 {% endif %}
 
 
-
-
-</body>
-</html>
+{% endblock %}

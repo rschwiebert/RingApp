@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Rings</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Rings{% endblock %}
+
+{% block body_block %}
+
+<h1>Rings</h1>
 
 You are now browsing rings we have on record.
 
@@ -18,7 +18,4 @@ You are now browsing rings we have on record.
     <p>No rings were retrieved.</p>
 {% endif %}
 
-
-
-</body>
-</html>
+{% endblock %}

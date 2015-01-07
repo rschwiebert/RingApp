@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Ring property detail</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
 
-Property detail page.
+{% block title %}Property detail{% endblock %}
+
+{% block body_block %}
+
+<h1>Property detail</h1>
 
 {% if property_id %}
     <ul>
@@ -49,8 +47,4 @@ We don't know if these rings have or lack the property:
     <p>Nothing was retrieved.</p>
 {% endif %}
 
-
-
-
-</body>
-</html>
+{% endblock %}

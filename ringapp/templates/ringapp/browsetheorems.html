@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Ring theory theorems</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Theorems{% endblock %}
+
+{% block body_block %}
+
+<h1>Theorems in ring theory</h1>
 
 You are now browsing theorems we have on record. 
 
@@ -18,6 +18,4 @@ You are now browsing theorems we have on record.
     <p>No theorems were retrieved.</p>
 {% endif %}
 
-
-</body>
-</html>
+{% endblock %}

@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Commutative ring detail</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
 
-Commutative ring detail page.
+{% block title %}Commutative ring detail{% endblock %}
+
+{% block body_block %}
+
+<h1>Commutative ring detail</h1>
 
 {% if r %}
     <ul>
@@ -38,7 +36,4 @@ We don't know if the ring has or lacks the following properties:
     <p>Nothing was retrieved.</p>
 {% endif %}
 
-
-
-</body>
-</html>
+{% endblock %}

@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Commutative implication detail</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
 
-Commutative logic detail page
+{% block title %}Commutative implication detail{% endblock %}
+
+{% block body_block %}
+
+<h1>Commutative implication detail</h1>
+
 
 {% if L %}
     <ul>
@@ -19,6 +18,4 @@ Commutative logic detail page
     <p>Nothing was retrieved.</p>
 {% endif %}
 
-
-</body>
-</html>
+{% endblock %}

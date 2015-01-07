@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title>DaRT - {% block title %}Database of Ring Theory{% endblock %}</title>
+    </head>
+
+    <body>
+        <div>
+            {% block body_block %}{% endblock %}
+        </div>
+
+        <hr />
+
+
+    </body>
+
+    <footer>
+      <p>© Ryan C. Schwiebert 2014 | <a href="{% url 'index' %}">Home</a> | <a href="{% url 'about' %}">FAQ</a></p>
+    </footer>
+</html>

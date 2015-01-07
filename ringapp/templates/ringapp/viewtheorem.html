@@ -1,5 +1,10 @@
-Theorem detail page
+{% extends 'ringapp/base.html' %}
 
+{% block title %}Theorem detail{% endblock %}
+
+{% block body_block %}
+
+<h1>Theorem detail</h1>
 {% if T %}
     <ul>
         <li>Alias: {{ T.alias }}</li>
@@ -22,3 +27,5 @@ Theorem detail page
 {% else %}
     <p>Nothing was retrieved.</p>
 {% endif %}
+
+{% endblock %}

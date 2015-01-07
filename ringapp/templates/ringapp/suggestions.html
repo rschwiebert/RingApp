@@ -1,22 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Suggestions</title>
-</head>
-<body>
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Suggestions{% endblock %}
+
+{% block body_block %}
+
+<h1>Suggestions</h1>
 
 {% if option == "ring" %}
-SUGGEST A RING:<br>
+<h2>Suggest a ring we should add</h2>
 (Sorry, still working on the submission form.)
 
 {% elif option == "theorem" %}
-SUGGEST A THEOREM:<br>
+<h2>Suggest a theorem we should add</h2>
 (form for collecting property.)
 (Sorry, still working on the submission form.)
 
 {% elif option == "citation" %}
-SUGGEST A CITATION:<br>
+<h2>Suggest a citation</h2>
 (form for collecting citations.)
 (Sorry, still working on the submission form.)
 
@@ -31,7 +31,7 @@ The database says we could fill these gaps:
 Get a randomly generated citation that needs improvement.
 
 {% elif option == "property" %}
-SUGGEST A PROPERTY:<br>
+<h2>Suggest a new property</h2>
 (form for collecting property.)
 (Sorry, still working on the submission form.)
 
@@ -41,10 +41,4 @@ Something is wrong.
 {% endif %}
 
 
-
-
-
-
-
-</body>
-</html>
+{% endblock %}
