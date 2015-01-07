@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 
 <html>
+    <header><p><a href="{% url 'index' %}">Home</a> | <a href="{% url 'about' %}">About</a> |
+        <a href="{% url 'about' %}#Contact">Contact</a></p></header>
+        <hr />
+        <name="top"/>
     <head lang="en">
         <meta charset="UTF-8">
         <title>DaRT - {% block title %}Database of Ring Theory{% endblock %}</title>
@@ -17,6 +21,6 @@
     </body>
 
     <footer>
-      <p>© Ryan C. Schwiebert 2014 | <a href="{% url 'index' %}">Home</a> | <a href="{% url 'about' %}">FAQ</a></p>
+      <p>© Ryan C. Schwiebert 2014 | <a href="#top">Top</a> | Site map</p>
     </footer>
 </html>
