@@ -7,8 +7,9 @@ from django.db import models
 #   * Remove `managed = False` lines for those models you wish to give write DB access
 # Feel free to rename the models, but don't rename db_table values or field names.
 
+
 class Logic(models.Model):
-    logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True) # Field name made lowercase.
+    logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True)  # Field name made lowercase.
     entry_type = models.IntegerField(blank=True, null=True)
     cond_1 = models.IntegerField(blank=True, null=True)
     cond_2 = models.IntegerField(blank=True, null=True)
@@ -17,19 +18,22 @@ class Logic(models.Model):
     conc = models.IntegerField(blank=True, null=True)
     option = models.CharField(max_length=200, blank=True)
     citation = models.CharField(max_length=200, blank=True, null=True)
-    poster = models.CharField(max_length=25,blank=True,null=True)
-    readable = models.CharField(max_length=120,blank=True,null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    readable = models.CharField(max_length=120, blank=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'logic'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.readable is not None and self.readable != '':
             return self.readable
         else:
             return "Set readable field for this entry!"
 
+
 class CommLogic(models.Model):
-    logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True) # Field name made lowercase.
+    logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True)  # Field name made lowercase.
     entry_type = models.IntegerField(blank=True, null=True)
     cond_1 = models.IntegerField(blank=True, null=True)
     cond_2 = models.IntegerField(blank=True, null=True)
@@ -38,11 +42,13 @@ class CommLogic(models.Model):
     conc = models.IntegerField(blank=True, null=True)
     option = models.CharField(max_length=200, blank=True)
     citation = models.CharField(max_length=200, blank=True)
-    poster = models.CharField(max_length=25,blank=True,null=True)
-    readable = models.CharField(max_length=120,blank=True,null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    readable = models.CharField(max_length=120, blank=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'comm_logic'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.readable is not None and self.readable != '':
             return self.readable
@@ -51,149 +57,180 @@ class CommLogic(models.Model):
         
         
 class Ring(models.Model):
-    ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True) # Field name made lowercase.
+    ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True)  # Field name made lowercase.
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
     keywords = models.CharField(max_length=200)
     reference = models.CharField(max_length=500)
-    notes = models.CharField(max_length=500, blank=True,null=True)
-    poster = models.CharField(max_length=25,blank=True,null=True)
+    notes = models.CharField(max_length=500, blank=True, null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'rings'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name        
+      
         
 class Property(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True) # Field name made lowercase.
+    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
     name = models.CharField(max_length=250)
     definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25,blank=True,null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'properties'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
 
+
 class CommProperty(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True) # Field name made lowercase.
+    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
     name = models.CharField(max_length=250)
     definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25,blank=True,null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'comm_properties'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
+        
         
 class RingProperty(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
-    ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True) # Field name made lowercase.
-    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True) # Field name made lowercase.
+    ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
+    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
     has_property = models.IntegerField(blank=True, null=True)
     reason = models.CharField(max_length=200)
     source = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25,blank=True,null=True)
-    time = models.DateTimeField(auto_now_add=True,null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    time = models.DateTimeField(auto_now_add=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'ring_property'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.has_property == 1:        
-            return "%s is %s"%(self.ring.name,self.property.name)
+            return "%s is %s" % (self.ring.name, self.property.name)
         elif self.has_property == 0:
-            return "%s is not %s"%(self.ring.name,self.property.name)
+            return "%s is not %s" % (self.ring.name, self.property.name)
         else:
             return "A bug occurred in RingProperty unicode method."
 
+
 class CommRingProperty(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True) #get this to autoincrement properly
-    ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True) # Field name made lowercase.
-    property = models.ForeignKey(CommProperty, db_column='property_ID', blank=True, null=True) # Field name made lowercase.
+    id = models.AutoField(null=False, unique=True, primary_key=True)  # get this to autoincrement properly
+    ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
+    property = models.ForeignKey(CommProperty, db_column='property_ID',
+                                 blank=True, null=True)  # Field name made lowercase.
     has_property = models.IntegerField(blank=True, null=True)
     reason = models.CharField(max_length=200)
     source = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25,blank=True,null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'comm_ring_property'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.has_property == 1:        
-            return "%s is %s"%(self.ring.name,self.property.name)
+            return "%s is %s" % (self.ring.name, self.property.name)
         elif self.has_property == 0:
-            return "%s is not %s"%(self.ring.name,self.property.name)
+            return "%s is not %s" % (self.ring.name, self.property.name)
         else:
             return "A bug occurred in CommRingProperty unicode method."
         
+        
 class Equivalents(models.Model):
-    id = models.AutoField(null=False, unique = True, primary_key=True)
-    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True) # Field name made lowercase.
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
     equivalent = models.CharField(max_length=500)
     keywords = models.CharField(max_length=200)
     source = models.CharField(max_length=100)
-    poster = models.CharField(max_length=30,blank=True,null=True)
+    poster = models.CharField(max_length=30, blank=True, null=True)
+    
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'equivalents'
+    
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.property.name)+"\t"+str(self.equivalent)
-    
+
+
 class CommEquivalents(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
-    property = models.ForeignKey(CommProperty, db_column='property_ID', blank=True, null=True) # Field name made lowercase.
+    property = models.ForeignKey(CommProperty, db_column='property_ID',
+                                 blank=True, null=True)  # Field name made lowercase.
     equivalent = models.CharField(max_length=500)
     keywords = models.CharField(max_length=200)
     source = models.CharField(max_length=100)
-    poster = models.CharField(max_length=30,blank=True,null=True)
+    poster = models.CharField(max_length=30, blank=True, null=True)
+
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'comm_equivalents'
+
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.property.name)+"\t"+str(self.equivalent)
+
 
 class Publication(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     title = models.CharField(max_length=100)
     authors = models.CharField(max_length=50)
-    details = models.CharField(max_length=100, null=True, blank = True)
+    details = models.CharField(max_length=100, null=True, blank=True)
     pub_date = models.DateField()
     poster = models.CharField(max_length=30)
     time = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'publications'
+
     def __unicode__(self):  # Python 3: def __str__(self):
-        return "%s (%d)"%(self.title, self.pub_date.year)
+        return "%s (%d)" % (self.title, self.pub_date.year)
+
 
 class Citation(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
-    publication = models.ForeignKey(Publication) # Field name made lowercase.
+    publication = models.ForeignKey(Publication)  # Field name made lowercase.
     location = models.CharField(max_length=50)
     poster = models.CharField(max_length=30)
     time = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'citations'
+        
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.publication.title)+","+str(self.location)
 
+
 class Theorem(models.Model):
-    theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True) # Field name made lowercase.
-    alias = models.CharField(max_length=100,null=True,blank = True)
+    theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True)  # Field name made lowercase.
+    alias = models.CharField(max_length=100, null=True, blank=True)
     statement = models.CharField(max_length=400)
     reference = models.ManyToManyField(Citation, verbose_name="theorem reference")
     link = models.URLField(blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        #managed = False
+        # managed = False
         db_table = 'theorems'
+        
     def __unicode__(self):  # Python 3: def __str__(self):
-        if self.alias != None and self.alias != '':
+        if self.alias:
             return self.alias
         else:
             if len(self.statement) < 30:
                 return self.statement
             else:
-                return self.statement[:30]+'...'
+                return self.statement[:30] + '...'

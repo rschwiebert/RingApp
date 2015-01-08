@@ -4,55 +4,55 @@
 
 {% block body_block %}
 
-<h1>Ring search results</h1>
+    <h1>Ring search results</h1>
 
-You searched for rings
-{% if has_string %}
-which ARE<br>
-{{ has_string }},<br>
-{% endif %}
-{% if lacks_string %}
-which ARE NOT<br>
-{{ lacks_string }}
-{% endif %}
-<br><br>
+    You searched for rings
+    {% if has_string %}
+    which ARE<br>
+    {{ has_string }},<br>
+    {% endif %}
+    {% if lacks_string %}
+    which ARE NOT<br>
+    {{ lacks_string }}
+    {% endif %}
+</div>
+<div>
+    <h2>Search results</h2>
+    {% if main_results %}
+    {% if scope == 'n' %}
+    These rings are known to satisfy all of your criteria:
+    {% else %}
+    These rings are consistent with your criteria, but may not satisfy your criteria when more data is supplied.
+    {% endif %}
 
-Search results:<br>
-{% if main_results %}
-{% if scope == 'n' %}
-These rings are known to satisfy all of your criteria:
-{% else %}
-These rings are consistent with your criteria, but may not satisfy your criteria when more data is supplied.
-{% endif %}
-
-    <ul>
-    {% for item in main_results %}
-        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>The regular search turned up no rings.</p>
-{% endif %}
-<br>
-
-Mirror search results:<br>
-{% if mirror_results %}
-{% if scope == 'n' %}
-These rings are known to satisfy the mirror image of all your criteria:
-{% else %}
-These rings are consistent with the mirror version of your criteria, but may not satisfy your criteria when more data is supplied.
-{% endif %}
-<br>
+        <ul>
+        {% for item in main_results %}
+            <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>The regular search turned up no rings.</p>
+    {% endif %}
+</div>
+<div>
+    <h2>Mirror search results</h2>
+    {% if mirror_results %}
+    {% if scope == 'n' %}
+    These rings are known to satisfy the mirror image of all your criteria:
+    {% else %}
+    These rings are consistent with the mirror version of your criteria, but may not satisfy your criteria when more data is supplied.
+    {% endif %}
+    <br>
 
 
-    <ul>
-    {% for item in mirror_results %}
-        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>The mirror search turned up no rings.</p>
-{% endif %}
+        <ul>
+        {% for item in mirror_results %}
+            <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>The mirror search turned up no rings.</p>
+    {% endif %}
 
 
 {% endblock %}

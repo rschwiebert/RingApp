@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 
 <html>
-    <header><p><a href="{% url 'index' %}">Home</a> | <a href="{% url 'about' %}">About</a> |
-        <a href="{% url 'about' %}#Contact">Contact</a></p></header>
-        <hr />
-        <name="top"/>
     <head lang="en">
         <meta charset="UTF-8">
         <title>DaRT - {% block title %}Database of Ring Theory{% endblock %}</title>
     </head>
 
     <body>
+        <header><p><a href="{% url 'index' %}">Home</a> | <a href="{% url 'about' %}">About</a> |
+            <a href="{% url 'about' %}#Contact">Contact</a></p>
+            <name="top"/>
+        </header>
+        <hr />
         <div>
             {% block body_block %}{% endblock %}
         </div>
-
         <hr />
-
-
+        <footer>
+          <p>© Ryan C. Schwiebert 2014 | <a href="#top">Top</a> | Site map</p>
+        </footer>
     </body>
-
-    <footer>
-      <p>© Ryan C. Schwiebert 2014 | <a href="#top">Top</a> | Site map</p>
-    </footer>
 </html>
