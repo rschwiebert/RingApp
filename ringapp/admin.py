@@ -57,22 +57,22 @@ class CommEquivalentsAdmin(admin.ModelAdmin):
     fields = ['property', 'equivalent', 'source', 'keywords']
 
 
-# class LogicAdmin(admin.ModelAdmin):
-#     fields = ['description', 'notes', 'reference', 'keywords']
-#
-#     def save_model(self, request, obj, form, change):
-#         if not change:
-#             obj.poster = request.user.username
-#         obj.save()
+class LogicAdmin(admin.ModelAdmin):
+    fields = ['readable', 'citation', 'theorem',]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.poster = request.user.username
+        obj.save()
 
 
-# class CommLogicAdmin(admin.ModelAdmin):
-#     fields = ['logic_ID', 'name', 'description', 'notes', 'reference', 'keywords']
-#
-#     def save_model(self, request, obj, form, change):
-#         if not change:
-#             obj.poster = request.user.username
-#         obj.save()
+class CommLogicAdmin(admin.ModelAdmin):
+    fields = ['readable', 'citation', 'theorem',]
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.poster = request.user.username
+        obj.save()
 
 
 class TheoremAdmin(admin.ModelAdmin):
@@ -104,7 +104,7 @@ class PublicationAdmin(admin.ModelAdmin):
 admin.site.register(Ring, RingAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(RingProperty, RingPropertyAdmin)
-# admin.site.register(Logic, LogicAdmin)
+admin.site.register(Logic, LogicAdmin)
 # admin.site.register(CommLogic, CommLogicAdmin)
 admin.site.register(Equivalents, EquivalentsAdmin)
 admin.site.register(CommEquivalents, CommEquivalentsAdmin)

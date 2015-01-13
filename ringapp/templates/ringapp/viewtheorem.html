@@ -15,12 +15,13 @@
             {% for ref in ref_list %}
             <li>{{ ref.title }}</li>
             {% endfor %}
-            </ul>
+
             {% else %}
             <li>(Citation needed)</li>
             {% endif %}
+            </ul>
         </li>
-        <li>Link:<a href="{{ T.link }}"></a>{{ T.link }}</li>
+        <li>Link: <a href="{{ T.link }}">{{ T.link }}</a></li>
     </ul>
 
     

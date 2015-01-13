@@ -8,6 +8,61 @@ from django.db import models
 # Feel free to rename the models, but don't rename db_table values or field names.
 
 
+class Publication(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    title = models.CharField(max_length=100)
+    authors = models.CharField(max_length=50)
+    details = models.CharField(max_length=100, null=True, blank=True)
+    pub_date = models.DateField()
+    poster = models.CharField(max_length=30)
+    time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'publications'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return "%s (%d)" % (self.title, self.pub_date.year)
+
+
+class Citation(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    publication = models.ForeignKey(Publication)  # Field name made lowercase.
+    location = models.CharField(max_length=50)
+    poster = models.CharField(max_length=30)
+    time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'citations'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return str(self.publication.title)+","+str(self.location)
+
+
+class Theorem(models.Model):
+    theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True)  # Field name made lowercase.
+    alias = models.CharField(max_length=100, null=True, blank=True)
+    statement = models.CharField(max_length=400)
+    reference = models.ManyToManyField(Citation, verbose_name="theorem reference")
+    link = models.URLField(blank=True, null=True)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'theorems'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        if self.alias:
+            return self.alias
+        else:
+            if len(self.statement) < 100:
+                return self.statement
+            else:
+                return self.statement[:100] + '...'
+
+
 class Logic(models.Model):
     logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True)  # Field name made lowercase.
     entry_type = models.IntegerField(blank=True, null=True)
@@ -18,6 +73,7 @@ class Logic(models.Model):
     conc = models.IntegerField(blank=True, null=True)
     option = models.CharField(max_length=200, blank=True)
     citation = models.CharField(max_length=200, blank=True, null=True)
+    theorem = models.ForeignKey(Theorem, db_column='theorem_id', blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     readable = models.CharField(max_length=120, blank=True, null=True)
     
@@ -42,6 +98,7 @@ class CommLogic(models.Model):
     conc = models.IntegerField(blank=True, null=True)
     option = models.CharField(max_length=200, blank=True)
     citation = models.CharField(max_length=200, blank=True)
+    theorem = models.ForeignKey(Theorem, db_column='theorem_id', blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     readable = models.CharField(max_length=120, blank=True, null=True)
     
@@ -179,58 +236,3 @@ class CommEquivalents(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.property.name)+"\t"+str(self.equivalent)
-
-
-class Publication(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    title = models.CharField(max_length=100)
-    authors = models.CharField(max_length=50)
-    details = models.CharField(max_length=100, null=True, blank=True)
-    pub_date = models.DateField()
-    poster = models.CharField(max_length=30)
-    time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'publications'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return "%s (%d)" % (self.title, self.pub_date.year)
-
-
-class Citation(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    publication = models.ForeignKey(Publication)  # Field name made lowercase.
-    location = models.CharField(max_length=50)
-    poster = models.CharField(max_length=30)
-    time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'citations'
-        
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.publication.title)+","+str(self.location)
-
-
-class Theorem(models.Model):
-    theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True)  # Field name made lowercase.
-    alias = models.CharField(max_length=100, null=True, blank=True)
-    statement = models.CharField(max_length=400)
-    reference = models.ManyToManyField(Citation, verbose_name="theorem reference")
-    link = models.URLField(blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'theorems'
-        
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.alias:
-            return self.alias
-        else:
-            if len(self.statement) < 30:
-                return self.statement
-            else:
-                return self.statement[:30] + '...'
