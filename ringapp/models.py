@@ -8,6 +8,18 @@ from django.db import models
 # Feel free to rename the models, but don't rename db_table values or field names.
 
 
+class Keyword(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        # managed = False
+        db_table = 'keywords'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
 class Publication(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     title = models.CharField(max_length=100)
@@ -117,7 +129,8 @@ class Ring(models.Model):
     ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True)  # Field name made lowercase.
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
-    keywords = models.CharField(max_length=200)
+    kwds = models.CharField(max_length=200)
+    keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords")
     reference = models.CharField(max_length=500)
     notes = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
@@ -209,7 +222,7 @@ class Equivalents(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
     equivalent = models.CharField(max_length=500)
-    keywords = models.CharField(max_length=200)
+    kwds = models.CharField(max_length=200)
     source = models.CharField(max_length=100)
     poster = models.CharField(max_length=30, blank=True, null=True)
     
@@ -226,7 +239,7 @@ class CommEquivalents(models.Model):
     property = models.ForeignKey(CommProperty, db_column='property_ID',
                                  blank=True, null=True)  # Field name made lowercase.
     equivalent = models.CharField(max_length=500)
-    keywords = models.CharField(max_length=200)
+    kwds = models.CharField(max_length=200)
     source = models.CharField(max_length=100)
     poster = models.CharField(max_length=30, blank=True, null=True)
 

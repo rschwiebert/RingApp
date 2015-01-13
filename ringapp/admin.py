@@ -1,11 +1,11 @@
 from django.contrib import admin
 from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic
 from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic
-from ringapp.models import Theorem, Publication, Citation
+from ringapp.models import Theorem, Publication, Citation, Keyword
 
 
 class RingAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'notes', 'reference', 'keywords']
+    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -20,6 +20,10 @@ class PropertyAdmin(admin.ModelAdmin):
         if not change:
             obj.poster = request.user.username
         obj.save()
+
+
+class KeywordAdmin(admin.ModelAdmin):
+    fields = ['name',]
 
 
 class RingPropertyAdmin(admin.ModelAdmin):
@@ -113,3 +117,4 @@ admin.site.register(CommRingProperty, CommRingPropertyAdmin)
 admin.site.register(Theorem, TheoremAdmin)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(Citation, CitationAdmin)
+admin.site.register(Keyword, KeywordAdmin)
