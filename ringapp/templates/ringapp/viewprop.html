@@ -17,7 +17,27 @@
         <li><a href="{% url 'results' %}{{ has_url }}">View rings having this property</a></li>
         <li><a href="{% url 'results' %}{{ lacks_url }}">View rings not having this property</a></li>
     </ul>
+{% if metaproperties %}
 
+    <h2>Metaproperties</h2>
+    {% if has_mp %}
+    This property has the following metaproperties
+    <ul>
+    {% for item in has_mp %}
+        <li>{{ item.description }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% if lacks_mp %}
+    This property does not have the following metaproperties
+    <ul>
+    {% for item in lacks_mp %}
+        <li>{{ item.description }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+{% endif %}
 
 {% else %}
     <p>Nothing was retrieved.</p>

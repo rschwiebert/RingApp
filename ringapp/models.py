@@ -280,9 +280,9 @@ class Invariance(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.is_invariant:
-            return "%s is %s" % (self.property.name, self.invarianttype.description)
+            return "%s : %s" % (self.property.name, self.invarianttype.description)
         else:
-            return "%s is not %s" % (self.property.name, self.invarianttype.description)
+            return "%s : not %s" % (self.property.name, self.invarianttype.description)
 
 
 class CommInvariance(models.Model):
@@ -300,6 +300,6 @@ class CommInvariance(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.is_invariant:
-            return "%s is %s" % (self.property.name, self.invarianttype.description)
+            return "%s : %s" % (self.property.name, self.invarianttype.description)
         else:
-            return "%s is not %s" % (self.property.name, self.invarianttype.description)
+            return "%s : not %s" % (self.property.name, self.invarianttype.description)

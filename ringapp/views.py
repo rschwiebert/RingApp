@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404
 
 from django.template import RequestContext, loader
-from ringapp.models import Ring, Property, Logic, RingProperty, Theorem
-from ringapp.models import CommProperty, CommLogic, CommRingProperty
-from ringapp.models import Publication
+from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
+from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
+from ringapp.models import Publication, Theorem
 from ringapp.forms import SearchForm, CommSearchForm, ContribSelector
 import re
 import random
@@ -249,6 +249,9 @@ def viewprop(request, property_id):
     # unknown_url =
     hasnum = prop.ringproperty_set.filter(has_property=1).count()
     lacksnum = prop.ringproperty_set.filter(has_property=0).count()
+    metaproperties = Invariance.objects.filter(property=prop)
+    has_mp = [x.invarianttype for x in metaproperties.filter(is_invariant=True)]
+    lacks_mp = [x.invarianttype for x in metaproperties.filter(is_invariant=False)]
 
     context = RequestContext(request, {
         'property_id':  property_id,
@@ -256,7 +259,10 @@ def viewprop(request, property_id):
         'hasnum': hasnum,
         'lacksnum': lacksnum,
         'has_url': has_url,
-        'lacks_url': lacks_url
+        'metaproperties':metaproperties,
+        'lacks_url': lacks_url,
+        'has_mp': has_mp,
+        'lacks_mp': lacks_mp,
     })
     template = loader.get_template('ringapp/viewprop.html')
     return HttpResponse(template.render(context))    
@@ -269,6 +275,9 @@ def viewcommprop(request, property_id):
     # unknown_url =
     hasnum = prop.commringproperty_set.filter(has_property=1).count()
     lacksnum = prop.commringproperty_set.filter(has_property=0).count()
+    metaproperties = CommInvariance.objects.filter(property=prop)
+    has_mp = [x.invarianttype for x in metaproperties.filter(is_invariant=True)]
+    lacks_mp = [x.invarianttype for x in metaproperties.filter(is_invariant=False)]
 
     context = RequestContext(request, {
         'property_id':  property_id,
@@ -276,7 +285,10 @@ def viewcommprop(request, property_id):
         'hasnum': hasnum,
         'lacksnum': lacksnum,
         'has_url': has_url,
-        'lacks_url': lacks_url
+        'metaproperties':metaproperties,
+        'lacks_url': lacks_url,
+        'has_mp': has_mp,
+        'lacks_mp': lacks_mp,
     })
     template = loader.get_template('ringapp/viewcommprop.html')
     return HttpResponse(template.render(context))
