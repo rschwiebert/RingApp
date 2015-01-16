@@ -49,7 +49,7 @@ def view_logic(lid, comm=False):
     readable_conds = [PropSupply.objects.get(pk=i).name for i in conds]
     readable_conds = map(rewriteName, readable_conds)
     readable_conc = rewriteName(PropSupply.objects.get(pk=conc).name)
-    output = " and ".join(readable_conds) + " implies %s." % readable_conc
+    output = " and ".join(readable_conds) + " ==> %s." % readable_conc
     return output
 
 
@@ -508,7 +508,7 @@ to_comm_map = pickle.load(open('to_comm_map.p', 'r'))
 
 
 def convert(r):
-    """Lift entries in ring_property and put them in comm_ring_property
+    """Lift entries in ring_property and put them in comm_ring_property for a single ring r
     """
     print 'Starting conversion tool'
     rps = [x for x in r.ringproperty_set.all()]

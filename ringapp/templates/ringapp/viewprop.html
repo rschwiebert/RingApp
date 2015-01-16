@@ -8,40 +8,16 @@
 
 {% if property_id %}
     <ul>
-Property name: {{ prop.name }}<br>
-Definition: {{ prop.definition }}<br>
-Rings with property: {{ hasnum }}<br>
-Rings without property: {{ lacksnum }}<br>
+        Property name: {{ prop.name }}<br>
+        Definition: {{ prop.definition }}<br>
+        Rings with property: {{ hasnum }}<br>
+        Rings without property: {{ lacksnum }}<br>
+    </ul>
+    <ul>
+        <li><a href="{% url 'results' %}{{ has_url }}">View rings having this property</a></li>
+        <li><a href="{% url 'results' %}{{ lacks_url }}">View rings not having this property</a></li>
     </ul>
 
-{% if has_rings %}
-These rings have this property:
-    <ul>
-    {% for item in has_rings %}
-        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-No rings on record have the property.
-{% endif %}
-{% if lacks_rings %}
-These rings lack the property:
-    <ul>
-    {% for item in lacks_rings %}
-        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-No rings on record lack the property.
-{% endif %}
-{% if other_rings %}
-We don't know if these rings have or lack the property:
-    <ul>
-    {% for item in other_rings %}
-        <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
 
 {% else %}
     <p>Nothing was retrieved.</p>

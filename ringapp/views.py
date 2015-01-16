@@ -194,6 +194,7 @@ def viewring(request, ring_id):
     has_props.sort()
     lacks_props.sort()
     other_props.sort()
+
     if has_props:
         has_props = zip(*has_props)[1]
     if lacks_props:
@@ -243,34 +244,19 @@ def viewcommring(request, ring_id):
 
 def viewprop(request, property_id):
     prop = Property.objects.get(property_id=property_id)
+    has_url = '?scope=n&has1=%s&has2=0&has3=0&lacks1=0&lacks2=0&lacks3=0' % property_id
+    lacks_url = '?scope=n&has1=0&has2=0&has3=0&lacks1=%s&lacks2=0&lacks3=0' % property_id
+    # unknown_url =
     hasnum = prop.ringproperty_set.filter(has_property=1).count()
     lacksnum = prop.ringproperty_set.filter(has_property=0).count()
-    
-    has_rings = []
-    lacks_rings = []
-    other_rings = []
-    for r in Ring.objects.all():
-        if prop.ringproperty_set.filter(ring=r, has_property=1):
-            has_rings.append((r.name.lower(), r))
-        elif prop.ringproperty_set.filter(ring=r, has_property=0):
-            lacks_rings.append((r.name.lower(), r))
-        else:
-            other_rings.append((r.name.lower(), r))
-    has_rings.sort()
-    lacks_rings.sort()
-    other_rings.sort()
-    has_rings = zip(*has_rings)[1] if has_rings else []
-    lacks_rings = zip(*lacks_rings)[1] if lacks_rings else []
-    other_rings = zip(*other_rings)[1] if other_rings else []
-    
+
     context = RequestContext(request, {
         'property_id':  property_id,
         'prop': prop,
         'hasnum': hasnum,
         'lacksnum': lacksnum,
-        'has_rings': has_rings,
-        'lacks_rings': lacks_rings,
-        'other_rings': other_rings
+        'has_url': has_url,
+        'lacks_url': lacks_url
     })
     template = loader.get_template('ringapp/viewprop.html')
     return HttpResponse(template.render(context))    
@@ -278,34 +264,19 @@ def viewprop(request, property_id):
 
 def viewcommprop(request, property_id):
     prop = CommProperty.objects.get(property_id=property_id)
+    has_url = '?scope=n&has1=%s&has2=0&has3=0&lacks1=0&lacks2=0&lacks3=0' % property_id
+    lacks_url = '?scope=n&has1=0&has2=0&has3=0&lacks1=%s&lacks2=0&lacks3=0' % property_id
+    # unknown_url =
     hasnum = prop.commringproperty_set.filter(has_property=1).count()
     lacksnum = prop.commringproperty_set.filter(has_property=0).count()
-    
-    has_rings = []
-    lacks_rings = []
-    other_rings = []
-    for r in Ring.objects.filter(ringproperty__property_id=1, ringproperty__has_property=1):
-        if prop.commringproperty_set.filter(ring=r, has_property=1):
-            has_rings.append((r.name.lower(), r))
-        elif prop.commringproperty_set.filter(ring=r, has_property=0):
-            lacks_rings.append((r.name.lower(), r))
-        else:
-            other_rings.append((r.name.lower(), r))
-    has_rings.sort()
-    lacks_rings.sort()
-    other_rings.sort()
-    has_rings = zip(*has_rings)[1] if has_rings else []
-    lacks_rings = zip(*lacks_rings)[1] if lacks_rings else []
-    other_rings = zip(*other_rings)[1] if other_rings else []
-    
+
     context = RequestContext(request, {
         'property_id':  property_id,
         'prop': prop,
         'hasnum': hasnum,
         'lacksnum': lacksnum,
-        'has_rings': has_rings,
-        'lacks_rings': lacks_rings,
-        'other_rings': other_rings
+        'has_url': has_url,
+        'lacks_url': lacks_url
     })
     template = loader.get_template('ringapp/viewcommprop.html')
     return HttpResponse(template.render(context))
