@@ -1,7 +1,7 @@
 from django.contrib import admin
 from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic
 from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic
-from ringapp.models import Theorem, Publication, Citation, Keyword
+from ringapp.models import Theorem, Publication, Citation, Keyword, Invariance, InvariantType
 
 
 class RingAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class PropertyAdmin(admin.ModelAdmin):
 
 
 class KeywordAdmin(admin.ModelAdmin):
-    fields = ['name',]
+    fields = ['name']
 
 
 class RingPropertyAdmin(admin.ModelAdmin):
@@ -62,7 +62,7 @@ class CommEquivalentsAdmin(admin.ModelAdmin):
 
 
 class LogicAdmin(admin.ModelAdmin):
-    fields = ['readable', 'citation', 'theorem',]
+    fields = ['readable', 'citation', 'theorem']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -71,7 +71,7 @@ class LogicAdmin(admin.ModelAdmin):
 
 
 class CommLogicAdmin(admin.ModelAdmin):
-    fields = ['readable', 'citation', 'theorem',]
+    fields = ['readable', 'citation', 'theorem']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -80,7 +80,7 @@ class CommLogicAdmin(admin.ModelAdmin):
 
 
 class TheoremAdmin(admin.ModelAdmin):
-    fields = ['alias', 'statement', 'reference', 'link']
+    fields = ['alias', 'statement', 'reference', 'link', 'characterizs', 'comm_characterizes']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -104,17 +104,28 @@ class PublicationAdmin(admin.ModelAdmin):
         if not change:
             obj.poster = request.user.username
         obj.save()
-    
+
+
+class InvarianceAdmin(admin.ModelAdmin):
+    fields = ['property', 'invarianttype','is_invariant', 'example', 'theorem', 'note']
+
+
+class InvariantTypeAdmin(admin.ModelAdmin):
+    fields = ['description']
+
+
 admin.site.register(Ring, RingAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(RingProperty, RingPropertyAdmin)
 admin.site.register(Logic, LogicAdmin)
 admin.site.register(CommLogic, CommLogicAdmin)
-admin.site.register(Equivalents, EquivalentsAdmin)
-admin.site.register(CommEquivalents, CommEquivalentsAdmin)
+# admin.site.register(Equivalents, EquivalentsAdmin)
+# admin.site.register(CommEquivalents, CommEquivalentsAdmin)
 admin.site.register(CommProperty, CommPropertyAdmin)
 admin.site.register(CommRingProperty, CommRingPropertyAdmin)
 admin.site.register(Theorem, TheoremAdmin)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(Citation, CitationAdmin)
 admin.site.register(Keyword, KeywordAdmin)
+admin.site.register(Invariance, InvarianceAdmin)
+admin.site.register(InvariantType, InvariantTypeAdmin)

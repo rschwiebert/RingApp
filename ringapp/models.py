@@ -52,6 +52,34 @@ class Citation(models.Model):
         return str(self.publication.title)+","+str(self.location)
 
 
+class Property(models.Model):
+    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
+    name = models.CharField(max_length=250)
+    definition = models.CharField(max_length=500)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'properties'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
+class CommProperty(models.Model):
+    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
+    name = models.CharField(max_length=250)
+    definition = models.CharField(max_length=500)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'comm_properties'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
 class Theorem(models.Model):
     theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True)  # Field name made lowercase.
     alias = models.CharField(max_length=100, null=True, blank=True)
@@ -60,6 +88,8 @@ class Theorem(models.Model):
     link = models.URLField(blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
+    characterizes = models.ForeignKey(Property, null=True)
+    comm_characterizes = models.ForeignKey(CommProperty, null=True)
 
     class Meta:
         # managed = False
@@ -141,35 +171,7 @@ class Ring(models.Model):
     
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name        
-      
-        
-class Property(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    
-    class Meta:
-        # managed = False
-        db_table = 'properties'
-    
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
 
-
-class CommProperty(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    
-    class Meta:
-        # managed = False
-        db_table = 'comm_properties'
-    
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
-        
         
 class RingProperty(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
@@ -249,3 +251,26 @@ class CommEquivalents(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.property.name)+"\t"+str(self.equivalent)
+
+
+class InvariantType(models.Model):
+    type_id = models.AutoField(null=False, unique=True, primary_key=True)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        # managed = False
+        db_table = 'invariant_types'
+
+
+class Invariance(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    property = models.ForeignKey(Property, db_column='property_ID')
+    invarianttype = models.ForeignKey(InvariantType, db_column='type_id')
+    is_invariant = models.BooleanField(default=None)
+    example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
+    theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
+    note = models.CharField(max_length=100)
+
+    class Meta:
+        # managed = False
+        db_table = 'invariance'
