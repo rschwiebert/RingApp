@@ -261,16 +261,45 @@ class InvariantType(models.Model):
         # managed = False
         db_table = 'invariant_types'
 
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.description
+
 
 class Invariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(Property, db_column='property_ID')
     invarianttype = models.ForeignKey(InvariantType, db_column='type_id')
-    is_invariant = models.BooleanField(default=None)
+    is_invariant = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
-    note = models.CharField(max_length=100)
+    note = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'invariance'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        if self.is_invariant:
+            return "%s is %s" % (self.property.name, self.invarianttype.description)
+        else:
+            return "%s is not %s" % (self.property.name, self.invarianttype.description)
+
+
+class CommInvariance(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    property = models.ForeignKey(CommProperty, db_column='property_ID')
+    invarianttype = models.ForeignKey(InvariantType, db_column='type_id')
+    is_invariant = models.BooleanField(default=None, null=False)
+    example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
+    theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
+    note = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'comm_invariance'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        if self.is_invariant:
+            return "%s is %s" % (self.property.name, self.invarianttype.description)
+        else:
+            return "%s is not %s" % (self.property.name, self.invarianttype.description)
