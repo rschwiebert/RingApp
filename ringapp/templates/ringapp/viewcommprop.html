@@ -20,21 +20,25 @@
     </ul>
 
 {% if metaproperties %}
-    <ul>
+
     <h2>Metaproperties</h2>
     {% if has_mp %}
     This property has the following metaproperties
+    <ul>
     {% for item in has_mp %}
         <li>{{ item.description }}</li>
     {% endfor %}
+    </ul>
     {% endif %}
     {% if lacks_mp %}
     This property does not have the following metaproperties
+    <ul>
     {% for item in lacks_mp %}
         <li>{{ item.description }}</li>
     {% endfor %}
-    {% endif %}
     </ul>
+    {% endif %}
+
 {% endif %}
 
 {% else %}

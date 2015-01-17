@@ -1,7 +1,8 @@
 from django.contrib import admin
-from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic
-from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic
-from ringapp.models import Theorem, Publication, Citation, Keyword, Invariance, CommInvariance, InvariantType
+from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic, Invariance
+from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic, CommInvariance
+from ringapp.models import Theorem, Publication, Citation, Keyword, InvariantType
+from ringapp.models import FAQ, Glossary
 
 
 class RingAdmin(admin.ModelAdmin):
@@ -118,6 +119,14 @@ class InvariantTypeAdmin(admin.ModelAdmin):
     fields = ['description']
 
 
+class FAQAdmin(admin.ModelAdmin):
+    fields = ['question', 'answer']
+
+
+class GlossaryAdmin(admin.ModelAdmin):
+    fields = ['term', 'definition', 'reference']
+
+
 admin.site.register(Ring, RingAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(RingProperty, RingPropertyAdmin)
@@ -134,3 +143,5 @@ admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(Invariance, InvarianceAdmin)
 admin.site.register(CommInvariance, CommInvarianceAdmin)
 admin.site.register(InvariantType, InvariantTypeAdmin)
+admin.site.register(FAQ, FAQAdmin)
+admin.site.register(Glossary, GlossaryAdmin)

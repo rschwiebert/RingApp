@@ -303,3 +303,30 @@ class CommInvariance(models.Model):
             return "%s : %s" % (self.property.name, self.invarianttype.description)
         else:
             return "%s : not %s" % (self.property.name, self.invarianttype.description)
+
+
+class Glossary(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    term = models.CharField(max_length=100, blank=True, null=True)
+    definition = models.CharField(max_length=400, blank=True, null=True)
+    reference = models.ManyToManyField(Citation, verbose_name="glossary reference")
+
+    class Meta:
+        # managed = False
+        db_table = 'glossary'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.term
+
+
+class FAQ(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    question = models.CharField(max_length=200, blank=True, null=True)
+    answer = models.CharField(max_length=400, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'faq'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.question
