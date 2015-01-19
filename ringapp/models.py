@@ -170,7 +170,7 @@ class Ring(models.Model):
         db_table = 'rings'
     
     def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name        
+        return self.name
 
         
 class RingProperty(models.Model):
@@ -330,3 +330,37 @@ class FAQ(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.question
+
+
+class test_Ring(models.Model):
+    ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True)  # Field name made lowercase.
+    name = models.CharField(max_length=250)
+    description = models.CharField(max_length=1000)
+
+    class Meta:
+        # managed = False
+        db_table = 'test_rings'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
+class test_RingProperty(models.Model):
+    id = models.AutoField(null=False, unique=True, primary_key=True)
+    ring = models.ForeignKey(test_Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
+    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
+    has_property = models.IntegerField(blank=True, null=True)
+    reason = models.CharField(max_length=200)
+    source = models.CharField(max_length=500)
+
+    class Meta:
+        # managed = False
+        db_table = 'test_ring_property'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        if self.has_property == 1:
+            return "%s is %s" % (self.ring.name, self.property.name)
+        elif self.has_property == 0:
+            return "%s is not %s" % (self.ring.name, self.property.name)
+        else:
+            return "A bug occurred in RingProperty unicode method."
