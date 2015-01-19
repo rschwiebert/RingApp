@@ -8,6 +8,7 @@ import pickle
 from django.db.models.query import QuerySet
 import logging
 import logging.handlers
+from collections import defaultdict
 
 LOG_FILENAME = 'ringapp/logs/deduction.log'
 
@@ -200,8 +201,9 @@ def symmetrize():
     for new_entry in storage:
         new_entry.save()
     print 'Done.'
-    msg = 'SymmScript completed run and added %d entries and encountered %d errors' % (counter, errors)
-    dlogger.info(msg)
+    dlogger.info('SymmScript completed run and added %d entries.', counter)
+    if errors > 0:
+        dlogger.error('SymmScript encountered %d errors', errors)
 
 
 def all_logic_forward(comm=False):
@@ -473,62 +475,92 @@ def bkwd_atom(type, r, conds, logic_id, counter, error, comm=False):
 
 # ### DIAGNOSTIC SCRIPTS ###
 
+def hash_ring(ring, comm=False):
+    """Compute a hash value for the properties this ring has for comparison
+    with other rings' hashes. The hash is a ternary vector that records what
+    properties are positive, negative and unknown"""
+    if comm is True:
+        prop_id_supply = [p.property_id for p in CommProperty.objects.all()]
+        ring_prop_set = ring.commringproperty_set.all()
+    else:
+        prop_id_supply = [p.property_id for p in Property.objects.all()]
+        ring_prop_set = ring.ringproperty_set.all()
+    ring_prop_map = dict([(rp.property.property_id, rp.has_property) for rp in ring_prop_set])
+    hashval = 0
+    for pid in sorted(prop_id_supply):
+        hashval *= 3
+        hashval += ring_prop_map.get(pid, 2)
+    return hashval
 
-def are_same(r1, r2):
-    """Determines if the database can distinguish between two rings"""
-    for prop in Property.objects.all():
-        if RingProperty.objects.filter(ring=r1, property=prop).exists():
-            res1 = RingProperty.objects.get(ring=r1, property=prop)
+
+def hash_all_rings():
+    """Compute hashes for all rings and create a dict with hashes as keys
+    whose values are lists of rings with that hash"""
+    rhash_dict = defaultdict(list)
+    for ring in Ring.objects.all():
+        rhash_dict[hash_ring(ring)].append(ring)
+    return rhash_dict
+
+
+def ring_profile(ring, comm=False):
+    """Generate a ternary vector representing the ring's properties."""
+    if comm is True:
+        prop_id_supply = [p.property_id for p in CommProperty.objects.all()]
+        ring_prop_set = ring.commringproperty_set.all()
+    else:
+        prop_id_supply = [p.property_id for p in Property.objects.all()]
+        ring_prop_set = ring.ringproperty_set.all()
+    ring_prop_map = dict([(rp.property.property_id, rp.has_property) for rp in ring_prop_set])
+    ret_vec = []
+    for pid in sorted(prop_id_supply):
+        ret_vec.append(ring_prop_map.get(pid, 2))
+    return ret_vec
+
+
+def similarity_confidence(ring1, ring2, comm=False):
+    """Returns a measure of similarity of the two rings. If there are records indicating
+    they are different, return -1. Otherwise, return a ratio matching_attributes/total_attributes"""
+    r_prof1 = ring_profile(ring1, comm=comm)
+    r_prof2 = ring_profile(ring2, comm=comm)
+    same = 0
+    unsure = 0
+    for i, k in enumerate(r_prof1):
+        if (r_prof1[i] == 1 and r_prof2[i] == 0) or (r_prof1[i] == 0 and r_prof2[i] == 1):
+            return -1
+        elif r_prof1[i] == r_prof2[i] == 1 or r_prof1[i] == r_prof2[i] == 0:
+            same += 1
         else:
-            continue
-        if RingProperty.objects.filter(ring=r2, property=prop).exists():
-            res2 = RingProperty.objects.get(ring=r2, property=prop)
-        else:
-            continue
-        if res1 and res2 and res1.has_property != res2.has_property:
-            print 'The rings differ on property ', prop.property_id
-            return False
-    print 'No difference found.'
-    return True
+            unsure += 1
+    return float(same)/len(r_prof1)
 
 
-def sieve():
-    results = dict()
-    supply = [x for x in Ring.objects.all()]
-    while supply:
-        ring1 = supply.pop(0)
-        results[ring1] = [ring1]
-        for ring2 in supply:
-            if are_same(ring1, ring2):
-                results[ring1].append(ring2)
-                supply.remove(ring2)
-    return results
-
-to_comm_map = pickle.load(open('to_comm_map.p', 'r'))
-
-
-def convert(r):
+def convert_to_comm(ring):
     """Lift entries in ring_property and put them in comm_ring_property for a single ring r
     """
-    print 'Starting conversion tool'
-    rps = [x for x in r.ringproperty_set.all()]
+    to_comm_map = pickle.load(open('to_comm_map.p', 'r'))
+    rps = [prop for prop in ring.ringproperty_set.all()]
+    crpids = [prop.property_id for prop in ring.commringproperty_set.all()]
+    rps = [prop for prop in rps if prop.property_id in to_comm_map.keys()]
     new_rps = []
     for rp in rps:
-        try:
-            new_id = to_comm_map[rp.property_id]
-            comm_property = CommProperty.objects.get(pk=new_id)
-            new = CommRingProperty(ring=r, property=comm_property,
+        if to_comm_map[rp.property_id] not in crpids:
+            comm_property = CommProperty.objects.get(pk=to_comm_map[rp.property_id])
+            new = CommRingProperty(ring=ring, property=comm_property,
                                    has_property=rp.has_property,
                                    reason=rp.reason,
                                    source=rp.source,
                                    poster='ConvertScript')
             new_rps.append(new)
-        except KeyError:
-            pass
+    errors = 0
+    successes = 0
     for rp in new_rps:
-        if not CommRingProperty.objects.filter(ring=r, property=comm_property).exists():
+        try:
             rp.save()
-    print 'Done converting', r
+            successes += 1
+        except:
+            dlogger.error('Error saving new entry in convertscript: %s', rp)
+    dlogger.info('ConvertScript completed run on %s. Added %s entries.', ring, str(successes))
+    print 'Done converting', ring
 
 
 def suggestions1():

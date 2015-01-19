@@ -1,12 +1,10 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from ringapp import views
+from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'ringapp.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
+    url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='index'),
     url(r'^search/$', views.searchpage, name='search'),
