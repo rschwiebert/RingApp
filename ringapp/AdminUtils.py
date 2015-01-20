@@ -1,5 +1,6 @@
 from models import Ring, Property, RingProperty, Logic, Equivalents
 from models import CommProperty, CommRingProperty, CommLogic, CommEquivalents
+from models import test_RingProperty, test_Ring
 from subprocess import call
 from datetime import datetime
 import time
@@ -142,17 +143,21 @@ def wide_ring_search(has=[], lacks=[], comm=False):
     return supply
 
 
-def narrow_ring_search(has=[], lacks=[], comm=False):
+def narrow_ring_search(has=[], lacks=[], comm=False, test=False):
     """Returns a queryset of ring objects that are known satisfy all the requirements
     """
-    supply = Ring.objects.all()
-
-    if comm is True:
+    if test is True:
+        PropSupply = Property
+        RPSupply = test_RingProperty
+        supply = test_Ring.objects.all()
+    elif comm is True:
         PropSupply = CommProperty
         RPSupply = CommRingProperty
+        supply = Ring.objects.all()
     else:
         PropSupply = Property
         RPSupply = RingProperty
+        supply = Ring.objects.all()
     # working with haslist
     for pid in has:
         supply = supply.filter(ring_id__in=[x.ring.ring_id for x in RPSupply.objects.filter(property=PropSupply.objects.get(pk=pid), has_property=1)])
@@ -226,9 +231,11 @@ def all_logic_forward(comm=False):
     print 'Done.'
 
 
-def single_logic_forward(r, comm=False):
+def single_logic_forward(r, comm=False, test=False):
     print 'Starting FwdLogicSingle...'
-    if comm is True:
+    if test is True:
+        LogSupply = Logic
+    elif comm is True:
         LogSupply = CommLogic
     else:
         LogSupply = Logic
@@ -236,13 +243,14 @@ def single_logic_forward(r, comm=False):
     counter = 0
     errors = 0
     for entry in entries:
-        counter, errors = logic_forward(entry, counter, errors, override=[r], comm=comm)
+        counter, errors = logic_forward(entry, counter, errors, override=[r], comm=comm, test=test)
     msg = 'FwdLogicSingle completed run adding %d entries and encountering %d errors.' % (counter, errors)
     dlogger.info(msg)
     print 'Done.'
+    return counter, errors
 
 
-def logic_forward(logic_entry, counter, errors, override=[], comm=False):
+def logic_forward(logic_entry, counter, errors, override=[], comm=False, test=False):
     """FwdLogicScript
     Logic script that applies a logic entry to one or many ring objects
     override is a list of ring objects
@@ -251,18 +259,20 @@ def logic_forward(logic_entry, counter, errors, override=[], comm=False):
     conds = [c for c in [logic_entry.cond_1, logic_entry.cond_2,
                          logic_entry.cond_3, logic_entry.cond_4] if c is not None]
     conc = logic_entry.conc
-    if comm is True:
+    if test is True:
+        RPSupply = test_RingProperty
+    elif comm is True:
         RPSupply = CommRingProperty
     else:
         RPSupply = RingProperty
 
     # Find rings satisfying conditions
     if override:
-        candidates = [r for r in override if r in narrow_ring_search(has=conds, lacks=[], comm=comm)]
-        conflicts = [r for r in override if r in narrow_ring_search(has=conds, lacks=[conc], comm=comm)]
+        candidates = [r for r in override if r in narrow_ring_search(has=conds, lacks=[], comm=comm, test=test)]
+        conflicts = [r for r in override if r in narrow_ring_search(has=conds, lacks=[conc], comm=comm, test=test)]
     else:
-        candidates = narrow_ring_search(has=conds, lacks=[], comm=comm)
-        conflicts = narrow_ring_search(has=conds, lacks=[conc], comm=comm)
+        candidates = narrow_ring_search(has=conds, lacks=[], comm=comm, test=test)
+        conflicts = narrow_ring_search(has=conds, lacks=[conc], comm=comm, test=test)
     # Remove candidates which conflict with logic entry
     update_ids = [ring.ring_id for ring in candidates if ring not in conflicts]
     for rid in update_ids:
@@ -273,11 +283,68 @@ def logic_forward(logic_entry, counter, errors, override=[], comm=False):
             counter += 1
         else:
             continue
-    if conflicts:
-        msg = 'FwdLogicScript reports conflict of logic_id %d with ring_ids ' % logic_entry.logic_id+str(conflicts)
-        dlogger.warning(msg)
+    if conflicts and not test:
+        dlogger.warning('FwdLogicScript reports conflict of logic_id %d with ring_ids %s', logic_entry.logic_id, str(conflicts))
+        errors += len(conflicts)
+    elif conflicts and test:
+        print 'FwdLogicScript reports conflict of logic_id %d with ring_ids %s' % (logic_entry.logic_id, str(conflicts))
         errors += len(conflicts)
     return counter, errors
+
+
+def new_single_logic_forward(ring, comm=False, test=False):
+    """Processes a single ring with the Logic table (or the CommLogic table if comm=True)"""
+    if test:
+        logic_supply = Logic.objects.filter(option='on').order_by('entry_type')
+        has_props = ring.test_ringproperty_set.filter(has_property=1)
+        lacks_props = ring.test_ringproperty_set.filter(has_property=0)
+        rp_model = test_RingProperty
+        p_model = Property
+        source = 'Logic id %d'
+    elif comm:
+        logic_supply = CommLogic.objects.filter(option='on').order_by('entry_type')
+        has_props = ring.commringproperty_set.filter(has_property=1)
+        lacks_props = ring.commringproperty_set.filter(has_property=0)
+        rp_model = CommRingProperty
+        p_model = CommProperty
+        source = 'CommLogic id %d'
+    else:
+        logic_supply = Logic.objects.filter(option='on').order_by('entry_type')
+        has_props = ring.ringproperty_set.filter(has_property=1)
+        lacks_props = ring.ringproperty_set.filter(has_property=0)
+        rp_model = RingProperty
+        p_model = Property
+        source = 'Logic id %d'
+
+    has_props = set([prop.property_id for prop in has_props])
+    lacks_props = set([prop.property_id for prop in lacks_props])
+    candidates = []
+    for logic in logic_supply:
+        conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
+        conds = filter(lambda x: x is not None, conds)
+        conds = set(conds)
+        conc = logic.conc
+        if conds <= has_props:
+            if conc in lacks_props:
+                dlogger.error('Conflict of logic %s while processing %s.', str(logic.logic_id), ring)
+                return -1
+            elif conc not in has_props:
+                new = rp_model(ring=ring, property=p_model.objects.get(property_id=conc), has_property=1,
+                               reason='', source=source % logic.logic_id, poster='SingleLogicForward')
+                candidates.append(new)
+    for item in candidates:
+        item.save()
+    if comm is True:
+        msg = ' (comm)'
+    elif test is True:
+        msg = ' (test)'
+    else:
+        msg = ''
+    if test:
+        print 'SingleLogicForward%s completed run adding %d entries.' % (msg, len(candidates))
+    else:
+        dlogger.info('SingleLogicForward%s completed run adding %d entries.', msg, len(candidates))
+    return len(candidates)  # This will be used to stop iterations
 
 
 def all_logic_backward(comm=False):
