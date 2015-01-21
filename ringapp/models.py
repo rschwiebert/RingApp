@@ -352,8 +352,6 @@ class test_RingProperty(models.Model):
     has_property = models.IntegerField(blank=True, null=True)
     reason = models.CharField(max_length=200)
     source = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    time = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
         # managed = False

@@ -2,8 +2,6 @@ __author__ = 'ryan'
 
 import unittest
 from ringapp.models import test_Ring, test_RingProperty
-from ringapp.AdminUtils import new_single_logic_forward, single_logic_forward
-import random
 
 
 class ParametrizedTestCase(unittest.TestCase):
@@ -13,7 +11,7 @@ class ParametrizedTestCase(unittest.TestCase):
     def __init__(self, methodName='runTest', posprops=None, negprops=None):
         super(ParametrizedTestCase, self).__init__(methodName)
         self.posprops = posprops
-        self.negprops = negprops
+        self.negprops = posprops
 
     @staticmethod
     def parametrize(testcase_klass, posprops=None, negprops=None):
@@ -28,7 +26,7 @@ class ParametrizedTestCase(unittest.TestCase):
         return suite
 
 
-class ForwardLogicTestCase(ParametrizedTestCase):
+class ProposedRingTestCase(ParametrizedTestCase):
     def setUp(self):
         ring = test_Ring(name='testring', description='testdesc')
         ring.save()
@@ -36,39 +34,14 @@ class ForwardLogicTestCase(ParametrizedTestCase):
             new = test_RingProperty(ring=ring, property=prop, has_property=1,
                                     reason='', source='')
             new.save()
+        for prop in self.negprops:
+            new = test_RingProperty(ring=ring, property=prop, has_property=0,
+                                    reason='', source='')
+            new.save()
 
-    def test_1(self):
-        ctr = 0
-        check = 1
-        ring = test_Ring.objects.get(name='testring')
-        while ctr < 25 and check > 0:
-            check = new_single_logic_forward(ring, test=True)
-            if check == -1:
-                self.fail('The new single logic forward script produced an error.')
-        if ctr == 25:
-            self.fail('The new single logic forward script ran too many times.')
-
-        count = test_RingProperty.objects.count()
-        print "There are %d rows in test_Ring Property." % count
-        for item in test_RingProperty.objects.all():
-            print item
-
-    def test_2(self):
-        ctr = 0
-        check = 1
-        ring = test_Ring.objects.get(name='testring')
-        while ctr < 25 and check > 0:
-            check, err = single_logic_forward(ring, test=True)
-            if err > 0:
-                self.fail('The old single logic forward script produced an error.')
-            print "Added %d rows." % check
-        if ctr == 25:
-            self.fail('The old single logic forward script ran too many times.')
-
-        count = test_RingProperty.objects.count()
-        print "There are %d rows in test_Ring Property." % count
-        for item in test_RingProperty.objects.all():
-            print item
+    def test_sometest(self):
+        # run logic on test_RingProperty
+        pass
 
     def tearDown(self):
         test_Ring.objects.all().delete()
@@ -77,8 +50,8 @@ class ForwardLogicTestCase(ParametrizedTestCase):
 
 def main():
     from ringapp.models import Property
-    rand_prop = random.choice(Property.objects.all())
-    print rand_prop
+    posprops = [Property.objects.get(name='Noetherian (right)')]
+    negprops = [Property.objects.get(name='Artinian (right)')]
     suite = unittest.TestSuite()
-    suite.addTest(ParametrizedTestCase.parametrize(ForwardLogicTestCase, posprops=[rand_prop]))
+    suite.addTest(ParametrizedTestCase.parametrize(ProposedRingTestCase, posprops=posprops, negprops=negprops))
     unittest.TextTestRunner(verbosity=2).run(suite)
