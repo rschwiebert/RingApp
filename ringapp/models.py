@@ -61,6 +61,7 @@ class Property(models.Model):
     class Meta:
         # managed = False
         db_table = 'properties'
+        verbose_name_plural = 'Ring properties'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
@@ -75,6 +76,7 @@ class CommProperty(models.Model):
     class Meta:
         # managed = False
         db_table = 'comm_properties'
+        verbose_name_plural = 'Commutative ring properties'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
@@ -186,6 +188,7 @@ class RingProperty(models.Model):
     class Meta:
         # managed = False
         db_table = 'ring_property'
+        verbose_name_plural = 'Ring-property relationships'
     
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.has_property == 1:        
@@ -210,7 +213,8 @@ class CommRingProperty(models.Model):
     class Meta:
         # managed = False
         db_table = 'comm_ring_property'
-    
+        verbose_name_plural = 'Commutative ring-property relationships'
+
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.has_property == 1:        
             return "%s is %s" % (self.ring.name, self.property.name)
@@ -268,7 +272,7 @@ class InvariantType(models.Model):
 class Invariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(Property, db_column='property_ID')
-    invarianttype = models.ForeignKey(InvariantType, db_column='type_id')
+    metaproperty = models.ForeignKey(InvariantType, db_column='type_id')
     is_invariant = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
@@ -276,19 +280,19 @@ class Invariance(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'invariance'
+        db_table = 'property_metaproperty'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.is_invariant:
-            return "%s : %s" % (self.property.name, self.invarianttype.description)
+            return "%s : %s" % (self.property.name, self.metaproperty.description)
         else:
-            return "%s : not %s" % (self.property.name, self.invarianttype.description)
+            return "%s : not %s" % (self.property.name, self.metaproperty.description)
 
 
 class CommInvariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(CommProperty, db_column='property_ID')
-    invarianttype = models.ForeignKey(InvariantType, db_column='type_id')
+    metaproperty = models.ForeignKey(InvariantType, db_column='type_id')
     is_invariant = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
@@ -296,13 +300,13 @@ class CommInvariance(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'comm_invariance'
+        db_table = 'comm_property_metaproperty'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.is_invariant:
-            return "%s : %s" % (self.property.name, self.invarianttype.description)
+            return "%s : %s" % (self.property.name, self.metaproperty.description)
         else:
-            return "%s : not %s" % (self.property.name, self.invarianttype.description)
+            return "%s : not %s" % (self.property.name, self.metaproperty.description)
 
 
 class Glossary(models.Model):
@@ -314,6 +318,7 @@ class Glossary(models.Model):
     class Meta:
         # managed = False
         db_table = 'glossary'
+        verbose_name_plural = 'Glossary entries'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.term

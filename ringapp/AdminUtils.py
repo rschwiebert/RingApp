@@ -318,7 +318,7 @@ def new_single_logic_forward(ring, comm=False, test=False):
 
     has_props = set([prop.property_id for prop in has_props])
     lacks_props = set([prop.property_id for prop in lacks_props])
-    candidates = []
+    candidates = {}
     for logic in logic_supply:
         conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
         conds = filter(lambda x: x is not None, conds)
@@ -329,10 +329,11 @@ def new_single_logic_forward(ring, comm=False, test=False):
                 dlogger.error('Conflict of logic %s while processing %s.', str(logic.logic_id), ring)
                 return -1
             elif conc not in has_props:
-                new = rp_model(ring=ring, property=p_model.objects.get(property_id=conc), has_property=1,
+                proper = p_model.objects.get(property_id=conc)
+                new = rp_model(ring=ring, property=proper, has_property=1,
                                reason='', source=source % logic.logic_id, poster='SingleLogicForward')
-                candidates.append(new)
-    for item in candidates:
+                candidates[(ring.ring_id, proper.property_id)] = new
+    for item in candidates.values():
         item.save()
     if comm is True:
         msg = ' (comm)'

@@ -108,11 +108,11 @@ class PublicationAdmin(admin.ModelAdmin):
 
 
 class InvarianceAdmin(admin.ModelAdmin):
-    fields = ['property', 'invarianttype', 'is_invariant', 'example', 'theorem', 'note']
+    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'theorem', 'note']
 
 
 class CommInvarianceAdmin(admin.ModelAdmin):
-    fields = ['property', 'invarianttype', 'is_invariant', 'example', 'theorem', 'note']
+    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'theorem', 'note']
 
 
 class InvariantTypeAdmin(admin.ModelAdmin):
