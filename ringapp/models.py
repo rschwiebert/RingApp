@@ -264,6 +264,7 @@ class Metaproperty(models.Model):
     class Meta:
         # managed = False
         db_table = 'metaproperty'
+        verbose_name_plural = 'Metaproperties'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.description
@@ -281,6 +282,7 @@ class Invariance(models.Model):
     class Meta:
         # managed = False
         db_table = 'property_metaproperty'
+        verbose_name_plural = 'Property-metaproperty relationships'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.is_invariant:
@@ -301,6 +303,7 @@ class CommInvariance(models.Model):
     class Meta:
         # managed = False
         db_table = 'comm_property_metaproperty'
+        verbose_name_plural = 'Commutative property-metaproperty relationships'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.is_invariant:
