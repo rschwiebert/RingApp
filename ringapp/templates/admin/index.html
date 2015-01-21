@@ -43,7 +43,18 @@
         </table>
         </div>
     {% endfor %}
-    <a href="{% url 'utilities' %}">Here are the utilities.</a>
+
+    <div class="app-{{ app.app_label }} module">
+        <table>
+            <a href="{% url 'guides' %}">Guides to get you started</a><br>
+            <a href="{% url 'utilities' %}">Utilities under construction here.</a>
+        </table>
+        </div>
+    <div>
+
+
+    </div>
+
 {% else %}
     <p>{% trans "You don't have permission to edit anything." %}</p>
 {% endif %}

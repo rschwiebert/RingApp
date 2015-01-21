@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<h2>How to add a ring</h2>
+    <ul>
+        <li>(Under construction: on the utilities page, fill out the "check for duplicates" form and see if your ring is in the results.)</li>
+        <li>On the admin home page, click the "add" option in the row for Ring.</li>
+        <li>Fill in as much information for the ring as you can (use the keyword selector and ignore kwd.)</li>
+        <li>Hit "save." Your ring is now in the database.</li>
+        <li>Hopefully you had some key properties of the ring in mind. You ought to follow the following instructions to add them.</li>
+        <li>Return to the admin home page. Click "add" in the "Ring-property relationships" row, or the commutative counterpart.</li>
+        <li>Select your ring in the ring selector (it is probably at the bottom.)</li>
+        <li>Select a property you are interested in from the drop-down.</li>
+        <li>In "has property," put a 1 if the ring HAS the property, and a 0 if it does NOT have the property.</li>
+        <li>Use the "reason" field if the reason is something very straightforward. Use the "source" field to include a citation if you can.</li>
+        <li>If the form demands content in one of the text fields, you can skirt it by submitting whitespace.</li>
+        <li>Click "save" or "save and add another" depending on if you are done or not.</li>
+        <li>Remember that you don't have to supply all properties you know about the ring, just "the best" ones.</li>
+        <li>(Under construction: on the utilities page, select your ring from the dropdown and hit "run processor")</li>
+    </ul>
+
+</div>
+{% endblock %}

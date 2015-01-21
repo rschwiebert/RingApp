@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = patterns('',
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
+    url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.index, name='index'),
     url(r'^search/$', views.searchpage, name='search'),
