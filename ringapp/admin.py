@@ -1,7 +1,7 @@
 from django.contrib import admin
 from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic, Invariance
 from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic, CommInvariance
-from ringapp.models import Theorem, Publication, Citation, Keyword, InvariantType
+from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
 from ringapp.models import FAQ, Glossary
 
 
@@ -115,7 +115,7 @@ class CommInvarianceAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'theorem', 'note']
 
 
-class InvariantTypeAdmin(admin.ModelAdmin):
+class MetapropertyAdmin(admin.ModelAdmin):
     fields = ['description']
 
 
@@ -142,6 +142,6 @@ admin.site.register(Citation, CitationAdmin)
 admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(Invariance, InvarianceAdmin)
 admin.site.register(CommInvariance, CommInvarianceAdmin)
-admin.site.register(InvariantType, InvariantTypeAdmin)
+admin.site.register(Metaproperty, MetapropertyAdmin)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Glossary, GlossaryAdmin)

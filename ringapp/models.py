@@ -257,13 +257,13 @@ class CommEquivalents(models.Model):
         return str(self.property.name)+"\t"+str(self.equivalent)
 
 
-class InvariantType(models.Model):
+class Metaproperty(models.Model):
     type_id = models.AutoField(null=False, unique=True, primary_key=True)
     description = models.CharField(max_length=100)
 
     class Meta:
         # managed = False
-        db_table = 'invariant_types'
+        db_table = 'metaproperty'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.description
@@ -272,7 +272,7 @@ class InvariantType(models.Model):
 class Invariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(Property, db_column='property_ID')
-    metaproperty = models.ForeignKey(InvariantType, db_column='type_id')
+    metaproperty = models.ForeignKey(Metaproperty, db_column='type_id')
     is_invariant = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
@@ -292,7 +292,7 @@ class Invariance(models.Model):
 class CommInvariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(CommProperty, db_column='property_ID')
-    metaproperty = models.ForeignKey(InvariantType, db_column='type_id')
+    metaproperty = models.ForeignKey(Metaproperty, db_column='type_id')
     is_invariant = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
