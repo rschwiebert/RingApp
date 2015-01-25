@@ -11,23 +11,58 @@
 
 {% block content %}
 <div id="content-main">
+<h1>Guides</h1>
 <h2>How to add a ring</h2>
     <ul>
-        <li>(Under construction: on the utilities page, fill out the "check for duplicates" form and see if your ring is in the results.)</li>
-        <li>On the admin home page, click the "add" option in the row for Ring.</li>
-        <li>Fill in as much information for the ring as you can (use the keyword selector and ignore kwd.)</li>
-        <li>Hit "save." Your ring is now in the database.</li>
-        <li>Hopefully you had some key properties of the ring in mind. You ought to follow the following instructions to add them.</li>
-        <li>Return to the admin home page. Click "add" in the "Ring-property relationships" row, or the commutative counterpart.</li>
-        <li>Select your ring in the ring selector (it is probably at the bottom.)</li>
-        <li>Select a property you are interested in from the drop-down.</li>
-        <li>In "has property," put a 1 if the ring HAS the property, and a 0 if it does NOT have the property.</li>
-        <li>Use the "reason" field if the reason is something very straightforward. Use the "source" field to include a citation if you can.</li>
-        <li>If the form demands content in one of the text fields, you can skirt it by submitting whitespace.</li>
-        <li>Click "save" or "save and add another" depending on if you are done or not.</li>
-        <li>Remember that you don't have to supply all properties you know about the ring, just "the best" ones.</li>
-        <li>(Under construction: on the utilities page, select your ring from the dropdown and hit "run processor")</li>
-    </ul>
+        <li>Do a quick background check: <a href="{% url 'search' %}">run a wide scope search</a> for rings with
+        the properties of the ring you want to add. If you don't notice anything that looks like your ring, proceeed
+        to the next steps.</li>
+        <li>Make a record for your ring
+            <ul>
+                <li>On the admin home page, click the "add" option in the row for Ring.</li>
+                <li>Fill in as much information for the ring as you can (use the keyword selector and ignore kwd.)</li>
+                <li>Hit "save." Your ring is now in the database.</li>
+                <li>Hopefully you had some key properties of the ring in mind. You ought to follow the following instructions to add them.</li>
+            </ul>
+        </li>
+        <li>Relate your ring to its properties
+            <ul>
+                <li>Return to the admin home page. Click "add" in the "Ring-property relationships" row, or the commutative counterpart.</li>
+                <li>Select your ring in the ring selector (it is probably at the bottom.)</li>
+                <li>Select a property you are interested in from the drop-down.</li>
+                <li>In "has property," put a 1 if the ring HAS the property, and a 0 if it does NOT have the property.</li>
+                <li>Use the "reason" field if the reason is something very straightforward. Use the "source" field to include a citation if you can.</li>
+                <li>Click "save" or "save and add another" depending on if you are done or not.</li>
+            </ul>
 
+        </li>
+        <li>(Under construction: run the processor on your ring.)</li>
+        <li>Tips:
+            <ul>
+                <li>If the form demands content in one of the text fields, you can skirt it by submitting whitespace.</li>
+                <li>Remember that you don't have to supply all properties you know about the ring, just "the best" ones.</li>
+
+            </ul>
+        </li>
+    </ul>
+<h2>How to add a citation</h2>
+    <ul>
+        <li>Click the "add" link in the Citations row on the admin homepage. (In the Theorem adder, you can also click
+        the square next to the citation dropdown field to reach this form. It will soon be the same for the ring adder.)</li>
+        <li>Select the publication from the dropdown, or if your publication is not in the dropdown already, use
+            the square next to the dropdown as a shortcut to the publication adder.</li>
+        <li>Include the page number and other descriptors as appropriate into the location field. (For example "Theorem 10.9")</li>
+        <li>Hit save, and your citation will now be in the database.</li>
+
+
+    </ul>
+<h2>How to add a publication</h2>
+    <ul>
+        <li>Click the "add" link in the Citations row on the admin homepage. (You may also have gotten here from the square
+        next to the publication dropdown in the citation adder.)</li>
+        <li>Enter the publication title, author(s) and date, using January 1 as a default, if necessary.</li>
+        <li>Anything else about the publication (like edition, volume, publisher) goes into the details field.</li>
+        <li>Click "save" and the publication will now appear in the database.</li>
+    </ul>
 </div>
 {% endblock %}
