@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% if msg %}
+    <h1>Message: ->{{ msg }}<- </h1>
+    {% endif %}
+    <h1>Ring processor</h1>
+    Select a ring for processing:
+    <form action="{% url 'processor' %}" method="get">
+        {{ form.non_field_errors }}
+        <div class="fieldWrapper">
+            {{ form.ring.errors }}
+            <label for="scope">Ring:</label>
+            {{ form.ring }}
+        </div>
+        <p><input type="submit" value="Run processor" /></p>
+    </form>
+</div>
+{% endblock %}

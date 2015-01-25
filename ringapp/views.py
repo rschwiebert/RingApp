@@ -5,7 +5,7 @@ from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
 from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
 from ringapp.models import Publication, Theorem
-from ringapp.forms import SearchForm, CommSearchForm, ContribSelector
+from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector
 import re
 import random
 
@@ -374,4 +374,27 @@ def bibliography(request):
                                   x.pub_date.year) for x in Publication.objects.exclude(id=6)]
     bib.sort()
     context = RequestContext(request, {'bibliography': bib})
+    return HttpResponse(template.render(context))
+
+
+def processor(request):
+    if request.method == 'GET':  # If the form has been submitted...
+        form = RingSelector(request.GET)  # A form bound to the POST data
+        if form.is_valid():  # All validation rules pass
+            # Process the data in form.cleaned_data
+            # ...
+            msg = 'submission happened'
+            template = loader.get_template('admin/processor.html')
+            context = RequestContext(request, {'form': form, 'msg': msg})
+            return HttpResponse(template.render(context))
+    else:
+        form = RingSelector()  # An unbound form
+    template = loader.get_template('admin/processor.html')
+    context = RequestContext(request, {'form': form})
+    return HttpResponse(template.render(context))
+
+
+def testview(request):
+    template = loader.get_template('')
+    context = RequestContext(request, {})
     return HttpResponse(template.render(context))

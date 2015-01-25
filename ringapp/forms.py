@@ -1,5 +1,5 @@
 from django import forms
-from ringapp.models import Property, CommProperty
+from ringapp.models import Property, CommProperty, Ring
 
 prop_choices = [(0, '')] + [(obj.property_id, obj.name) for obj in Property.objects.all().order_by('name')]
 cprop_choices = [(0, '')] + [(obj.property_id, obj.name) for obj in CommProperty.objects.all().order_by('name')]
@@ -33,3 +33,7 @@ class ContribSelector(forms.Form):
                                         ('randring', 'Give me an idea for a ring!'),
                                         ('randcite', 'Give me an idea for a citation!'),
                                         ('property', 'I want to suggest a property.')])
+
+
+class RingSelector(forms.Form):
+    ring = forms.ChoiceField(choices=[(r, r.__unicode__()) for r in Ring.objects.all()])
