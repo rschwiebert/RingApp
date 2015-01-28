@@ -5,14 +5,6 @@ from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
 from ringapp.models import FAQ, Glossary
 
 
-class RingAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
-
 
 class PropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition']
@@ -29,6 +21,24 @@ class KeywordAdmin(admin.ModelAdmin):
 
 class RingPropertyAdmin(admin.ModelAdmin):
     fields = ['ring', 'property', 'has_property', 'reason', 'source']
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.poster = request.user.username
+        obj.save()
+
+
+class RingPropertyInline(admin.TabularInline):
+    model = RingProperty
+    fields = ['ring', 'property', 'has_property', 'reason', 'source']
+    extra = 1
+
+
+class RingAdmin(admin.ModelAdmin):
+    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
+    inlines = [
+        RingPropertyInline,
+    ]
 
     def save_model(self, request, obj, form, change):
         if not change:
