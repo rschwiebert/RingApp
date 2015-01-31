@@ -5,7 +5,6 @@ from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
 from ringapp.models import FAQ, Glossary
 
 
-
 class PropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition']
 
@@ -34,6 +33,12 @@ class RingPropertyInline(admin.TabularInline):
     extra = 1
 
 
+class CommRingPropertyInline(admin.TabularInline):
+    model = CommRingProperty
+    fields = ['ring', 'property', 'has_property', 'reason', 'source']
+    extra = 1
+
+
 class RingAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
     inlines = [
@@ -44,6 +49,23 @@ class RingAdmin(admin.ModelAdmin):
         if not change:
             obj.poster = request.user.username
         obj.save()
+
+
+# class CommRingAdmin(admin.ModelAdmin):
+#     fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
+#     inlines = [
+#         CommRingPropertyInline,
+#     ]
+#
+#     def queryset(self, request):
+#         prop = Property.objects.get(name='commutative')
+#         rids = [ring.ring_id for ring in RingProperty.objects.filter(property=prop)]
+#         return Ring.objects.filter(ring_id__in=rids)
+#
+#     def save_model(self, request, obj, form, change):
+#         if not change:
+#             obj.poster = request.user.username
+#         obj.save()
 
 
 class EquivalentsAdmin(admin.ModelAdmin):
@@ -91,7 +113,7 @@ class CommLogicAdmin(admin.ModelAdmin):
 
 
 class TheoremAdmin(admin.ModelAdmin):
-    fields = ['alias', 'statement', 'reference', 'link', 'characterizs', 'comm_characterizes']
+    fields = ['alias', 'statement', 'reference', 'link', 'characterizes', 'comm_characterizes']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -101,6 +123,7 @@ class TheoremAdmin(admin.ModelAdmin):
 
 class CitationAdmin(admin.ModelAdmin):
     fields = ['publication', 'location']
+    ordering = ('publication',)
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -110,6 +133,7 @@ class CitationAdmin(admin.ModelAdmin):
 
 class PublicationAdmin(admin.ModelAdmin):
     fields = ['title', 'authors', 'details', 'pub_date']
+    ordering = ('authors',)
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -138,6 +162,7 @@ class GlossaryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Ring, RingAdmin)
+# admin.site.register(Ring, CommRingAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(RingProperty, RingPropertyAdmin)
 admin.site.register(Logic, LogicAdmin)

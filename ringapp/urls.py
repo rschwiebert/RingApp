@@ -3,7 +3,8 @@ from django.contrib import admin
 from ringapp import views
 from django.views.generic import TemplateView
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/processor/$', views.processor, name='processor'),

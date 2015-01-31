@@ -232,7 +232,7 @@ def all_logic_forward(comm=False):
 
 
 def single_logic_forward(r, comm=False, test=False):
-    print 'Starting FwdLogicSingle...'
+    # print 'Starting FwdLogicSingle...'
     if test is True:
         LogSupply = Logic
     elif comm is True:
@@ -246,7 +246,6 @@ def single_logic_forward(r, comm=False, test=False):
         counter, errors = logic_forward(entry, counter, errors, override=[r], comm=comm, test=test)
     msg = 'FwdLogicSingle completed run adding %d entries and encountering %d errors.' % (counter, errors)
     dlogger.info(msg)
-    print 'Done.'
     return counter, errors
 
 
@@ -318,7 +317,7 @@ def new_single_logic_forward(ring, comm=False, test=False):
 
     has_props = set([prop.property_id for prop in has_props])
     lacks_props = set([prop.property_id for prop in lacks_props])
-    candidates = {}
+    candidates = []
     for logic in logic_supply:
         conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
         conds = filter(lambda x: x is not None, conds)
@@ -326,14 +325,18 @@ def new_single_logic_forward(ring, comm=False, test=False):
         conc = logic.conc
         if conds <= has_props:
             if conc in lacks_props:
-                dlogger.error('Conflict of logic %s while processing %s.', str(logic.logic_id), ring)
+                if test:
+                    print 'Conflict of logic_id %s while forward processing %s.' % (str(logic.logic_id), str(ring))
+                else:
+                    dlogger.error('Conflict of logic_id %s while forward processing %s.', str(logic.logic_id), ring)
                 return -1
             elif conc not in has_props:
                 proper = p_model.objects.get(property_id=conc)
                 new = rp_model(ring=ring, property=proper, has_property=1,
                                reason='', source=source % logic.logic_id, poster='SingleLogicForward')
-                candidates[(ring.ring_id, proper.property_id)] = new
-    for item in candidates.values():
+                has_props.add(conc)
+                candidates.append(new)
+    for item in candidates:
         item.save()
     if comm is True:
         msg = ' (comm)'
@@ -342,7 +345,8 @@ def new_single_logic_forward(ring, comm=False, test=False):
     else:
         msg = ''
     if test:
-        print 'SingleLogicForward%s completed run adding %d entries.' % (msg, len(candidates))
+        pass
+        # print 'SingleLogicForward%s completed run adding %d entries.' % (msg, len(candidates))
     else:
         dlogger.info('SingleLogicForward%s completed run adding %d entries.', msg, len(candidates))
     return len(candidates)  # This will be used to stop iterations
@@ -539,6 +543,66 @@ def bkwd_atom(type, r, conds, logic_id, counter, error, comm=False):
     else:
         print 'Invalid logic type'
     return counter, error
+
+
+def new_single_logic_backward(ring, comm=False, test=False):
+    """For a single ring, employs modus tollens with all logic on the ring."""
+    if test:
+        logic_supply = Logic.objects.filter(option='on').order_by('entry_type')
+        has_props = ring.test_ringproperty_set.filter(has_property=1)
+        lacks_props = ring.test_ringproperty_set.filter(has_property=0)
+        rp_model = test_RingProperty
+        p_model = Property
+        source = 'Logic id %d'
+    elif comm:
+        logic_supply = CommLogic.objects.filter(option='on').order_by('entry_type')
+        has_props = ring.commringproperty_set.filter(has_property=1)
+        lacks_props = ring.commringproperty_set.filter(has_property=0)
+        rp_model = CommRingProperty
+        p_model = CommProperty
+        source = 'CommLogic id %d'
+    else:
+        logic_supply = Logic.objects.filter(option='on').order_by('entry_type')
+        has_props = ring.ringproperty_set.filter(has_property=1)
+        lacks_props = ring.ringproperty_set.filter(has_property=0)
+        rp_model = RingProperty
+        p_model = Property
+        source = 'Logic id %d'
+
+    has_props = set([prop.property_id for prop in has_props])
+    lacks_props = set([prop.property_id for prop in lacks_props])
+    candidates = []
+    for logic in logic_supply:
+        conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
+        conds = set(filter(lambda x: x is not None, conds))
+        conc = logic.conc
+        if conc in lacks_props and conds <= has_props:
+            if test:
+                print 'Conflict of logic_id %s while backward processing %s.' % (str(logic.logic_id), ring)
+            else:
+                dlogger.error('Conflict of logic_id %s while backward processing %s.', str(logic.logic_id), ring)
+            return -1
+        elif conc in lacks_props and len(has_props & conds) == len(conds) - 1:
+            missing = list(conds - (has_props & conds))[0]  # The ring necessarily lacks this property
+            proper = p_model.objects.get(property_id=missing)
+            new = rp_model(ring=ring, property=proper, has_property=0,
+                           reason='', source=source % logic.logic_id, poster='SingleLogicBackward')
+            candidates.append(new)
+            lacks_props.add(missing)  # updating the lacks property list with newly discovered lacking property
+
+    for item in candidates:
+        item.save()
+    if comm is True:
+        msg = ' (comm)'
+    elif test is True:
+        msg = ' (test)'
+    else:
+        msg = ''
+    if test:
+        print 'SingleLogicBackward%s completed run adding %d entries.' % (msg, len(candidates))
+    else:
+        dlogger.info('SingleLogicBackward%s completed run adding %d entries.', msg, len(candidates))
+    return len(candidates)  # This will be used to stop iterations
 
 
 # ### DIAGNOSTIC SCRIPTS ###
