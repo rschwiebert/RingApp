@@ -21,30 +21,43 @@
             <ul>
                 <li>On the admin home page, click the "add" option in the row for Ring.</li>
                 <li>Fill in as much information for the ring as you can (use the keyword selector and ignore kwd.)</li>
-                <li>Hit "save." Your ring is now in the database.</li>
-                <li>Hopefully you had some key properties of the ring in mind. You ought to follow the following instructions to add them.</li>
-            </ul>
-        </li>
-        <li>Relate your ring to its properties
-            <ul>
-                <li>Return to the admin home page. Click "add" in the "Ring-property relationships" row, or the commutative counterpart.</li>
-                <li>Select your ring in the ring selector (it is probably at the bottom.)</li>
-                <li>Select a property you are interested in from the drop-down.</li>
-                <li>In "has property," put a 1 if the ring HAS the property, and a 0 if it does NOT have the property.</li>
-                <li>Use the "reason" field if the reason is something very straightforward. Use the "source" field to include a citation if you can.</li>
-                <li>Click "save" or "save and add another" depending on if you are done or not.</li>
-            </ul>
+                <li>Hopefully you had some key properties of the ring in mind. You ought to add (noncommutative style)
+                    properties to the ring via the following steps.</li>
+                <li>The bottom of the form has a few rows to associate properties with the ring. (When I get things fixed,
+                    you will be able to request another row whenever you need one.
+                    <ul>
+                        <li>Select a property you are interested in from the drop-down in the row.</li>
+                        <li>In "has property," put a 1 if the ring HAS the property, and a 0 if it does NOT have the property.</li>
+                        <li>Use the "reason" field if the reason is something very straightforward. Use the "source"
+                            field to include a citation if you can.</li>
+                    </ul>
+                </li>
+                <li>Hit "save." Your ring is now in the database, and is associated with the properties you entered.</li>
 
+            </ul>
         </li>
         <li>(Under construction: run the processor on your ring.)</li>
         <li>Tips:
             <ul>
                 <li>If the form demands content in one of the text fields, you can skirt it by submitting whitespace.</li>
                 <li>Remember that you don't have to supply all properties you know about the ring, just "the best" ones.</li>
-
             </ul>
         </li>
     </ul>
+
+<h2>How to modify properties on an existing ring</h2>
+    <ul>
+        <li>(Note: I'm currently implementing a parallel procedure for adding commutative style properties, but it is
+            not ready yet.)</li>
+        <li>Click the "change" link in the Ring row.</li>
+        <li>The form for the ring will appear, and at the bottom will be the currently associated properties, along with
+        a few empty rows for you to add items. You can remove currently existing items (if you have permissions to do
+        so.</li>
+        <li>Once done modifying the associations, you hit the save button.</li>
+        <li>Alternatively, you can do this manually one at a time through the "Ring-property relationships" row.
+        To add commutative associations, use the "Commutative ring-property relationships" row.</li>
+    </ul>
+
 <h2>How to add a citation</h2>
     <ul>
         <li>Click the "add" link in the Citations row on the admin homepage. (In the Theorem adder, you can also click
