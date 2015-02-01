@@ -52,21 +52,6 @@ class Citation(models.Model):
         return str(self.publication.title)+","+str(self.location)
 
 
-class Property(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'properties'
-        verbose_name_plural = 'Ring properties'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
-
-
 class CommProperty(models.Model):
     property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
     name = models.CharField(max_length=250)
@@ -77,6 +62,22 @@ class CommProperty(models.Model):
         # managed = False
         db_table = 'comm_properties'
         verbose_name_plural = 'Commutative ring properties'
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return self.name
+
+
+class Property(models.Model):
+    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
+    name = models.CharField(max_length=250)
+    definition = models.CharField(max_length=500)
+    poster = models.CharField(max_length=25, blank=True, null=True)
+    comm_version = models.ForeignKey(CommProperty, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'properties'
+        verbose_name_plural = 'Ring properties'
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
@@ -161,12 +162,13 @@ class Ring(models.Model):
     ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True)  # Field name made lowercase.
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
-    kwds = models.CharField(max_length=200)
+    kwds = models.CharField(max_length=200, blank=True, null=True)
     keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords")
-    reference = models.CharField(max_length=500)
+    old_reference = models.CharField(max_length=500)
     notes = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
-    
+    reference = models.ManyToManyField(Citation, verbose_name="ring reference")
+
     class Meta:
         # managed = False
         db_table = 'rings'

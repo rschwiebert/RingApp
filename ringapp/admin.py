@@ -40,7 +40,8 @@ class CommRingPropertyInline(admin.TabularInline):
 
 
 class RingAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
+    fields = ['name', 'description', 'notes', 'reference', 'old_reference', 'keywords', 'kwds']
+    readonly_fields = ('kwds', 'old_reference')
     inlines = [
         RingPropertyInline,
     ]
