@@ -6,7 +6,7 @@ from ringapp.models import FAQ, Glossary
 
 
 class PropertyAdmin(admin.ModelAdmin):
-    fields = ['name', 'definition']
+    fields = ['name', 'definition', 'comm_version']
 
     def save_model(self, request, obj, form, change):
         if not change:

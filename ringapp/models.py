@@ -186,7 +186,23 @@ class RingProperty(models.Model):
     source = models.CharField(max_length=500)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True, null=True)
-    
+
+    def save(self, *args, **kwargs):
+        if self.property.comm_version is not None\
+            and self.ring.ringproperty_set.filter(ring=self.ring,
+                                                  property=Property.objects.get(name='commutative')).exists()\
+            and self.ring.ringproperty_set.get(ring=self.ring,
+                                               property=Property.objects.get(name='commutative')).has_property == 1\
+            and not CommRingProperty.objects.filter(ring=self.ring,
+                                                    property=self.property.comm_version).exists():
+            CommRingProperty.objects.create(ring=self.ring,
+                                            property=self.property.comm_version,
+                                            has_property=self.has_property,
+                                            reason=self.reason,
+                                            source=self.source,
+                                            poster=self.poster)
+        super(RingProperty, self).save(*args, **kwargs)
+
     class Meta:
         # managed = False
         db_table = 'ring_property'
