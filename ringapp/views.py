@@ -201,11 +201,18 @@ def viewring(request, ring_id):
         lacks_props = zip(*lacks_props)[1]
     if other_props:
         other_props = zip(*other_props)[1]
+    ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
+                                          x.publication.title,
+                                          x.publication.details,
+                                          x.publication.pub_date.year,
+                                          x.location) for x in r.reference.all()]
+
     context = RequestContext(request, {
         'r': r,
         'has_props': has_props,
         'lacks_props': lacks_props,
-        'other_props': other_props
+        'other_props': other_props,
+        'ref_list': ref_list,
     })
     template = loader.get_template('ringapp/viewring.html')
     return HttpResponse(template.render(context))

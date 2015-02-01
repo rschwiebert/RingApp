@@ -11,7 +11,20 @@
         <li>Name: {{ r.name }}</li>
         <li>Description: {{ r.description }}</li>
         <li>Notes: {{ r.notes }}</li>
-        <li>Reference: {{ r.reference }}</li>
+        {% if ref_list %}
+        <li>Reference(s):
+            {% if ref_list %}
+            <ul>
+            {% for ref in ref_list %}
+            <li>{{ ref.title }}</li>
+            {% endfor %}
+
+            {% else %}
+            <li>(Citation needed)</li>
+            {% endif %}
+            </ul>
+        </li>
+        {% endif %}
     </ul>
 This ring has the following properties:
     <ul>
