@@ -91,8 +91,8 @@ class Theorem(models.Model):
     link = models.URLField(blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
-    characterizes = models.ForeignKey(Property, null=True)
-    comm_characterizes = models.ForeignKey(CommProperty, null=True)
+    characterizes = models.ForeignKey(Property, null=True, blank=True)
+    comm_characterizes = models.ForeignKey(CommProperty, null=True, blank=True)
 
     class Meta:
         # managed = False
@@ -205,7 +205,9 @@ class RingProperty(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'ring_property'
+        db_table = 'ring_proper' \
+                   '' \
+                   'ty'
         verbose_name_plural = 'Ring-property relationships'
     
     def __unicode__(self):  # Python 3: def __str__(self):
@@ -292,7 +294,7 @@ class Invariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(Property, db_column='property_ID')
     metaproperty = models.ForeignKey(Metaproperty, db_column='type_id')
-    is_invariant = models.BooleanField(default=None, null=False)
+    has_metaproperty = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
     note = models.CharField(max_length=100, blank=True, null=True)
@@ -303,7 +305,7 @@ class Invariance(models.Model):
         verbose_name_plural = 'Property-metaproperty relationships'
 
     def __unicode__(self):  # Python 3: def __str__(self):
-        if self.is_invariant:
+        if self.has_metaproperty:
             return "%s : %s" % (self.property.name, self.metaproperty.description)
         else:
             return "%s : not %s" % (self.property.name, self.metaproperty.description)
@@ -313,7 +315,7 @@ class CommInvariance(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     property = models.ForeignKey(CommProperty, db_column='property_ID')
     metaproperty = models.ForeignKey(Metaproperty, db_column='type_id')
-    is_invariant = models.BooleanField(default=None, null=False)
+    has_metaproperty = models.BooleanField(default=None, null=False)
     example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
     theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
     note = models.CharField(max_length=100, blank=True, null=True)
@@ -324,7 +326,7 @@ class CommInvariance(models.Model):
         verbose_name_plural = 'Commutative property-metaproperty relationships'
 
     def __unicode__(self):  # Python 3: def __str__(self):
-        if self.is_invariant:
+        if self.has_metaproperty:
             return "%s : %s" % (self.property.name, self.metaproperty.description)
         else:
             return "%s : not %s" % (self.property.name, self.metaproperty.description)
@@ -334,7 +336,7 @@ class Glossary(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     term = models.CharField(max_length=100, blank=True, null=True)
     definition = models.CharField(max_length=400, blank=True, null=True)
-    reference = models.ManyToManyField(Citation, verbose_name="glossary reference")
+    reference = models.ManyToManyField(Citation, verbose_name="glossary reference", null=True, blank=True)
 
     class Meta:
         # managed = False
