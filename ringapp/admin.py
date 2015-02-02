@@ -5,8 +5,15 @@ from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
 from ringapp.models import FAQ, Glossary
 
 
+class InvarianceInline(admin.TabularInline):
+    model = Invariance
+    fields = ['property', 'metaproperty', 'is_invariant', 'example', 'theorem', 'note']
+    extra = 1
+
+
 class PropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', 'comm_version']
+    inlines = [InvarianceInline]
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -73,8 +80,15 @@ class EquivalentsAdmin(admin.ModelAdmin):
     fields = ['property', 'equivalent', 'source', 'keywords']
 
 
+class CommInvarianceInline(admin.TabularInline):
+    model = CommInvariance
+    fields = ['property', 'metaproperty', 'is_invariant', 'example', 'theorem', 'note']
+    extra = 1
+
+
 class CommPropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition']
+    inlines = [CommInvarianceInline]
 
     def save_model(self, request, obj, form, change):
         if not change:
