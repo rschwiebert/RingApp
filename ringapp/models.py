@@ -163,7 +163,7 @@ class Ring(models.Model):
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
     kwds = models.CharField(max_length=200, blank=True, null=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords")
+    keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords", null=True, blank=True)
     old_reference = models.CharField(max_length=500)
     notes = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)

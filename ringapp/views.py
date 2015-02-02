@@ -263,8 +263,8 @@ def viewprop(request, property_id):
     hasnum = prop.ringproperty_set.filter(has_property=1).count()
     lacksnum = prop.ringproperty_set.filter(has_property=0).count()
     metaproperties = Invariance.objects.filter(property=prop)
-    has_mp = [x.invarianttype for x in metaproperties.filter(has_metaproperty=True)]
-    lacks_mp = [x.invarianttype for x in metaproperties.filter(has_metaproperty=False)]
+    has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
+    lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
 
     context = RequestContext(request, {
         'property_id':  property_id,
@@ -289,8 +289,8 @@ def viewcommprop(request, property_id):
     hasnum = prop.commringproperty_set.filter(has_property=1).count()
     lacksnum = prop.commringproperty_set.filter(has_property=0).count()
     metaproperties = CommInvariance.objects.filter(property=prop)
-    has_mp = [x.invarianttype for x in metaproperties.filter(has_metaproperty=True)]
-    lacks_mp = [x.invarianttype for x in metaproperties.filter(has_metaproperty=False)]
+    has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
+    lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
 
     context = RequestContext(request, {
         'property_id':  property_id,
