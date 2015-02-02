@@ -7,7 +7,7 @@ from ringapp.models import FAQ, Glossary
 
 class InvarianceInline(admin.TabularInline):
     model = Invariance
-    fields = ['property', 'metaproperty', 'is_invariant', 'example', 'theorem', 'note']
+    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'theorem', 'note']
     extra = 1
 
 
@@ -82,7 +82,7 @@ class EquivalentsAdmin(admin.ModelAdmin):
 
 class CommInvarianceInline(admin.TabularInline):
     model = CommInvariance
-    fields = ['property', 'metaproperty', 'is_invariant', 'example', 'theorem', 'note']
+    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'theorem', 'note']
     extra = 1
 
 
