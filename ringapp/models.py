@@ -182,8 +182,8 @@ class RingProperty(models.Model):
     ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
     property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
     has_property = models.IntegerField(blank=True, null=True)
-    reason = models.CharField(max_length=200)
-    source = models.CharField(max_length=500)
+    reason = models.CharField(max_length=200, blank=True, null=True)
+    source = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -223,8 +223,8 @@ class CommRingProperty(models.Model):
     property = models.ForeignKey(CommProperty, db_column='property_ID',
                                  blank=True, null=True)  # Field name made lowercase.
     has_property = models.IntegerField(blank=True, null=True)
-    reason = models.CharField(max_length=200)
-    source = models.CharField(max_length=500)
+    reason = models.CharField(max_length=200, blank=True, null=True)
+    source = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
     
