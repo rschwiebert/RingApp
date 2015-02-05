@@ -167,7 +167,7 @@ class Ring(models.Model):
     old_reference = models.CharField(max_length=500)
     notes = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
-    reference = models.ManyToManyField(Citation, verbose_name="ring reference")
+    reference = models.ManyToManyField(Citation, verbose_name="ring reference", blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -205,9 +205,7 @@ class RingProperty(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'ring_proper' \
-                   '' \
-                   'ty'
+        db_table = 'ring_property'
         verbose_name_plural = 'Ring-property relationships'
     
     def __unicode__(self):  # Python 3: def __str__(self):
