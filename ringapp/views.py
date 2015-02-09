@@ -384,7 +384,7 @@ def bibliography(request):
     bib = ['%s, %s, %s, (%d).' % (x.authors,
                                   x.title,
                                   x.details,
-                                  x.pub_date.year) for x in Publication.objects.exclude(id=6)]
+                                  x.pub_date.year) for x in Publication.objects.exclude(id__in=[6, 10])]
     bib.sort()
     context = RequestContext(request, {'bibliography': bib})
     return HttpResponse(template.render(context))
