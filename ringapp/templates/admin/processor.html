@@ -10,13 +10,15 @@
 {% block breadcrumbs %}{% endblock %}
 
 {% block content %}
+
 <div id="content-main">
     {% if msg %}
     <h1>Message: ->{{ msg }}<- </h1>
     {% endif %}
     <h1>Ring processor</h1>
     Select a ring for processing:
-    <form action="{% url 'processor' %}" method="get">
+    <form action="{% url 'processor' %}" method="post">
+        {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="fieldWrapper">
             {{ form.ring.errors }}

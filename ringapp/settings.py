@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -22,7 +24,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -87,7 +89,7 @@ STATIC_URL = '/static/'
 import dj_database_url
 
 
-DATABASES['default'] = dj_database_url.config()
+DATABASES['default'] =  dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -106,3 +108,42 @@ STATICFILES_DIRS = (
 )
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters':{
+        'simple': {'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'}
+    },
+    'handlers': {
+        'dlogger_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'ringapp/logs/deduction.log',
+            'formatter': 'simple',
+            'maxBytes': 1024*100,
+            'backupCount': 5,
+        },
+        'v'
+        'logger_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'ringapp/logs/views.log',
+            'formatter': 'simple',
+            'maxBytes': 1024*100,
+            'backupCount': 5,
+        },
+    },
+    'loggers': {
+        'ringapp.dlogger': {
+            'handlers': ['dlogger_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'ringapp.vlogger': {
+            'handlers': ['vlogger_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

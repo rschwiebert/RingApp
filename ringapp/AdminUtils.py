@@ -11,14 +11,8 @@ import logging
 import logging.handlers
 from collections import defaultdict
 
-LOG_FILENAME = 'ringapp/logs/deduction.log'
+dlogger = logging.getLogger('ringapp.dlogger')
 
-dlogger = logging.getLogger('DeductionLogger')
-dlogger.setLevel(logging.DEBUG)
-handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=50000, backupCount=5)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-dlogger.addHandler(handler)
 
 
 # ### FILE PROCESSING SCRIPTS ###

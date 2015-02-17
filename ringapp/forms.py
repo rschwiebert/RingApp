@@ -36,4 +36,4 @@ class ContribSelector(forms.Form):
 
 
 class RingSelector(forms.Form):
-    ring = forms.ChoiceField(choices=[(r, r.__unicode__()) for r in Ring.objects.all()])
+    ring = forms.ChoiceField(choices=[(r.ring_id, r.__unicode__()) for r in Ring.objects.all()])

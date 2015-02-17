@@ -24,7 +24,13 @@
     This property has the following metaproperties
     <ul>
     {% for item in has_mp %}
-        <li>{{ item.description }}</li>
+        <li>{{ item.description }}
+            {% if item.theorem != None %}
+            (<a href="{% url 'theorem' item.theorem.theorem_id %}">theorem</a>)
+            {% else %}
+            (theorem needed)
+            {% endif %}
+            </li>
     {% endfor %}
     </ul>
     {% endif %}
@@ -32,7 +38,13 @@
     This property does not have the following metaproperties
     <ul>
     {% for item in lacks_mp %}
-        <li>{{ item.description }}</li>
+        <li>{{ item.description }}
+        {% if item.example != None %}
+            (<a href="{% url 'ring' item.example.ring_id %}">counterexample</a>)
+        {% else %}
+            (counterexample needed)
+        {% endif %}
+        </li>
     {% endfor %}
     </ul>
     {% endif %}

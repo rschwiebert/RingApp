@@ -8,6 +8,8 @@ from ringapp.models import Publication, Theorem
 from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector
 import re
 import random
+import logging
+vlogger = logging.getLogger('ringapp.vlogger')
 
 from AdminUtils import *
 
@@ -391,12 +393,44 @@ def bibliography(request):
 
 
 def processor(request):
-    if request.method == 'GET':  # If the form has been submitted...
-        form = RingSelector(request.GET)  # A form bound to the POST data
+    if request.method == 'POST':  # If the form has been submitted...
+        form = RingSelector(request.POST)  # A form bound to the POST data
         if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
-            # ...
-            msg = 'submission happened'
+            ring_id = request.POST['ring']
+            ring = Ring.objects.get(ring_id=ring_id)
+            comm = Property.objects.get(name='commutative')
+            rps = ring.ringproperty_set.filter(property=comm, has_property=1)
+            if rps.exists():
+                modes = [False, True]
+            else:
+                modes = [False]
+            for mode in modes:
+                try:
+                    ctr = 0
+                    check = True
+                    while ctr < 15 and check is True:
+                        check = new_single_logic_forward(ring, comm=mode)
+                        ctr += 1
+                        if check == -1:
+                            raise Exception("SingleLogicForward conflict")
+                    if ctr == 15:
+                        vlogger.error('New single logic forward script ran too many times on ring_id=%s comm=%s.'
+                                      % (str(ring.ring_id, str(mode))))
+                    ctr = 0
+                    check = True
+                    while ctr < 15 and check is True:
+                        check = new_single_logic_backward(ring, comm=mode)
+                        ctr += 1
+                        if check == -1:
+                            raise Exception("SingleLogicBackward conflict")
+                    if ctr == 15:
+                        vlogger.error('New single logic backward script ran too many times on ring_id=%s comm=%s.'
+                                      % (str(ring.ring_id, str(mode))))
+
+                except Exception:
+                    msg = 'Exception occurred during processing. Alert an admin.'
+            msg = "Processing of %s was successful" % str(ring)
             template = loader.get_template('admin/processor.html')
             context = RequestContext(request, {'form': form, 'msg': msg})
             return HttpResponse(template.render(context))
