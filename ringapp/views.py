@@ -21,8 +21,8 @@ def index(request):
 
 
 def searchpage(request):
-    if request.method == 'POST':  # If the form has been submitted...
-        form = SearchForm(request.POST)  # A form bound to the POST data
+    if "scope" in request.GET:  # If the form has been submitted...
+        form = SearchForm(request.GET)  # A form bound to the POST data
         if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
             # ...
@@ -39,8 +39,8 @@ def searchpage(request):
 
 
 def commsearchpage(request):
-    if request.method == 'POST':  # If the form has been submitted...
-        form = CommSearchForm(request.POST)  # A form bound to the POST data
+    if "scope" in request.GET:  # If the form has been submitted...
+        form = CommSearchForm(request.GET)  # A form bound to the POST data
         if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
             # ...
@@ -58,22 +58,18 @@ def commsearchpage(request):
 
 def results(request):
     template = loader.get_template('ringapp/results.html')
-    values = request.GET.items()
-    scope = dict(values)['scope']
-    values.remove(('scope', scope))
-    values = [x for x in values if x[1] != '0']
-    
-    has = [int(x[1]) for x in values if re.search(re.compile('^has'), x[0])is not None]
-    lacks = [int(x[1]) for x in values if re.search(re.compile('^lacks'), x[0]) is not None]
+    scope = request.GET['scope']
+    has = [int(request.GET[key]) for key in request.GET if key.startswith('has') and request.GET[key] != '']
+    lacks = [int(request.GET[key]) for key in request.GET if key.startswith('lacks') and request.GET[key] != '']
     has_names = [Property.objects.get(pk=x).name for x in has]
-    lacks_names = [Property.objects.get(pk=x).name for x in lacks] 
+    lacks_names = [Property.objects.get(pk=x).name for x in lacks]
     has_string = ' and '.join(has_names)
     lacks_string = ' or '.join(lacks_names)
-    
+
     main_results = find_rings(scope, has=has, lacks=lacks)
     mirror_results = mirror_search(scope, has=has, lacks=lacks)
     
-    context = RequestContext(request, {'values': values,
+    context = RequestContext(request, {
                                        'has': has,
                                        'lacks': lacks,
                                        'scope': scope,
@@ -87,13 +83,9 @@ def results(request):
 
 def commresults(request):
     template = loader.get_template('ringapp/commresults.html')
-    values = request.GET.items()
-    scope = dict(values)['scope']
-    values.remove(('scope', scope))
-    values = [x for x in values if x[1] != '0']
-    
-    has = [int(x[1]) for x in values if re.search(re.compile('^has'), x[0]) is not None]
-    lacks = [int(x[1]) for x in values if re.search(re.compile('^lacks'), x[0]) is not None]
+    scope = request.GET['scope']
+    has = [int(request.GET[key]) for key in request.GET if key.startswith('has') and request.GET[key] != '']
+    lacks = [int(request.GET[key]) for key in request.GET if key.startswith('lacks') and request.GET[key] != '']
     has_names = [CommProperty.objects.get(pk=x).name for x in has]
     lacks_names = [CommProperty.objects.get(pk=x).name for x in lacks] 
     has_string = ' and '.join(has_names)
@@ -101,8 +93,7 @@ def commresults(request):
     
     main_results = find_rings(scope, has=has, lacks=lacks, comm=True)
     
-    context = RequestContext(request, {'values': values,
-                                       'has': has,
+    context = RequestContext(request, {'has': has,
                                        'lacks': lacks,
                                        'scope': scope,
                                        'main_results': main_results,
@@ -259,8 +250,8 @@ def viewcommring(request, ring_id):
 
 def viewprop(request, property_id):
     prop = Property.objects.get(property_id=property_id)
-    has_url = '?scope=n&has1=%s&has2=0&has3=0&lacks1=0&lacks2=0&lacks3=0' % property_id
-    lacks_url = '?scope=n&has1=0&has2=0&has3=0&lacks1=%s&lacks2=0&lacks3=0' % property_id
+    has_url = '?scope=n&has1=%s' % property_id
+    lacks_url = '?scope=n&lacks1=%s' % property_id
     # unknown_url =
     hasnum = prop.ringproperty_set.filter(has_property=1).count()
     lacksnum = prop.ringproperty_set.filter(has_property=0).count()
@@ -285,8 +276,8 @@ def viewprop(request, property_id):
 
 def viewcommprop(request, property_id):
     prop = CommProperty.objects.get(property_id=property_id)
-    has_url = '?scope=n&has1=%s&has2=0&has3=0&lacks1=0&lacks2=0&lacks3=0' % property_id
-    lacks_url = '?scope=n&has1=0&has2=0&has3=0&lacks1=%s&lacks2=0&lacks3=0' % property_id
+    has_url = '?scope=n&has1=%s' % property_id
+    lacks_url = '?scope=n&lacks1=%s' % property_id
     # unknown_url =
     hasnum = prop.commringproperty_set.filter(has_property=1).count()
     lacksnum = prop.commringproperty_set.filter(has_property=0).count()

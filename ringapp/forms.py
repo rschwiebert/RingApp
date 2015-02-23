@@ -1,29 +1,27 @@
 from django import forms
 from ringapp.models import Property, CommProperty, Ring
 
-prop_choices = [(0, '')] + [(obj.property_id, obj.name) for obj in Property.objects.all().order_by('name')]
-cprop_choices = [(0, '')] + [(obj.property_id, obj.name) for obj in CommProperty.objects.all().order_by('name')]
 scope_choices = [('n', 'Narrow'), ('w', 'Wide')]
 
 
 class SearchForm(forms.Form):
     scope = forms.ChoiceField(choices=scope_choices)
-    has1 = forms.ChoiceField(choices=prop_choices)
-    has2 = forms.ChoiceField(choices=prop_choices)
-    has3 = forms.ChoiceField(choices=prop_choices)
-    lacks1 = forms.ChoiceField(choices=prop_choices)
-    lacks2 = forms.ChoiceField(choices=prop_choices)
-    lacks3 = forms.ChoiceField(choices=prop_choices)
+    has1 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
+    has2 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
+    has3 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
+    lacks1 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
+    lacks2 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
+    lacks3 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
 
 
 class CommSearchForm(forms.Form):
     scope = forms.ChoiceField(choices=scope_choices)
-    has1 = forms.ChoiceField(choices=cprop_choices)
-    has2 = forms.ChoiceField(choices=cprop_choices)
-    has3 = forms.ChoiceField(choices=cprop_choices)
-    lacks1 = forms.ChoiceField(choices=cprop_choices)
-    lacks2 = forms.ChoiceField(choices=cprop_choices)
-    lacks3 = forms.ChoiceField(choices=cprop_choices)
+    has1 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
+    has2 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
+    has3 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
+    lacks1 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
+    lacks2 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
+    lacks3 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
 
 
 class ContribSelector(forms.Form):
@@ -36,4 +34,4 @@ class ContribSelector(forms.Form):
 
 
 class RingSelector(forms.Form):
-    ring = forms.ChoiceField(choices=[(r.ring_id, r.__unicode__()) for r in Ring.objects.all()])
+    ring = forms.ModelChoiceField(queryset=Ring.objects.all().order_by('name'))
