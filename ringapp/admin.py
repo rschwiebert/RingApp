@@ -148,9 +148,16 @@ class CitationAdmin(admin.ModelAdmin):
         obj.save()
 
 
+class CitationInline(admin.TabularInline):
+    model = Citation
+    fields = ['publication', 'location']
+    extra = 1
+
+
 class PublicationAdmin(admin.ModelAdmin):
     fields = ['title', 'authors', 'details', 'pub_date']
     ordering = ('authors',)
+    inlines = [CitationInline]
 
     def save_model(self, request, obj, form, change):
         if not change:
