@@ -12,7 +12,8 @@ class InvarianceInline(admin.TabularInline):
 
 
 class PropertyAdmin(admin.ModelAdmin):
-    fields = ['name', 'definition', 'comm_version']
+    readonly_fields = ['property_id']
+    fields = ['property_id', 'name', 'definition', 'comm_version']
     inlines = [InvarianceInline]
 
     def save_model(self, request, obj, form, change):
@@ -87,7 +88,8 @@ class CommInvarianceInline(admin.TabularInline):
 
 
 class CommPropertyAdmin(admin.ModelAdmin):
-    fields = ['name', 'definition']
+    readonly_fields = ['property_id']
+    fields = ['property_id', 'name', 'definition']
     inlines = [CommInvarianceInline]
 
     def save_model(self, request, obj, form, change):
@@ -110,7 +112,7 @@ class CommEquivalentsAdmin(admin.ModelAdmin):
 
 
 class LogicAdmin(admin.ModelAdmin):
-    fields = ['readable', 'citation', 'theorem']
+    fields = ['cond_1', 'cond_2', 'cond_3', 'cond_4', 'conc', 'readable', 'citation', 'theorem']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -119,7 +121,7 @@ class LogicAdmin(admin.ModelAdmin):
 
 
 class CommLogicAdmin(admin.ModelAdmin):
-    fields = ['readable', 'citation', 'theorem']
+    fields = ['cond_1', 'cond_2', 'cond_3', 'cond_4', 'conc', 'readable', 'citation', 'theorem']
 
     def save_model(self, request, obj, form, change):
         if not change:
