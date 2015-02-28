@@ -3,6 +3,7 @@ from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic, Inv
 from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic, CommInvariance
 from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
 from ringapp.models import FAQ, Glossary
+from ringapp.AdminUtils import rewriteName
 
 
 class InvarianceInline(admin.TabularInline):
@@ -117,6 +118,14 @@ class LogicAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.poster = request.user.username
+            conds = [obj.cond_1, obj.cond_2, obj.cond_3, obj.cond_4]
+            conds = filter(lambda x: x is not None, conds)
+            conc = obj.conc
+            readable_conds = [Property.objects.get(pk=i).name for i in conds]
+            readable_conds = map(rewriteName, readable_conds)
+            readable_conc = rewriteName(Property.objects.get(pk=conc).name)
+            output = " and ".join(readable_conds) + " implies %s" % readable_conc
+            obj.readable = output
         obj.save()
 
 

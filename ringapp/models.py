@@ -7,6 +7,15 @@ from django.db import models
 #   * Remove `managed = False` lines for those models you wish to give write DB access
 # Feel free to rename the models, but don't rename db_table values or field names.
 
+def rewriteName(st):
+    """Makes database property names with (left)/(right) a little more readable."""
+    if st[-7:] == ' (left)':
+        return 'left %s' % st[:-7]
+    elif st[-8:] == ' (right)':
+        return 'right %s' % st[:-8]
+    else:
+        return st
+
 
 class Keyword(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
@@ -125,7 +134,19 @@ class Logic(models.Model):
     class Meta:
         # managed = False
         db_table = 'logic'
-    
+
+    def save(self, *args, **kwargs):
+        conds = [self.cond_1, self.cond_2, self.cond_3, self.cond_4]
+        conds = filter(lambda x: x is not None, conds)
+        self.entry_type = len(conds)
+        conc = self.conc
+        readable_conds = [Property.objects.get(pk=i).name for i in conds]
+        readable_conds = map(rewriteName, readable_conds)
+        readable_conc = rewriteName(Property.objects.get(pk=conc).name)
+        output = " and ".join(readable_conds) + " implies %s" % readable_conc
+        self.readable = output
+        super(Logic, self).save(*args, **kwargs)
+
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.readable is not None and self.readable != '':
             return self.readable
@@ -150,7 +171,18 @@ class CommLogic(models.Model):
     class Meta:
         # managed = False
         db_table = 'comm_logic'
-    
+
+    def save(self, *args, **kwargs):
+        conds = [self.cond_1, self.cond_2, self.cond_3, self.cond_4]
+        conds = filter(lambda x: x is not None, conds)
+        self.entry_type = len(conds)
+        conc = self.conc
+        readable_conds = [CommProperty.objects.get(pk=i).name for i in conds]
+        readable_conc = CommProperty.objects.get(pk=conc).name
+        output = " and ".join(readable_conds) + " implies %s" % readable_conc
+        self.readable = output
+        super(CommLogic, self).save(*args, **kwargs)
+
     def __unicode__(self):  # Python 3: def __str__(self):
         if self.readable is not None and self.readable != '':
             return self.readable
