@@ -136,6 +136,7 @@ class Logic(models.Model):
         db_table = 'logic'
 
     def save(self, *args, **kwargs):
+        self.option = 'on'
         conds = [self.cond_1, self.cond_2, self.cond_3, self.cond_4]
         conds = filter(lambda x: x is not None, conds)
         self.entry_type = len(conds)
@@ -173,6 +174,7 @@ class CommLogic(models.Model):
         db_table = 'comm_logic'
 
     def save(self, *args, **kwargs):
+        self.option = 'on'
         conds = [self.cond_1, self.cond_2, self.cond_3, self.cond_4]
         conds = filter(lambda x: x is not None, conds)
         self.entry_type = len(conds)

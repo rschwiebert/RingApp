@@ -323,14 +323,14 @@ def logic_forward(logic_entry, counter, errors, override=[], comm=False):
 def new_single_logic_forward(ring, comm=False):
     """Processes a single ring with the Logic table (or the CommLogic table if comm=True)"""
     if comm:
-        logic_supply = CommLogic.objects.filter(option='on').order_by('entry_type')
+        logic_supply = CommLogic.objects.order_by('entry_type')
         has_props = ring.commringproperty_set.filter(has_property=1)
         lacks_props = ring.commringproperty_set.filter(has_property=0)
         rp_model = CommRingProperty
         p_model = CommProperty
         source = 'CommLogic id %d'
     else:
-        logic_supply = Logic.objects.filter(option='on').order_by('entry_type')
+        logic_supply = Logic.objects.order_by('entry_type')
         has_props = ring.ringproperty_set.filter(has_property=1)
         lacks_props = ring.ringproperty_set.filter(has_property=0)
         rp_model = RingProperty
@@ -341,6 +341,9 @@ def new_single_logic_forward(ring, comm=False):
     lacks_props = set([prop.property_id for prop in lacks_props])
     candidates = []
     for logic in logic_supply:
+        print logic.logic_id
+        if logic.logic_id == 529:
+            import pdb; pdb.set_trace()
         conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
         conds = filter(lambda x: x is not None, conds)
         conds = set(conds)
@@ -570,7 +573,7 @@ def new_single_logic_backward(ring, comm=False):
         p_model = CommProperty
         source = 'CommLogic id %d'
     else:
-        logic_supply = Logic.objects.filter(option='on').order_by('entry_type')
+        logic_supply = Logic.objects.order_by('entry_type')
         has_props = ring.ringproperty_set.filter(has_property=1)
         lacks_props = ring.ringproperty_set.filter(has_property=0)
         rp_model = RingProperty
@@ -582,6 +585,8 @@ def new_single_logic_backward(ring, comm=False):
     candidates = []
     for logic in logic_supply:
         # print logic.logic_id
+        if logic.logic_id == 529:
+            import pdb; pdb.set_trace()
         conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
         conds = set(x for x in conds if x is not None)
         conc = logic.conc
