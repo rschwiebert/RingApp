@@ -116,6 +116,11 @@ LOGGING = {
         'simple': {'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'}
     },
     'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
         'dlogger_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -124,7 +129,6 @@ LOGGING = {
             'maxBytes': 1024*100,
             'backupCount': 5,
         },
-        'v'
         'logger_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -136,14 +140,14 @@ LOGGING = {
     },
     'loggers': {
         'ringapp.dlogger': {
-            'handlers': ['dlogger_handler'],
+            'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True,
+            # 'propagate': True,
         },
         'ringapp.vlogger': {
-            'handlers': ['vlogger_handler'],
+            'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True,
+            # 'propagate': True,
         },
     },
 }
