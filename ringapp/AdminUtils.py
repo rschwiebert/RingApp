@@ -341,9 +341,6 @@ def new_single_logic_forward(ring, comm=False):
     lacks_props = set([prop.property_id for prop in lacks_props])
     candidates = []
     for logic in logic_supply:
-        print logic.logic_id
-        if logic.logic_id == 529:
-            import pdb; pdb.set_trace()
         conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
         conds = filter(lambda x: x is not None, conds)
         conds = set(conds)
@@ -585,8 +582,6 @@ def new_single_logic_backward(ring, comm=False):
     candidates = []
     for logic in logic_supply:
         # print logic.logic_id
-        if logic.logic_id == 529:
-            import pdb; pdb.set_trace()
         conds = [logic.cond_1, logic.cond_2, logic.cond_3, logic.cond_4]
         conds = set(x for x in conds if x is not None)
         conc = logic.conc
