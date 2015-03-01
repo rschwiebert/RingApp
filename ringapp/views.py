@@ -396,8 +396,8 @@ def processor(request):
                 modes = [False, True]
             else:
                 modes = [False]
-            for mode in modes:
-                try:
+            try:
+                for mode in modes:
                     ctr = 0
                     check = True
                     while ctr < 15 and check is True:
@@ -407,7 +407,7 @@ def processor(request):
                             raise Exception("SingleLogicForward conflict")
                     if ctr == 15:
                         vlogger.error('New single logic forward script ran too many times on ring_id=%s comm=%s.'
-                                      % (str(ring.ring_id, str(mode))))
+                                      % (str(ring.ring_id), str(mode)))
                     ctr = 0
                     check = True
                     while ctr < 15 and check is True:
@@ -417,11 +417,11 @@ def processor(request):
                             raise Exception("SingleLogicBackward conflict")
                     if ctr == 15:
                         vlogger.error('New single logic backward script ran too many times on ring_id=%s comm=%s.'
-                                      % (str(ring.ring_id, str(mode))))
+                                      % (str(ring.ring_id), str(mode)))
+                msg = "Processing of %s was successful" % str(ring)
+            except Exception:
+                msg = 'Exception occurred during processing. Alert an admin.'
 
-                except Exception:
-                    msg = 'Exception occurred during processing. Alert an admin.'
-            msg = "Processing of %s was successful" % str(ring)
             template = loader.get_template('admin/processor.html')
             context = RequestContext(request, {'form': form, 'msg': msg})
             return HttpResponse(template.render(context))
@@ -429,10 +429,4 @@ def processor(request):
         form = RingSelector()  # An unbound form
     template = loader.get_template('admin/processor.html')
     context = RequestContext(request, {'form': form})
-    return HttpResponse(template.render(context))
-
-
-def testview(request):
-    template = loader.get_template('')
-    context = RequestContext(request, {})
     return HttpResponse(template.render(context))
