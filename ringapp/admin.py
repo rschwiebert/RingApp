@@ -1,6 +1,6 @@
 from django.contrib import admin
 from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic, Invariance
-from ringapp.models import CommProperty, CommRingProperty, CommEquivalents, CommLogic, CommInvariance
+from ringapp.models import CommRing, CommProperty, CommRingProperty, CommEquivalents, CommLogic, CommInvariance
 from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
 from ringapp.models import FAQ, Glossary
 from ringapp.AdminUtils import rewriteName
@@ -61,21 +61,21 @@ class RingAdmin(admin.ModelAdmin):
         obj.save()
 
 
-# class CommRingAdmin(admin.ModelAdmin):
-#     fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
-#     inlines = [
-#         CommRingPropertyInline,
-#     ]
-#
-#     def queryset(self, request):
-#         prop = Property.objects.get(name='commutative')
-#         rids = [ring.ring_id for ring in RingProperty.objects.filter(property=prop)]
-#         return Ring.objects.filter(ring_id__in=rids)
-#
-#     def save_model(self, request, obj, form, change):
-#         if not change:
-#             obj.poster = request.user.username
-#         obj.save()
+class CommRingAdmin(admin.ModelAdmin):
+    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
+    inlines = [
+        CommRingPropertyInline,
+    ]
+
+    def get_queryset(self, request):
+        prop = Property.objects.get(name='commutative')
+        rids = [ring.ring_id for ring in RingProperty.objects.filter(property=prop)]
+        return Ring.objects.filter(ring_id__in=rids)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.poster = request.user.username
+        obj.save()
 
 
 class EquivalentsAdmin(admin.ModelAdmin):
@@ -195,7 +195,7 @@ class GlossaryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Ring, RingAdmin)
-# admin.site.register(Ring, CommRingAdmin)
+admin.site.register(CommRing, CommRingAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(RingProperty, RingPropertyAdmin)
 admin.site.register(Logic, LogicAdmin)

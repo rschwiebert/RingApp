@@ -210,7 +210,15 @@ class Ring(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.name
 
-        
+
+class CommRing(Ring):
+    class Meta:
+        # managed = False
+        db_table = 'rings'
+        proxy = True
+        verbose_name_plural = 'Commutative rings'
+
+
 class RingProperty(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
