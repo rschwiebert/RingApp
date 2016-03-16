@@ -26,7 +26,7 @@
 
         <ul>
         {% for item in main_results %}
-            <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
+            <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}
@@ -46,7 +46,7 @@
 
         <ul>
         {% for item in mirror_results %}
-            <li><a href="{% url 'ring' item.ring_id %}">{{ item.name }}</a></li>
+            <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}

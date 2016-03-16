@@ -11,7 +11,7 @@ You are now browsing commutative ring properties that we track.
 {% if prop_list %}
     <ul>
     {% for item in prop_list %}
-        <li><a href="property/{{ item.property_id }}/">{{ item.name }}</a>  </li>
+        <li><a href="{% url 'commproperty-detail' item.property_id %}">{{ item.name }}</a>  </li>
     {% endfor %}
     </ul>
 {% else %}

@@ -9,13 +9,13 @@
 This is a listing of the implications used by the commutative ring database.
 
 <br><br>
-<a href="{% url 'logics' %}">Switch to full list of implications</a>
+<a href="{% url 'logic-list' %}">Switch to full list of implications</a>
 
 <br><br>
-{% if logics %}
+{% if object_list %}
     <ul>
-    {% for item in logics %}
-        <li><a href="commlogic/{{ item.logic_id }}/">{{ item.readable }}</a>  </li>
+    {% for item in object_list %}
+        <li><a href="{% url 'commlogic-detail' item.logic_id %}/">{{ item.readable }}</a>  </li>
     {% endfor %}
     </ul>
 {% else %}
