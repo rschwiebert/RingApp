@@ -119,6 +119,7 @@ class CommPropertyList(ListView):
     def get_queryset(self):
         return CommProperty.objects.order_by('name')
 
+
 class LogicList(ListView):
     model = Logic
 

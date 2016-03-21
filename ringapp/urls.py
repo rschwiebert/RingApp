@@ -1,10 +1,16 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from ringapp import views
+from django.contrib.auth.views import login, logout, password_reset
+from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.views.generic.edit import CreateView
+from ringapp import views
 from ringapp import models
 
 urlpatterns = [
+    url(r'^login/$', login, {'template_name': 'ringapp/login.html'}, name='login'),
+    url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
+    url(r'^password_reset/$', password_reset, name='password_reset'),
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/processor/$', views.processor, name='processor'),
@@ -36,4 +42,7 @@ urlpatterns = [
     url(r'^contribute/$', views.contribute, name='contribute'),
     url(r'^suggestions/$', views.suggestions, name='suggestions'),
     url(r'^bibliography/$', views.bibliography, name='bibliography'),
+    url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',
+                                           form_class=UserCreationForm,
+                                           success_url='/'), name='register')
 ]
