@@ -8,9 +8,9 @@
 
 You are now browsing commutative ring properties that we track.
 
-{% if prop_list %}
+{% if object_list %}
     <ul>
-    {% for item in prop_list %}
+    {% for item in object_list %}
         <li><a href="{% url 'commproperty-detail' item.property_id %}">{{ item.name }}</a>  </li>
     {% endfor %}
     </ul>

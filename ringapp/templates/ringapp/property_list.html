@@ -10,9 +10,9 @@ Here is a list of all properties tracked for the ring database.<br>
 <br>
 (More properties specific to commutative rings appear in the <a href="{% url 'commproperty-list' %}">commutative ring property page.)</a>
 
-{% if prop_list %}
+{% if object_list %}
     <ul>
-    {% for item in prop_list %}
+    {% for item in object_list %}
         <li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a>  </li>
     {% endfor %}
     </ul>

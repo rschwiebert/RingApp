@@ -97,7 +97,7 @@ def commresults(request):
     return HttpResponse(template.render(context))
 
 
-class CommRingListView(ListView):
+class CommRingList(ListView):
     model = Ring
     template_name = 'commring_list.html'
 
@@ -209,56 +209,50 @@ def viewcommring(request, ring_id):
     return HttpResponse(template.render(context))
     
 
-def viewprop(request, property_id):
-    prop = Property.objects.get(property_id=property_id)
-    has_url = '?scope=n&has1=%s' % property_id
-    lacks_url = '?scope=n&lacks1=%s' % property_id
-    # unknown_url =
-    hasnum = prop.ringproperty_set.filter(has_property=1).count()
-    lacksnum = prop.ringproperty_set.filter(has_property=0).count()
-    metaproperties = Invariance.objects.filter(property=prop)
-    has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
-    lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+class PropertyView(DetailView):
+    model = Property
+    template_name = 'ringapp/property_detail.html'
 
-    context = RequestContext(request, {
-        'property_id':  property_id,
-        'prop': prop,
-        'hasnum': hasnum,
-        'lacksnum': lacksnum,
-        'has_url': has_url,
-        'metaproperties': metaproperties,
-        'lacks_url': lacks_url,
-        'has_mp': has_mp,
-        'lacks_mp': lacks_mp,
-    })
-    template = loader.get_template('ringapp/viewprop.html')
-    return HttpResponse(template.render(context))    
+    def get_context_data(self, **kwargs):
+        context = super(PropertyView, self).get_context_data(**kwargs)
+        hasnum = self.object.ringproperty_set.filter(has_property=1).count()
+        lacksnum = self.object.ringproperty_set.filter(has_property=0).count()
+        metaproperties = Invariance.objects.filter(property=self.object)
+        has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
+        lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+
+        context.update({
+            'hasnum': hasnum,
+            'lacksnum': lacksnum,
+            'metaproperties': metaproperties,
+            'has_mp': has_mp,
+            'lacks_mp': lacks_mp,
+        })
+
+        return context    
 
 
-def viewcommprop(request, property_id):
-    prop = CommProperty.objects.get(property_id=property_id)
-    has_url = '?scope=n&has1=%s' % property_id
-    lacks_url = '?scope=n&lacks1=%s' % property_id
-    # unknown_url =
-    hasnum = prop.commringproperty_set.filter(has_property=1).count()
-    lacksnum = prop.commringproperty_set.filter(has_property=0).count()
-    metaproperties = CommInvariance.objects.filter(property=prop)
-    has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
-    lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+class CommPropertyView(DetailView):
+    model = CommProperty
+    template_name = 'ringapp/commproperty_detail.html'
 
-    context = RequestContext(request, {
-        'property_id':  property_id,
-        'prop': prop,
-        'hasnum': hasnum,
-        'lacksnum': lacksnum,
-        'has_url': has_url,
-        'metaproperties': metaproperties,
-        'lacks_url': lacks_url,
-        'has_mp': has_mp,
-        'lacks_mp': lacks_mp,
-    })
-    template = loader.get_template('ringapp/viewcommprop.html')
-    return HttpResponse(template.render(context))
+    def get_context_data(self, **kwargs):
+        context = super(CommPropertyView, self).get_context_data(**kwargs)
+
+        hasnum = self.object.commringproperty_set.filter(has_property=1).count()
+        lacksnum = self.object.commringproperty_set.filter(has_property=0).count()
+        metaproperties = CommInvariance.objects.filter(property=self.object)
+        has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
+        lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+
+        context.update({
+            'hasnum': hasnum,
+            'lacksnum': lacksnum,
+            'metaproperties': metaproperties,
+            'has_mp': has_mp,
+            'lacks_mp': lacks_mp,
+        })
+        return context
 
 
 def contribute(request):

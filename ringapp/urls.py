@@ -4,8 +4,7 @@ from ringapp import views
 from django.views.generic import TemplateView, ListView, DetailView, FormView
 from ringapp import models
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/processor/$', views.processor, name='processor'),
@@ -16,14 +15,14 @@ urlpatterns = patterns(
     url(r'^search/results/$', views.results, name='results'),
     url(r'^commsearch/commresults/$', views.commresults, name='cresults'),
     url(r'^rings/$', ListView.as_view(model=models.Ring), name='ring-list'),
-    url(r'^commrings/$', views.CommRingListView.as_view(), name='commring-list'),
+    url(r'^commrings/$', views.CommRingList.as_view(), name='commring-list'),
     url(r'^rings/ring/(?P<ring_id>\d+)/$', views.viewring, name='ring-detail'),
     url(r'^commrings/ring/(?P<ring_id>\d+)/$', views.viewcommring, name='commring-detail'),
 
     url(r'^properties/$', views.PropertyList.as_view(), name='property-list'),
-    url(r'^properties/property/(?P<property_id>\d+)/$', views.viewprop, name='property-detail'),
+    url(r'^properties/property/(?P<pk>\d+)/$', views.PropertyView.as_view(), name='property-detail'),
     url(r'^commproperties/$', views.CommPropertyList.as_view(), name='commproperty-list'),
-    url(r'^commproperties/property/(?P<pk>\d+)/$', DetailView.as_view(model=CommProperty), name='commproperty-detail'),
+    url(r'^commproperties/property/(?P<pk>\d+)/$', views.CommPropertyView.as_view(), name='commproperty-detail'),
 
     url(r'^logics/$', ListView.as_view(model=models.Logic), name='logic-list'),
     url(r'^logics/logic/(?P<pk>\d+)/$', DetailView.as_view(model=models.Logic), name='logic-detail'),
@@ -37,4 +36,4 @@ urlpatterns = patterns(
     url(r'^contribute/$', views.contribute, name='contribute'),
     url(r'^suggestions/$', views.suggestions, name='suggestions'),
     url(r'^bibliography/$', views.bibliography, name='bibliography'),
-)
+]
