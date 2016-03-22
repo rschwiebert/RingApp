@@ -6,17 +6,16 @@
 
 <h1>Commutative ring property detail</h1>
 
-{% if property_id %}
+{% if object %}
     <ul>
-    Property name: {{ prop.name }}<br>
-    Definition: {{ prop.definition }}<br>
+    Property name: {{ object.name }}<br>
+    Definition: {{ object.definition }}<br>
     Rings with property: {{ hasnum }}<br>
     Rings without property: {{ lacksnum }}<br>
     </ul>
-    
     <ul>
-        <li><a href="{% url 'cresults' %}{{ has_url }}">View rings having this property</a></li>
-        <li><a href="{% url 'cresults' %}{{ lacks_url }}">View rings not having this property</a></li>
+        <li><a href="{% url 'cresults' %}?scope=n&has1={{ object.pk }}">View rings having this property</a></li>
+        <li><a href="{% url 'cresults' %}?scope=n&lacks1={{ object.pk }}">View rings not having this property</a></li>
     </ul>
 
 {% if metaproperties %}

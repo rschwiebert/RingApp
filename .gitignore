@@ -4,4 +4,7 @@ staticfiles
 local_config.py
 *.*~
 settings.py
+.env
+db.sqlite3
+*~
 .idea

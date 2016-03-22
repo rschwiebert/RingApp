@@ -28,7 +28,7 @@ These rings are consistent with your criteria, but may not satisfy your criteria
 
     <ul>
     {% for item in main_results %}
-        <li><a href="{% url 'cring' item.ring_id %}">{{ item.name }}</a></li>
+        <li><a href="{% url 'commring-detail' item.ring_id %}">{{ item.name }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

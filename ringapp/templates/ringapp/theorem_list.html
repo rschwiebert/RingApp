@@ -8,13 +8,13 @@
 
 You are now browsing theorems we have on record. 
 
-{% if theorem_list %}
+{% if object_list %}
     <ul>
-    {% for item in theorem_list %}
+    {% for item in object_list %}
         {% if item.alias %}
-        <li><a href="theorem/{{ item.theorem_id }}/">{{ item.alias }}</a></li>
+        <li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.alias }}</a></li>
         {% else %}
-        <li><a href="theorem/{{ item.theorem_id }}/">{{ item.statement }}</a></li>
+        <li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.statement }}</a></li>
         {% endif %}
     {% endfor %}
     </ul>

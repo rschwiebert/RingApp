@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
-
+from django.views.generic import DetailView, ListView, TemplateView, FormView
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
 from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
@@ -12,12 +12,6 @@ import logging
 vlogger = logging.getLogger('ringapp.vlogger')
 
 from AdminUtils import *
-
-
-def index(request):
-    template = loader.get_template('ringapp/index.html')
-    context = RequestContext(request, {})
-    return HttpResponse(template.render(context))
 
 
 def searchpage(request):
@@ -103,73 +97,41 @@ def commresults(request):
     return HttpResponse(template.render(context))
 
 
-def browserings(request):
-    ring_list = Ring.objects.order_by('ring_id')
-    template = loader.get_template('ringapp/browserings.html')
-    context = RequestContext(request, {
-        'ring_list':  ring_list,
-    })
-    return HttpResponse(template.render(context))
+class CommRingList(ListView):
+    model = Ring
+    template_name = 'commring_list.html'
+
+    def get_queryset(self):
+        return Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),
+                                   ringproperty__has_property=1)
 
 
-def browsecommrings(request):
-    ring_list = Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),
-                                    ringproperty__has_property=1).order_by('ring_id')
-    template = loader.get_template('ringapp/browsecommrings.html')
-    context = RequestContext(request, {
-        'ring_list':  ring_list,
-    })
-    return HttpResponse(template.render(context))
+class PropertyList(ListView):
+    model = Property
+    
+    def get_queryset(self):
+        return Property.objects.order_by('name')
 
 
-def browseprops(request):
-    prop_list = Property.objects.order_by('name')
-    template = loader.get_template('ringapp/browseprops.html')
-    context = RequestContext(request, {
-        'prop_list':  prop_list,
-    })
-    return HttpResponse(template.render(context))
+class CommPropertyList(ListView):
+    model = CommProperty
+
+    def get_queryset(self):
+        return CommProperty.objects.order_by('name')
 
 
-def browsecommprops(request):
-    prop_list = CommProperty.objects.order_by('name')
-    template = loader.get_template('ringapp/browsecommprops.html')
-    context = RequestContext(request, {
-        'prop_list':  prop_list,
-    })
-    return HttpResponse(template.render(context))
+class LogicList(ListView):
+    model = Logic
+
+    def get_queryset(self):
+        Logic.objects.filter(option='on')
 
 
-def browselogic(request):
-    template = loader.get_template('ringapp/browselogics.html')
-    logics = Logic.objects.all().filter(option='on')
-    context = RequestContext(request, {'logics': logics})
-    return HttpResponse(template.render(context))
+class CommLogicList(ListView):
+    model = CommLogic
 
-
-def browsecommlogic(request):
-    template = loader.get_template('ringapp/browsecommlogics.html')
-    logics = CommLogic.objects.filter(option='on')
-    context = RequestContext(request, {'logics': logics})
-    return HttpResponse(template.render(context))
-
-
-def viewlogic(request, logic_id):
-    lobjs = Logic.objects.get(logic_id=logic_id)
-    context = RequestContext(request, {
-        'L': lobjs
-    })
-    template = loader.get_template('ringapp/viewlogic.html')
-    return HttpResponse(template.render(context))
-
-
-def viewcommlogic(request, logic_id):
-    lobjs = CommLogic.objects.get(logic_id=logic_id)
-    context = RequestContext(request, {
-        'L': lobjs
-    })
-    template = loader.get_template('ringapp/viewcommlogic.html')
-    return HttpResponse(template.render(context))
+    def get_queryset(self):
+        CommLogic.objects.filter(option='on')
 
 
 def viewring(request, ring_id):
@@ -248,74 +210,50 @@ def viewcommring(request, ring_id):
     return HttpResponse(template.render(context))
     
 
-def viewprop(request, property_id):
-    prop = Property.objects.get(property_id=property_id)
-    has_url = '?scope=n&has1=%s' % property_id
-    lacks_url = '?scope=n&lacks1=%s' % property_id
-    # unknown_url =
-    hasnum = prop.ringproperty_set.filter(has_property=1).count()
-    lacksnum = prop.ringproperty_set.filter(has_property=0).count()
-    metaproperties = Invariance.objects.filter(property=prop)
-    has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
-    lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+class PropertyView(DetailView):
+    model = Property
+    template_name = 'ringapp/property_detail.html'
 
-    context = RequestContext(request, {
-        'property_id':  property_id,
-        'prop': prop,
-        'hasnum': hasnum,
-        'lacksnum': lacksnum,
-        'has_url': has_url,
-        'metaproperties': metaproperties,
-        'lacks_url': lacks_url,
-        'has_mp': has_mp,
-        'lacks_mp': lacks_mp,
-    })
-    template = loader.get_template('ringapp/viewprop.html')
-    return HttpResponse(template.render(context))    
+    def get_context_data(self, **kwargs):
+        context = super(PropertyView, self).get_context_data(**kwargs)
+        hasnum = self.object.ringproperty_set.filter(has_property=1).count()
+        lacksnum = self.object.ringproperty_set.filter(has_property=0).count()
+        metaproperties = Invariance.objects.filter(property=self.object)
+        has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
+        lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+
+        context.update({
+            'hasnum': hasnum,
+            'lacksnum': lacksnum,
+            'metaproperties': metaproperties,
+            'has_mp': has_mp,
+            'lacks_mp': lacks_mp,
+        })
+
+        return context    
 
 
-def viewcommprop(request, property_id):
-    prop = CommProperty.objects.get(property_id=property_id)
-    has_url = '?scope=n&has1=%s' % property_id
-    lacks_url = '?scope=n&lacks1=%s' % property_id
-    # unknown_url =
-    hasnum = prop.commringproperty_set.filter(has_property=1).count()
-    lacksnum = prop.commringproperty_set.filter(has_property=0).count()
-    metaproperties = CommInvariance.objects.filter(property=prop)
-    has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
-    lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+class CommPropertyView(DetailView):
+    model = CommProperty
+    template_name = 'ringapp/commproperty_detail.html'
 
-    context = RequestContext(request, {
-        'property_id':  property_id,
-        'prop': prop,
-        'hasnum': hasnum,
-        'lacksnum': lacksnum,
-        'has_url': has_url,
-        'metaproperties': metaproperties,
-        'lacks_url': lacks_url,
-        'has_mp': has_mp,
-        'lacks_mp': lacks_mp,
-    })
-    template = loader.get_template('ringapp/viewcommprop.html')
-    return HttpResponse(template.render(context))
+    def get_context_data(self, **kwargs):
+        context = super(CommPropertyView, self).get_context_data(**kwargs)
 
+        hasnum = self.object.commringproperty_set.filter(has_property=1).count()
+        lacksnum = self.object.commringproperty_set.filter(has_property=0).count()
+        metaproperties = CommInvariance.objects.filter(property=self.object)
+        has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
+        lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
 
-def about(request):
-    context = RequestContext(request, {})
-    template = loader.get_template('ringapp/about.html')
-    return HttpResponse(template.render(context))
-
-
-def people(request):
-    template = loader.get_template('ringapp/people.html')
-    context = RequestContext(request, {})
-    return HttpResponse(template.render(context))
-
-
-def resources(request):
-    template = loader.get_template('ringapp/resources.html')
-    context = RequestContext(request, {})
-    return HttpResponse(template.render(context))
+        context.update({
+            'hasnum': hasnum,
+            'lacksnum': lacksnum,
+            'metaproperties': metaproperties,
+            'has_mp': has_mp,
+            'lacks_mp': lacks_mp,
+        })
+        return context
 
 
 def contribute(request):
@@ -350,26 +288,20 @@ def suggestions(request):
     return HttpResponse(template.render(context))
 
 
-def browsetheorems(request):
-    template = loader.get_template('ringapp/browsetheorems.html')
-    theorem_list = Theorem.objects.all()
-    context = RequestContext(request, {'theorem_list': theorem_list})
-    return HttpResponse(template.render(context))
-
-
-def viewtheorem(request, theorem_id):
-    tobjs = Theorem.objects.get(theorem_id=theorem_id)
-    ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
-                                          x.publication.title,
-                                          x.publication.details,
-                                          x.publication.pub_date.year,
-                                          x.location) for x in tobjs.reference.all()]
-    context = RequestContext(request, {
-        'T': tobjs,
-        'ref_list': ref_list,
-    })
-    template = loader.get_template('ringapp/viewtheorem.html')
-    return HttpResponse(template.render(context))
+class TheoremDetail(DetailView):
+    template_name = 'ringapp/theorem-detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(TheoremDetail, self).get_context_data(**kwargs)
+        tobjs = Theorem.objects.get(theorem_id=theorem_id)
+        ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
+                                              x.publication.title,
+                                              x.publication.details,
+                                              x.publication.pub_date.year,
+                                              x.location) for x in tobjs.reference.all()]
+        context['T']= tobjs,
+        context['ref_list'] = ref_list
+        return context
 
 
 def bibliography(request):

@@ -25,6 +25,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+LOGIN_URL = '/login'
+LOGIN_REDIRECT_URL = '/'
+
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
@@ -33,13 +36,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'ringapp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ringapp',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -53,6 +56,23 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'ringapp.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'debug': True,
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 WSGI_APPLICATION = 'ringapp.wsgi.application'
 
