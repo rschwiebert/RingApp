@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.contrib.auth.models import User
 
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
@@ -197,11 +198,11 @@ class Ring(models.Model):
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
     kwds = models.CharField(max_length=200, blank=True, null=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords", null=True, blank=True)
+    keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords", blank=True)
     old_reference = models.CharField(max_length=500)
     notes = models.CharField(max_length=500, blank=True, null=True)
     poster = models.CharField(max_length=25, blank=True, null=True)
-    reference = models.ManyToManyField(Citation, verbose_name="ring reference", blank=True, null=True)
+    reference = models.ManyToManyField(Citation, verbose_name="ring reference", blank=True)
 
     class Meta:
         # managed = False
@@ -376,7 +377,7 @@ class Glossary(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     term = models.CharField(max_length=100, blank=True, null=True)
     definition = models.CharField(max_length=400, blank=True, null=True)
-    reference = models.ManyToManyField(Citation, verbose_name="glossary reference", null=True, blank=True)
+    reference = models.ManyToManyField(Citation, verbose_name="glossary reference", blank=True)
 
     class Meta:
         # managed = False
@@ -398,6 +399,26 @@ class FAQ(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.question
+
+
+class Suggestion(models.Model):
+    object_type = models.SmallIntegerField(choices=[(0, 'ring'),
+                                                    (1, 'citation'),
+                                                    (1, 'theorem'),
+])
+    status = models.SmallIntegerField(choices=[(-2, 'need info'),
+                                               (-1, 'declined'),
+                                               (0, 'pending'),
+                                               (1, 'accepted'),
+                                               (2, 'withdrawn'),],
+                                      default=0)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    description = models.CharField(max_length=400, null=True, blank=True)
+    citation = models.CharField(max_length=100, null=True, blank=True)
+    user = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return '%s %s %s' % (self.get_object_type_display(), self.description, self.user.username)
 
 
 class test_Ring(models.Model):

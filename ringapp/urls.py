@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name='ringapp/about.html'), name='about'),
     url(r'^people/$', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),
     url(r'^resources/$', TemplateView.as_view(template_name='ringapp/resources.html'), name='resources'),
-    url(r'^contribute/$', views.contribute, name='contribute'),
+    url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
     url(r'^suggestions/$', views.suggestions, name='suggestions'),
     url(r'^bibliography/$', views.bibliography, name='bibliography'),
     url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',

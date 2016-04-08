@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, TemplateView, FormView
+from django.views.generic.edit import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
 from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
-from ringapp.models import Publication, Theorem
+from ringapp.models import Publication, Theorem, Suggestion
 from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector
 import re
 import random
@@ -254,6 +257,24 @@ class CommPropertyView(DetailView):
             'lacks_mp': lacks_mp,
         })
         return context
+
+
+class SuggestionView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model=Suggestion
+    template_name = 'ringapp/contribute.html'
+    success_url = '/contribute/'
+    fields = ['object_type', 'name', 'description']
+    success_message = "Thanks... we'll look into that %(object_display)s suggestion!"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(SuggestionView, self).form_valid(form)    
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            object_display=self.object.get_object_type_display(),
+        )
 
 
 def contribute(request):

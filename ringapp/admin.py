@@ -1,7 +1,10 @@
 from django.contrib import admin
-from ringapp.models import Ring, Property, RingProperty, Equivalents, Logic, Invariance
-from ringapp.models import CommRing, CommProperty, CommRingProperty, CommEquivalents, CommLogic, CommInvariance
-from ringapp.models import Theorem, Publication, Citation, Keyword, Metaproperty
+from ringapp.models import (Ring, Property, RingProperty, 
+                            Equivalents, Logic, Invariance)
+from ringapp.models import (CommRing, CommProperty, CommRingProperty, 
+                            CommEquivalents, CommLogic, CommInvariance)
+from ringapp.models import (Theorem, Publication, Citation, Keyword, 
+                            Metaproperty, Suggestion)
 from ringapp.models import FAQ, Glossary
 from ringapp.AdminUtils import rewriteName
 
@@ -173,6 +176,9 @@ class PublicationAdmin(admin.ModelAdmin):
             obj.poster = request.user.username
         obj.save()
 
+class SuggestionAdmin(admin.ModelAdmin):
+    fields = ['name', 'description', 'object_type', 'status', 'user']
+    
 
 class InvarianceAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'theorem', 'note']
@@ -213,3 +219,4 @@ admin.site.register(CommInvariance, CommInvarianceAdmin)
 admin.site.register(Metaproperty, MetapropertyAdmin)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Glossary, GlossaryAdmin)
+admin.site.register(Suggestion, SuggestionAdmin)
