@@ -276,6 +276,17 @@ class SuggestionView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             object_display=self.object.get_object_type_display(),
         )
 
+    def get_context_data(self, **kwargs):
+        context = super(SuggestionView, self).get_context_data(**kwargs)
+        with open('ringapp/generated/ring_sugg.txt', 'r') as f:
+            ring_sugg = random.choice(f.readlines())
+        with open('ringapp/generated/cring_sugg.txt', 'r') as f:
+            cring_sugg = random.choice(f.readlines())
+        context['ring_sugg'] = ring_sugg
+        context['cring_sugg'] = cring_sugg
+        return context
+        
+
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'ringapp/profile.html'
