@@ -44,5 +44,6 @@ urlpatterns = [
     url(r'^bibliography/$', views.bibliography, name='bibliography'),
     url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',
                                            form_class=UserCreationForm,
-                                           success_url='/'), name='register')
+                                           success_url='profile/'), name='register'),
+    url(r'^profile/$', views.ProfileView.as_view(), name='profile'),
 ]

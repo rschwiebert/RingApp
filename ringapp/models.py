@@ -418,7 +418,11 @@ class Suggestion(models.Model):
     user = models.ForeignKey(User)
 
     def __unicode__(self):
-        return '%s %s %s' % (self.get_object_type_display(), self.description, self.user.username)
+        if len(self.description) > 30:
+            shortdesc = self.description[:30]
+        else:
+            shortdesc = self.description
+        return '%s %s %s' % (self.get_object_type_display(), self.name, shortdesc)
 
 
 class test_Ring(models.Model):

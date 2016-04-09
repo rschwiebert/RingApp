@@ -1,0 +1,14 @@
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Profile page{% endblock %}
+
+{% block body_block %}
+<h1>{{ request.user.username }}'s Profile</h1>
+
+<h2>My suggestions</h2>
+{% for suggestion in suggestions %}
+<li>({{ suggestion.get_object_type_display }}) {{ suggestion.get_status_display }} {{ suggestion.name }} {{ suggestion.description }}</li>
+
+{% endfor %}
+
+{% endblock %}

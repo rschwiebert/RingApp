@@ -277,6 +277,16 @@ class SuggestionView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         )
 
 
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'ringapp/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        context['suggestions'] = Suggestion.objects.filter(user=self.request.user)
+        
+        return context
+        
+
 def contribute(request):
     if request.method == 'POST':  # If the form has been submitted...
         chooser = ContribSelector(request.POST)  # A form bound to the POST data
