@@ -320,17 +320,16 @@ def suggestions(request):
 
 
 class TheoremDetail(DetailView):
-    template_name = 'ringapp/theorem-detail.html'
+    template_name = 'ringapp/theorem_detail.html'
+    model = Theorem
     
     def get_context_data(self, **kwargs):
         context = super(TheoremDetail, self).get_context_data(**kwargs)
-        tobjs = Theorem.objects.get(theorem_id=theorem_id)
         ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
                                               x.publication.title,
                                               x.publication.details,
                                               x.publication.pub_date.year,
-                                              x.location) for x in tobjs.reference.all()]
-        context['T']= tobjs,
+                                              x.location) for x in self.object.reference.all()]
         context['ref_list'] = ref_list
         return context
 

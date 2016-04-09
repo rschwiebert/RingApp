@@ -35,7 +35,7 @@ urlpatterns = [
     url(r'^commlogics/$', views.CommLogicList, name='commlogic-list'),
     url(r'^commlogics/commlogic/(?P<pk>\d+)/$', DetailView.as_view(model=models.CommLogic), name='commlogic-detail'),
     url(r'^theorems/$', ListView.as_view(model=models.Theorem), name='theorem-list'),
-    url(r'^theorems/theorem/(?P<theorem_id>\d+)/$', views.TheoremDetail, name='theorem-detail'),
+    url(r'^theorems/theorem/(?P<pk>\d+)/$', views.TheoremDetail.as_view(), name='theorem-detail'),
     url(r'^about/$', TemplateView.as_view(template_name='ringapp/about.html'), name='about'),
     url(r'^people/$', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),
     url(r'^resources/$', TemplateView.as_view(template_name='ringapp/resources.html'), name='resources'),

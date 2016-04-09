@@ -5,10 +5,10 @@
 {% block body_block %}
 
 <h1>Theorem detail</h1>
-{% if T %}
+{% if object %}
     <ul>
-        <li>Alias: {{ T.alias }}</li>
-        <li>Statement: {{ T.statement }}</li>
+        <li>Alias: {{ object.alias }}</li>
+        <li>Statement: {{ object.statement }}</li>
         <li>Reference(s):
             {% if ref_list %}
             <ul>
@@ -21,7 +21,7 @@
             {% endif %}
             </ul>
         </li>
-        <li>Link: <a href="{{ T.link }}">{{ T.link }}</a></li>
+        <li>Link: <a href="{{ object.link }}">{{ object.link }}</a></li>
     </ul>
 
     
