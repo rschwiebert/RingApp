@@ -39,10 +39,64 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			  </button>
-			  <a class="navbar-brand" href="#">Database of Ring Theory</a>
-			</div>
+			  <a class="navbar-brand" href="{% url 'index' %}">Database of Ring Theory</a>
 			<div id="navbar" class="navbar-collapse collapse">
+<ul class="nav navbar-nav">
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                  Search
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  
+                  <li><a href="{% url 'search'%}">All rings</a></li>
+                  
+                  <li><a href="{% url 'csearch'%}">Commutative rings</a></li>
+                  
+                </ul>
+              </li>
+
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                  Rings
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  
+                  <li><a href="{% url 'ring-list'%}">All rings</a></li>
+                  
+                  <li><a href="{% url 'commring-list'%}">Commutative rings</a></li>
+                  
+                </ul>
+              </li>
+              
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                  Properties
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
+                  
+                  <li><a href="{% url 'property-list'%}">All properties</a></li>
+                  
+                  <li><a href="{% url 'commproperty-list'%}">Commutative ring properties</a></li>
+                  
+                </ul>
+              </li>
+
+              <li id="theoremsNav"><a href="{% url 'theorem-list'%}">Theorems</a></li>
+              <li id="sourcesNav"><a href="{% url 'bibliography'%}">Citations</a></li>
+              
+                           
+            </ul>
+
+
+			
+
 			  <form class="navbar-form navbar-right">
+                            
+
 				<div class="form-group">
 				  <input type="text" placeholder="Email" class="form-control">
 				</div>
@@ -52,6 +106,7 @@
 				<button type="submit" class="btn btn-success">Sign in</button>
 			  </form>
 			</div><!--/.navbar-collapse -->
+               </div>
 		  </div>
 		</nav>
 
@@ -65,9 +120,10 @@
         <div>
             {% block body_block %}{% endblock %}
         </div>
-<footer>
+<div id="footer"><footer class="container">
           <p>&copy;  Ryan C. Schwiebert 2014-2016 | <a href="#top">Top</a> | Site map</p>
         </footer>
+</div>
 		<!-- Bootstrap core JavaScript
 		================================================== -->
 		<!-- Placed at the end of the document so the pages load faster -->
