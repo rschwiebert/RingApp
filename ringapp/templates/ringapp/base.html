@@ -39,23 +39,11 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			  </button>
-			  <a class="navbar-brand" href="{% url 'index' %}">Database of Ring Theory</a>
 			<div id="navbar" class="navbar-collapse collapse">
+			  <a class="navbar-brand" href="{% url 'index' %}">Database of Ring Theory</a>
+
 <ul class="nav navbar-nav">
               
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                  Search
-                  <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" role="menu">
-                  
-                  <li><a href="{% url 'search'%}">All rings</a></li>
-                  
-                  <li><a href="{% url 'csearch'%}">Commutative rings</a></li>
-                  
-                </ul>
-              </li>
 
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -64,9 +52,12 @@
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   
-                  <li><a href="{% url 'ring-list'%}">All rings</a></li>
+                  <li><a href="{% url 'ring-list' %}">Browse all rings</a></li>
+                  <li><a href="{% url 'search' %}">Search all rings</a></li>
+                  <hr>
                   
-                  <li><a href="{% url 'commring-list'%}">Commutative rings</a></li>
+                  <li><a href="{% url 'commring-list' %}">Browse commutative rings</a></li>
+                  <li><a href="{% url 'csearch' %}">Search commutative rings</a></li>
                   
                 </ul>
               </li>
@@ -87,16 +78,16 @@
 
               <li id="theoremsNav"><a href="{% url 'theorem-list'%}">Theorems</a></li>
               <li id="sourcesNav"><a href="{% url 'bibliography'%}">Citations</a></li>
+              <li id="sourcesNav"><a href="{% url 'contribute'%}">Contribute</a></li>
+              <li id="sourcesNav"><a href="{% url 'resources'%}">Learn</a></li>
               
-                           
+              <li> {% if not request.user.is_authenticated %}<a class="btn btn-default" href="{% url 'login' %}"><font color="white">Login</font></a>{% else %}<a class="btn btn-primary" href="{% url 'logout' %}"><font color="white">Logout</font></a>{% endif %}
+            <name="top"/></li>             
             </ul>
 
-
-			
-
-			  <form class="navbar-form navbar-right">
+			  <!--<form class="navbar-form navbar-right">
                             
-
+                                
 				<div class="form-group">
 				  <input type="text" placeholder="Email" class="form-control">
 				</div>
@@ -104,19 +95,14 @@
 				  <input type="password" placeholder="Password" class="form-control">
 				</div>
 				<button type="submit" class="btn btn-success">Sign in</button>
-			  </form>
+			  </form> -->
 			</div><!--/.navbar-collapse -->
                </div>
 		  </div>
 		</nav>
 
-        <header><p><a href="{% url 'index' %}">Home</a> | <a href="{% url 'about' %}">About</a> |
-            <a href="{% url 'about' %}#Contact">Contact</a> | {% if not request.user.is_authenticated %}<a href="{% url 'login' %}">Login</a>{% else %}<a href="{% url 'logout' %}">Logout</a>{% endif %}</p>
-            <name="top"/>
-        </header>
 
 
-        <hr />
         <div>
             {% block body_block %}{% endblock %}
         </div>

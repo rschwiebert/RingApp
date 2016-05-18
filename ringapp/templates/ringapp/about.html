@@ -4,50 +4,56 @@
 
 {% block body_block %}
 
-<h1>About DaRT</h1>
+<div class="container">
+  <div class="col-md-8 content">
+    <h1>About DaRT</h1>
 
-<h2 name="mission">Our mission</h2>
-<p>In any discipline, examples are indispensable tools. They teach us the limits
+    <p>In any discipline, examples are indispensable tools. They teach us the limits
 of our knowledge by showing us what is possible, and they can often illuminate the differences between concepts.</p>
-<p>Here is the problem: In the past, students and researchers would incrementally accumulate a stockpile of examples
+    <p>Here is the problem: In the past, students and researchers would incrementally accumulate a stockpile of examples
     over a lifetime. Quite often each example is remembered with a specific purpose, and other properties are perhaps
     unobserved. Faster access to examples was made possible by books like Steen and Seebach's
     <a href="http://www.amazon.com/Counterexamples-Topology-Dover-Books-Mathematics/dp/048668735X">
         <i>Counterexamples in topology</i></a>, but still, retrieval is limited a bit by manual use of the book.
 
-<p>The DaRT, leveraging the power of software, can do much more. Not only can we maintain an ever-growing store
+    <p>The DaRT, leveraging the power of software, can do much more. Not only can we maintain an ever-growing store
     of examples, we can also <u>efficiently explore them,</u> and we can
     <u>automate the process of "completing the picture"</u> for each example. We can also smoothly track multiple
     citations for items in a way that books would have a hard time doing. In all, DaRT can provide a more complete,
     more easily searchable, and a better referenced package than a book.</p>
 
-<p>For convenience, you can explore the set of examples in two ways. You can explore the full database, or if you are
+    <p>For convenience, you can explore the set of examples in two ways. You can explore the full database, or if you are
     only interested in commutative rings and their properties, you can search the database through the lens of the
     commutative version of browsing and searching. So if you don't see a property of commutative rings in the full
     database, check the specialized commutative ring version: you will probably find it there.</p>
 
-<p>In addition to rings and their properties, you can also find theorems of ring theory, many of which are fuel for
+    <p>In addition to rings and their properties, you can also find theorems of ring theory, many of which are fuel for
     the automated deduction scripts.</p>
 
-<p>Check the FAQ if you have questions, and have fun exploring the data!</p>
+    <p>Check the FAQ if you have questions, and have fun exploring the data!</p>
+  </div>
+  <div class="col-md-4 content">  
+    <h2 name="contact">Contact</h2>
 
-<h2 name="contact">Contact</h2>
-
-This application <a href="https://github.com/rschwiebert/RingApp">is on GitHub!</a> If you'd like to help
-make this site better, please drop me a line there inquiring about how to contribute.
-
-<h2>Special thanks</h2>
-I started development of this project in mid 2013 after finding out about <b>Austin Mohr</b>'s site on topological spaces
-(then called "Spacebook," now reincarnated as <a href="http://topology.jdabbs.com/">π-Base</a>). Thanks to Austin's
-helpful advice (and a bit of a peek under the hood of the site) I began
+    <p>This application <a href="https://github.com/rschwiebert/RingApp">is on GitHub!</a> If you'd like to help
+make this site better, please drop me a line there inquiring about how to contribute.</p>
+  </div>
+  <div class="col-md-4">
+    <h2>Special thanks</h2>
+    <p>I started development of this project in mid 2013 after finding out about <b>Austin Mohr</b>'s site on topological spaces (then called "Spacebook," now reincarnated as <a href="http://topology.jdabbs.com/">π-Base</a>). Thanks to Austin's helpful advice (and a bit of a peek under the hood of the site) I began
 dreaming of a site for rings that could track ring examples, their properties,
-and have some logic on the back end to fill things out. The next major round
+and have some logic on the back end to fill things out.</p> 
+    <p>The next major round
 of thanks goes to <b>Derik Rhodes</b>, who set me up with a development environment
 and sketch database in late 2013. I went on developing locally for a year while
-I mustered the energy to learn about how and where I could make the page live.
-This finally happened when I learned about <b>James Dabbs'</b> work with Austin
+I mustered the energy to learn about how and where I could make the page live.</p>
+
+    <p>This finally happened when I learned about <b>James Dabbs'</b> work with Austin
 developing π-Base. Thanks to James' generous advice and encouragement,
 this Database of Ring Theory is now finally able to make its debut on Heroku.
-Thanks again for helping make this site a reality! --Ryan C. Schwiebert, December 2014
+Thanks again for helping make this site a reality!</p> 
+    <p><i>Ryan C. Schwiebert, December 2014</i></p>
+  </div>
+</div>
 
 {% endblock %}
