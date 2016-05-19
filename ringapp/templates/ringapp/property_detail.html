@@ -3,56 +3,56 @@
 {% block title %}Property detail{% endblock %}
 
 {% block body_block %}
+<div class="container">
+	<h1>Property detail</h1>
 
-<h1>Property detail</h1>
+	{% if object %}
+	    <ul>
+		Property name: {{ object.name }}<br>
+		Definition: {{ object.definition }}<br>
+		Rings with property: {{ hasnum }}<br>
+		Rings without property: {{ lacksnum }}<br>
+	    </ul>
+	    <ul>
+		<li><a href="{% url 'results' %}?scope=n&has1={{ object.pk }}">View rings having this property</a></li>
+		<li><a href="{% url 'results' %}?scope=n&lacks1={{ object.pk }}">View rings not having this property</a></li>
+	    </ul>
+	{% if metaproperties %}
 
-{% if object %}
-    <ul>
-        Property name: {{ object.name }}<br>
-        Definition: {{ object.definition }}<br>
-        Rings with property: {{ hasnum }}<br>
-        Rings without property: {{ lacksnum }}<br>
-    </ul>
-    <ul>
-        <li><a href="{% url 'results' %}?scope=n&has1={{ object.pk }}">View rings having this property</a></li>
-        <li><a href="{% url 'results' %}?scope=n&lacks1={{ object.pk }}">View rings not having this property</a></li>
-    </ul>
-{% if metaproperties %}
+	    <h2>Metaproperties</h2>
+	    {% if has_mp %}
+	    This property has the following metaproperties
+	    <ul>
+	    {% for item in has_mp %}
+		<li>{{ item.description }}
+		    {% if item.theorem != None %}
+		    (<a href="{% url 'theorem' item.theorem.theorem_id %}">theorem</a>)
+		    {% else %}
+		    (theorem needed)
+		    {% endif %}
+		    </li>
+	    {% endfor %}
+	    </ul>
+	    {% endif %}
+	    {% if lacks_mp %}
+	    This property does not have the following metaproperties
+	    <ul>
+	    {% for item in lacks_mp %}
+		<li>{{ item.description }}
+		{% if item.example != None %}
+		    (<a href="{% url 'ring' item.example.ring_id %}">counterexample</a>)
+		{% else %}
+		    (counterexample needed)
+		{% endif %}
+		</li>
+	    {% endfor %}
+	    </ul>
+	    {% endif %}
 
-    <h2>Metaproperties</h2>
-    {% if has_mp %}
-    This property has the following metaproperties
-    <ul>
-    {% for item in has_mp %}
-        <li>{{ item.description }}
-            {% if item.theorem != None %}
-            (<a href="{% url 'theorem' item.theorem.theorem_id %}">theorem</a>)
-            {% else %}
-            (theorem needed)
-            {% endif %}
-            </li>
-    {% endfor %}
-    </ul>
-    {% endif %}
-    {% if lacks_mp %}
-    This property does not have the following metaproperties
-    <ul>
-    {% for item in lacks_mp %}
-        <li>{{ item.description }}
-        {% if item.example != None %}
-            (<a href="{% url 'ring' item.example.ring_id %}">counterexample</a>)
-        {% else %}
-            (counterexample needed)
-        {% endif %}
-        </li>
-    {% endfor %}
-    </ul>
-    {% endif %}
+	{% endif %}
 
-{% endif %}
-
-{% else %}
-    <p>Nothing was retrieved.</p>
-{% endif %}
-
+	{% else %}
+	    <p>Nothing was retrieved.</p>
+	{% endif %}
+</div>
 {% endblock %}
