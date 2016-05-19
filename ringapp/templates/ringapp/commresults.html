@@ -3,36 +3,36 @@
 {% block title %}Commutative ring search results{% endblock %}
 
 {% block body_block %}
+<div class="container">
+    <div class="col-md-12 content">
+	<h1>Commutative ring search results</h1>
 
-<h1>Commutative ring search results</h1>
+	<p>You searched for commmutative rings</p>
+	{% if has_string %}
+	<p>which ARE {{ has_string }},</p>
+	{% endif %}
+	{% if lacks_string %}
+	<p>which ARE NOT {{ lacks_string }}</p>
+	{% endif %}
+    </div>
+    <div class="col-md-4 content">
+	{% if main_results %}
+	{% if scope == 'n' %}
+	<p>These commutative rings are known to satisfy all of your criteria:</p>
+	{% else %}
+	<p>These rings are consistent with your criteria, but may not satisfy your criteria when more data is supplied.</p>
+	{% endif %}
+	<br>
+	<h2>Search results</h2>
 
-You searched for commmutative rings
-{% if has_string %}
-which ARE<br>
-{{ has_string }},<br>
-{% endif %}
-{% if lacks_string %}
-which ARE NOT<br>
-{{ lacks_string }}
-{% endif %}
-<br><br>
-
-{% if main_results %}
-{% if scope == 'n' %}
-These commutative rings are known to satisfy all of your criteria:
-{% else %}
-These rings are consistent with your criteria, but may not satisfy your criteria when more data is supplied.
-{% endif %}
-<br>
-<h2>Search results</h2>
-
-    <ul>
-    {% for item in main_results %}
-        <li><a href="{% url 'commring-detail' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>The search turned up no rings.</p>
-{% endif %}
-
+	    <ul>
+	    {% for item in main_results %}
+		<li><a href="{% url 'commring-detail' item.ring_id %}">{{ item.name }}</a></li>
+	    {% endfor %}
+	    </ul>
+	{% else %}
+	    <p>The search turned up no rings.</p>
+	{% endif %}
+    </div>
+</div>
 {% endblock %}
