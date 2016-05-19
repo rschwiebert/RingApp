@@ -3,12 +3,21 @@
 {% block title %}Profile page{% endblock %}
 
 {% block body_block %}
-<h1>{{ request.user.username }}'s Profile</h1>
 
-<h2>My suggestions</h2>
-{% for suggestion in suggestions %}
-<li>({{ suggestion.get_object_type_display }}) {{ suggestion.get_status_display }} {{ suggestion.name }} {{ suggestion.description }}</li>
+<div class="container">
+	<h1>{{ request.user.username }}'s user profile</h1>
+    <div class="md-col-12 content">
+	<h2>My suggestions</h2>
+        {% if suggestions %}
+        <ul>
+	{% for suggestion in suggestions %}
+	<li>({{ suggestion.get_object_type_display }}) {{ suggestion.get_status_display }} {{ suggestion.name }} {{ suggestion.description }}</li>
 
-{% endfor %}
-
+	{% endfor %}
+        </ul>
+        {% else %}
+        <p>(No suggestions yet)</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

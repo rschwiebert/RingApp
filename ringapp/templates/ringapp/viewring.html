@@ -3,48 +3,61 @@
 {% block title %}Ring detail{% endblock %}
 
 {% block body_block %}
+<div class="container">
+	<h1>Ring detail</h1>
+        <hr/ >
+	<div class="row">
+		<div class="col-md-8 content">
+                    {% if r %}
+		    <h2>Name: {{ r.name }}</h2>
+			<p>Description: {{ r.description }}</p>
+			<p>Notes: {{ r.notes }}</p>
+                </div>
+                <div class="col-md-4 content">
+			<p>Reference(s):
+			    {% if ref_list %}
+			    <ul>
+			    {% for ref in ref_list %}
+			    <li>{{ ref.title }}</li>
+			    {% endfor %}
 
-<h1>Ring detail</h1>
-
-{% if r %}
-    <ul>
-        <li>Name: {{ r.name }}</li>
-        <li>Description: {{ r.description }}</li>
-        <li>Notes: {{ r.notes }}</li>
-        <li>Reference(s):
-            {% if ref_list %}
-            <ul>
-            {% for ref in ref_list %}
-            <li>{{ ref.title }}</li>
-            {% endfor %}
-
-            {% else %}
-            <li>(Citation needed)</li>
-            {% endif %}
-            </ul>
-        </li>
-    </ul>
-This ring has the following properties:
-    <ul>
-    {% for item in has_props %}
-        <li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-The ring lacks the following properties:
-    <ul>
-    {% for item in lacks_props %}
-        <li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-We don't know if the ring has or lacks the following properties:
-    <ul>
-    {% for item in other_props %}
-        <li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-    </ul>
-    
-{% else %}
-    <p>Nothing was retrieved.</p>
-{% endif %}
-
+			    {% else %}
+			    <li>(Citation needed)</li>
+			    {% endif %}
+			    </ul>
+			</p>
+		    
+                 </div>
+        </div>
+        <hr/ >
+        <div class="row">
+            <div class="col-md-4 content">
+		<p>This ring has the following properties:</p>
+		    <ul>
+		    {% for item in has_props %}
+			<li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a></li>
+		    {% endfor %}
+		    </ul>
+            </div>
+            <div class="col-md-4 content">
+		<p>The ring lacks the following properties:</p>
+		    <ul>
+		    {% for item in lacks_props %}
+			<li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a></li>
+		    {% endfor %}
+		    </ul>
+            </div>
+            <div class="col-md-4 content">
+		<p>We don't know if the ring has or lacks the following properties:<p>
+		    <ul>
+		    {% for item in other_props %}
+			<li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a></li>
+		    {% endfor %}
+		    </ul>
+	    </div>    
+	{% else %}
+	    <p>Nothing was retrieved.</p>
+	{% endif %}
+     </div>
+</div>
 {% endblock %}

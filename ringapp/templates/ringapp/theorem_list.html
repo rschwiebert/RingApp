@@ -3,23 +3,23 @@
 {% block title %}Theorems{% endblock %}
 
 {% block body_block %}
+<div class="container">
+	<h1>Theorems in ring theory</h1>
 
-<h1>Theorems in ring theory</h1>
+	<p>You are now browsing theorems we have on record. </p>
 
-You are now browsing theorems we have on record. 
-
-{% if object_list %}
-    <ul>
-    {% for item in object_list %}
-        {% if item.alias %}
-        <li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.alias }}</a></li>
-        {% else %}
-        <li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.statement }}</a></li>
-        {% endif %}
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No theorems were retrieved.</p>
-{% endif %}
-
+	{% if object_list %}
+	    <ul>
+	    {% for item in object_list %}
+		{% if item.alias %}
+		<li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.alias }}</a></li>
+		{% else %}
+		<li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.statement }}</a></li>
+		{% endif %}
+	    {% endfor %}
+	    </ul>
+	{% else %}
+	    <p>No theorems were retrieved.</p>
+	{% endif %}
+</div>
 {% endblock %}

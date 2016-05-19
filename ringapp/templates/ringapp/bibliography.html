@@ -1,15 +1,15 @@
 {% extends 'ringapp/base.html' %}
 
 {% block title %}Bibliography{% endblock %}
+<div class="container">
+	{% block body_block %}
 
-{% block body_block %}
+	<h1>Works referenced</h1>
 
-<h1>Works referenced</h1>
-
-{% for ref in bibliography %}
-    <ul>
-        <li>{{ ref }}</li>
-    </ul>
-{% endfor %}
-
+	{% for ref in bibliography %}
+	    <ul>
+		<li>{{ ref }}</li>
+	    </ul>
+	{% endfor %}
+</div>
 {% endblock %}

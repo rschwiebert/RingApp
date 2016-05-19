@@ -3,30 +3,35 @@
 {% block title %}Theorem detail{% endblock %}
 
 {% block body_block %}
+<div class="container">
+	<h1>Theorem detail</h1>
+	{% if object %}
+	    <h2>Alias: {{ object.alias }}</h2>
+            <div class="row">
+               <div class="col-md-8 content">
+		<p>Statement: {{ object.statement }}</p>
+		<p>Link: <a href="{{ object.link }}">{{ object.link }}</a></p>
+               </div>
+               <div class="col-md-4 content">
+                <h3>Reference(s)</h3>
+		    {% if ref_list %}
+		    <ul>
+			    {% for ref in ref_list %}
+			    <li>{{ ref.title }}</li>
+			    {% endfor %}
 
-<h1>Theorem detail</h1>
-{% if object %}
-    <ul>
-        <li>Alias: {{ object.alias }}</li>
-        <li>Statement: {{ object.statement }}</li>
-        <li>Reference(s):
-            {% if ref_list %}
-            <ul>
-            {% for ref in ref_list %}
-            <li>{{ ref.title }}</li>
-            {% endfor %}
+			    {% else %}
+			    <li>(Citation needed)</li>
+			    {% endif %}
+		    </ul>
+		
+               </div>
+	    </div>
 
-            {% else %}
-            <li>(Citation needed)</li>
-            {% endif %}
-            </ul>
-        </li>
-        <li>Link: <a href="{{ object.link }}">{{ object.link }}</a></li>
-    </ul>
+	    
+	{% else %}
+	    <p>Nothing was retrieved.</p>
+	{% endif %}
 
-    
-{% else %}
-    <p>Nothing was retrieved.</p>
-{% endif %}
-
+</div>
 {% endblock %}

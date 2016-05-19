@@ -3,19 +3,20 @@
 {% block title %}Rings{% endblock %}
 
 {% block body_block %}
+<div class="container">
+  <h1>Rings</h1>
 
-<h1>Rings</h1>
+  <p>You are now browsing rings we have on record.</p>
 
-You are now browsing rings we have on record.
-
-{% if object_list %}
-    <ul>
+  {% if object_list %}
+  <ul>
     {% for item in object_list %}
-        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+    <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
     {% endfor %}
-    </ul>
-{% else %}
+  </ul>
+  {% else %}
     <p>No rings were retrieved.</p>
-{% endif %}
+  {% endif %}
+</div>
 
 {% endblock %}

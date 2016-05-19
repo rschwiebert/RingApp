@@ -4,20 +4,21 @@
 
 {% block body_block %}
 
-<h1>Ring properties</h1>
+<div class="container">
+	<h1>Ring properties</h1>
+    <div class="col-md-12 content">
+	<p>Here is a list of properties any ring can have.</p>
+	<p>(Switch to the <a href="{% url 'commproperty-list' %}">commutative ring property index</a> for additional properties defined for commutative rings.)</p>
 
-Here is a list of all properties tracked for the ring database.<br>
-<br>
-(More properties specific to commutative rings appear in the <a href="{% url 'commproperty-list' %}">commutative ring property page.)</a>
-
-{% if object_list %}
-    <ul>
-    {% for item in object_list %}
-        <li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a>  </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No properties were retrieved.</p>
-{% endif %}
-
+	{% if object_list %}
+	    <ul>
+	    {% for item in object_list %}
+		<li><a href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a>  </li>
+	    {% endfor %}
+	    </ul>
+	{% else %}
+	    <p>No properties were retrieved.</p>
+	{% endif %}
+    </div>
+</div>
 {% endblock %}

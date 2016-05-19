@@ -11,30 +11,42 @@
 </ul>
 {% endif %}
 
-    <h1>Contribute</h1>
-The database is always growing, and is always in need of more content, especially ring examples and citations for specific claims.<br>
-<br>
-To help maintain the quality of content and integrity of the database, please keep these points in mind:
-<li>- We might not accept every suggestion.</li>
-<li>- Did you check the database to see if your ring example or property is already there? (Accidents will happen and we can deal with it, but it's best to avoid that altogether.)
-</li>
-<li>- It is really important to have good citations! (Incorrect proofs and claims exist, unfortunately.)</li>
-<li>- Multiple high-quality citations are helpful. (Readers will have more places to look.)</li>
+<div class="container"> 
+   <h1>Contribute</h1>
 
-<br>
-<h2>Contribution form</h2>
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit suggestion" />
-</form>
+   <div class="row">
+     <div class="col-md-12 content">
+	The database is always growing, and is always in need of more content, especially ring examples and citations for specific claims.<br>
+	<br>
+	To help maintain the quality of content and integrity of the database, please keep these points in mind:
+	<ul>
+        <li> We might not accept every suggestion.</li>
+	<li> Did you check the database to see if your ring example or property is already there? (Accidents will happen and we can deal with it, but it's best to avoid that altogether.)
+	</li>
+	<li> It is really important to have good citations! (Incorrect proofs and claims exist, unfortunately.)</li>
+	<li> Multiple high-quality citations are helpful. (Readers will have more places to look.)</li>
+        </ul>
+     </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 content">
+	<h2>Make a quick suggestion</h2>
+	<form action="" method="post">{% csrf_token %}
+	    {{ form.as_p }}
+	    <input type="submit" value="Submit suggestion" />
+	</form>
 
-<hr>
-<h2>Need inspiration?</h2>
+	</div>
+        <div class="col-md-6 content">
+		<h2>Need inspiration?</h2>
 
-The database says we could use help filling these gaps:
-<li>- {{ ring_sugg }}</li>
-<li>- {{ cring_sugg }}</li>
-<br>
-(There may be some latency between when these gaps get filled and these suggestions are made!)
-
+		<p>The database says we could use help filling these gaps:</p>
+                <ul>
+		<li> {{ ring_sugg }}</li>
+		<li> {{ cring_sugg }}</li>
+	        </ul>
+  	<p>(There may be some latency between when these gaps get filled and these suggestions are made!)</p>
+        </div>
+      </div>
+</div>
 {% endblock %}
