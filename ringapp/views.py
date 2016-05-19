@@ -259,7 +259,7 @@ class CommPropertyView(DetailView):
         return context
 
 
-class SuggestionView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class SuggestionView(SuccessMessageMixin, CreateView):
     model=Suggestion
     template_name = 'ringapp/contribute.html'
     success_url = '/contribute/'
