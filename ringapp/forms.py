@@ -6,22 +6,18 @@ scope_choices = [('n', 'Narrow'), ('w', 'Wide')]
 
 class SearchForm(forms.Form):
     scope = forms.ChoiceField(choices=scope_choices)
-    has1 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
-    has2 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
-    has3 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
-    lacks1 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
-    lacks2 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
-    lacks3 = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'))
+    has = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'),
+                                 widget=forms.SelectMultiple(attrs={'size':'15'}))
+    lacks = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'),
+                                   widget=forms.SelectMultiple(attrs={'size':'15'}))
 
 
 class CommSearchForm(forms.Form):
     scope = forms.ChoiceField(choices=scope_choices)
-    has1 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
-    has2 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
-    has3 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
-    lacks1 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
-    lacks2 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
-    lacks3 = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'))
+    has = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'),
+                                 widget=forms.SelectMultiple(attrs={'size':'15'}))
+    lacks = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'),
+                                   widget=forms.SelectMultiple(attrs={'size':'15'}))
 
 
 class ContribSelector(forms.Form):

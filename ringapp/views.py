@@ -55,9 +55,14 @@ def commsearchpage(request):
 
 def results(request):
     template = loader.get_template('ringapp/results.html')
+    
     scope = request.GET['scope']
-    has = [int(request.GET[key]) for key in request.GET if key.startswith('has') and request.GET[key] != '']
-    lacks = [int(request.GET[key]) for key in request.GET if key.startswith('lacks') and request.GET[key] != '']
+    has = lacks = tuple()
+    if 'has' in request.GET.keys():
+        has = [int(thing) for thing in request.GET.getlist('has')]
+    if 'lacks' in request.GET.keys():
+        lacks = [int(thing) for thing in request.GET.getlist('lacks')]
+
     has_names = [Property.objects.get(pk=x).name for x in has]
     lacks_names = [Property.objects.get(pk=x).name for x in lacks]
     has_string = ' and '.join(has_names)
@@ -81,8 +86,11 @@ def results(request):
 def commresults(request):
     template = loader.get_template('ringapp/commresults.html')
     scope = request.GET['scope']
-    has = [int(request.GET[key]) for key in request.GET if key.startswith('has') and request.GET[key] != '']
-    lacks = [int(request.GET[key]) for key in request.GET if key.startswith('lacks') and request.GET[key] != '']
+    has = lacks = tuple()
+    if 'has' in request.GET.keys():
+        has = [int(thing) for thing in request.GET.getlist('has')]
+    if 'lacks' in request.GET.keys():
+        lacks = [int(thing) for thing in request.GET.getlist('lacks')]
     has_names = [CommProperty.objects.get(pk=x).name for x in has]
     lacks_names = [CommProperty.objects.get(pk=x).name for x in lacks] 
     has_string = ' and '.join(has_names)

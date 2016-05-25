@@ -20,45 +20,25 @@
 	<form action="commresults/" method="get">
 	    {{ form.non_field_errors }}
           <div class="col-md-4 content">
-	    <h3>The ring</h3>
+	    <h3>The ring is</h3>
 	    <div class="fieldWrapper">
-		{{ form.has1.errors }}
-		<label for="has1">is:</label>
-		{{ form.has1 }}
-	    </div>
-	    <div class="fieldWrapper">
-		{{ form.has2.errors }}
-		<label for="has2">is:</label>
-		{{ form.has2 }}
-	    </div>
-	    <div class="fieldWrapper">
-		{{ form.has3.errors }}
-		<label for="has3">is:</label>
-		{{ form.has3 }}
-	    </div>
-          </div>
-          <div class="col-md-4 content">
-	    <h3>The ring</h3>
-	    <div class="fieldWrapper">
-		{{ form.lacks1.errors }}
-		<label for="lacks1">is not:</label>
-		{{ form.lacks1 }}
-	    </div>
-	    <div class="fieldWrapper">
-		{{ form.lacks2.errors }}
-		<label for="lacks2">is not:</label>
-		{{ form.lacks2 }}
-	    </div>
-	    <div class="fieldWrapper">
-		{{ form.lacks3.errors }}
-		<label for="lacks3">is not:</label>
-		{{ form.lacks3 }}
+		{{ form.has.errors }}
+		{{ form.has }}
 	    </div>
             <div class="fieldWrapper">
 		{{ form.scope.errors }}
 		<label for="scope">Scope:</label>
 		{{ form.scope }}
 	    </div>
+          </div>
+          <div class="col-md-4 content">
+	    <h3>The ring is not</h3>
+	    <div class="fieldWrapper">
+		{{ form.lacks.errors }}
+		{{ form.lacks }}
+	    </div>
+	    
+
             <p><input class="btn btn-primary" type="submit" value="Search" /></p>
           </div>
 	    
