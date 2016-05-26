@@ -404,8 +404,9 @@ class FAQ(models.Model):
 class Suggestion(models.Model):
     object_type = models.SmallIntegerField(choices=[(0, 'ring'),
                                                     (1, 'citation'),
-                                                    (1, 'theorem'),
-])
+                                                    (2, 'theorem'),
+                                                    (3, 'other'), 
+                                           ])
     status = models.SmallIntegerField(choices=[(-2, 'need info'),
                                                (-1, 'declined'),
                                                (0, 'pending'),

@@ -14,7 +14,6 @@
 	<p>So, there may be rings in wide scope results that aren't in narrow scope results, simply because the properties in question may have "unknown" status.</p>
     </div>
     <div class="col-md-8 content">
-        <h2>Search form</h2>
 	<form action="results/" method="get">
 	    {{ form.non_field_errors }}
           <div class="col-md-4 content">
@@ -24,11 +23,7 @@
 		<label for="has"></label>
 		{{ form.has }}
 	    </div>
-            <div class="fieldWrapper">
-		{{ form.scope.errors }}
-		<label for="scope">Scope:</label>
-		{{ form.scope }}
-	    </div>
+	    <p><i>Multiple selections can be made in both columns.<br />(CTRL-click on desktops.)</i></p>            
           </div>
           <div class="col-md-4 content">
 	    <h3>The ring is not</h3>
@@ -37,7 +32,12 @@
 		<label for="lacks"></label>
 		{{ form.lacks }}
 	    </div>
-	    
+
+            <div class="fieldWrapper">
+		{{ form.scope.errors }}
+		<label for="scope">Scope:</label>
+		{{ form.scope }}
+	    </div>
             <p><input class="btn btn-primary" type="submit" value="Search" /></p>
           </div>
 	    
