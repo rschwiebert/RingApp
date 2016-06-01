@@ -7,6 +7,11 @@ from django.views.generic.edit import CreateView
 from ringapp import views
 from ringapp import models
 
+from django.contrib.sitemaps.views import sitemap
+from ringapp.sitemaps import sitemapdict
+
+
+
 urlpatterns = [
     url(r'^login/$', login, {'template_name': 'ringapp/login.html'}, name='login'),
     url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
@@ -40,10 +45,12 @@ urlpatterns = [
     url(r'^people/$', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),
     url(r'^resources/$', TemplateView.as_view(template_name='ringapp/resources.html'), name='resources'),
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
-    url(r'^suggestions/$', views.suggestions, name='suggestions'),
+    # url(r'^suggestions/$', views.suggestions, name='suggestions'),
     url(r'^bibliography/$', views.bibliography, name='bibliography'),
     url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',
                                            form_class=UserCreationForm,
                                            success_url='profile/'), name='register'),
     url(r'^profile/$', views.ProfileView.as_view(), name='profile'),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
+        name='django.contrib.sitemaps.views.sitemap'),
 ]
