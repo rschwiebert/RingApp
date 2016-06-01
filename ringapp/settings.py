@@ -167,11 +167,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
-            'handlers':['logger_handler'],
-            'level': 'DEBUG'
-        },
-
         'ringapp.dlogger': {
             'handlers': ['console'],
             'level': 'DEBUG',
