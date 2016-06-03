@@ -59,5 +59,14 @@
 	    <p>Nothing was retrieved.</p>
 	{% endif %}
      </div>
+     {% if tags %}
+     <hr />
+     <div class="row col-md-12">
+       <h5>Keywords
+       {% for tag in tags %}
+         <span class="label label-default">{{ tag.name }}</span>
+       {% endfor %}</h5>
+     </div>
+     {% endif %}
 </div>
 {% endblock %}

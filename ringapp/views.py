@@ -172,13 +172,14 @@ def viewring(request, ring_id):
                                           x.publication.details,
                                           x.publication.pub_date.year,
                                           x.location) for x in r.reference.all()]
-
+    tags = r.keywords.all()
     context = RequestContext(request, {
         'r': r,
         'has_props': has_props,
         'lacks_props': lacks_props,
         'other_props': other_props,
         'ref_list': ref_list,
+        'tags': tags,
     })
     template = loader.get_template('ringapp/viewring.html')
     return HttpResponse(template.render(context))
@@ -210,12 +211,14 @@ def viewcommring(request, ring_id):
                                           x.publication.details,
                                           x.publication.pub_date.year,
                                           x.location) for x in r.reference.all()]
+    tags = r.keywords.all()
     context = RequestContext(request, {
         'r': r,
         'has_props': has_props,
         'lacks_props': lacks_props,
         'other_props': other_props,
         'ref_list': ref_list,
+        'tags': tags,
     })
     template = loader.get_template('ringapp/viewcommring.html')
     return HttpResponse(template.render(context))
