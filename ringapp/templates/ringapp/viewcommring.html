@@ -12,6 +12,12 @@
 		    <h2>Name: {{ r.name }}</h2>
 			<p>Description: {{ r.description }}</p>
 			<p>Notes: {{ r.notes }}</p>
+                        {% if tags %}
+                        <p>Keywords
+                          {% for tag in tags %}
+                          <span class="label label-default">{{ tag.name }}</span>
+                          {% endfor %}
+                          {% endif %}</p>
                 </div>
                 <div class="col-md-4 content">
 			<p>Reference(s):
@@ -59,14 +65,5 @@
 	    <p>Nothing was retrieved.</p>
 	{% endif %}
      </div>
-     {% if tags %}
-     <hr />
-     <div class="row col-md-12">
-       <h5>Keywords
-       {% for tag in tags %}
-         <span class="label label-default">{{ tag.name }}</span>
-       {% endfor %}</h5>
-     </div>
-     {% endif %}
 </div>
 {% endblock %}
