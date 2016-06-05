@@ -1,5 +1,5 @@
 from django import forms
-from ringapp.models import Property, CommProperty, Ring
+from ringapp.models import Property, CommProperty, Ring, Keyword
 
 scope_choices = [('n', 'Narrow'), ('w', 'Wide')]
 
@@ -31,3 +31,8 @@ class ContribSelector(forms.Form):
 
 class RingSelector(forms.Form):
     ring = forms.ModelChoiceField(queryset=Ring.objects.all().order_by('name'))
+
+
+class KeywordSearchForm(forms.Form):
+    kwd = forms.ModelChoiceField(queryset=Keyword.objects.all().order_by('name'), 
+                                 widget=forms.SelectMultiple(attrs={'size':'15'}))

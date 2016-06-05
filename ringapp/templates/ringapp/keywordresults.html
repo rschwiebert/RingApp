@@ -1,0 +1,31 @@
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Keyword search results{% endblock %}
+
+{% block body_block %}
+<div class="container">
+  <div class="col-md-6 content">
+    <h1>Keyword search</h1>
+    {% if kwds %}
+    <p>You searched for rings with the following keywords:</p>
+    {% for kwd in kwds %}
+      <span class="label label-default">{{ kwd.name }}</span>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <div class="col-md-6 content">
+    <h2>Search results</h2>
+    {% if results %}
+    <p>These rings are tagged with your keyword(s):</p>
+    <ul>
+     {% for item in results %}
+       <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+     {% endfor %}
+    </ul>
+    {% else %}
+        <p>No rings found during this search.</p>
+    {% endif %}
+  </div>
+  
+</div>
+{% endblock %}

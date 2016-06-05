@@ -7,8 +7,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
 from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
-from ringapp.models import Publication, Theorem, Suggestion
-from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector
+from ringapp.models import Publication, Theorem, Suggestion, Keyword
+from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector, KeywordSearchForm
 import re
 import random
 import logging
@@ -51,6 +51,25 @@ def commsearchpage(request):
     return render(request, 'ringapp/commsearch.html', {
         'form':  form,
     })
+
+
+def keywordsearchpage(request):
+    if "kwd" in request.GET:  # If the form has been submitted...
+        form = KeywordSearchForm(request.GET)  # A form bound to the POST data
+        if form.is_valid():  # All validation rules pass
+            # Process the data in form.cleaned_data
+            # ...
+            template = loader.get_template('ringapp/keywordresults.html')
+            datadict = form.cleaned_data
+            context = RequestContext(request, {'datadict': datadict})
+            return HttpResponse(template.render(context))
+    else:
+        form = KeywordSearchForm()  # An unbound form
+
+    return render(request, 'ringapp/keywordsearch.html', {
+        'form':  form,
+    })
+
 
 
 def results(request):
@@ -104,6 +123,26 @@ def commresults(request):
                                        'main_results': main_results,
                                        'has_string': has_string,
                                        'lacks_string': lacks_string,
+                                       })
+    return HttpResponse(template.render(context))
+
+
+def keywordresults(request):
+    template = loader.get_template('ringapp/keywordresults.html')
+    kids = []
+    if 'kwd' in request.GET.keys():
+        kids = [int(thing) for thing in request.GET.getlist('kwd')]
+    kwds = [Keyword.objects.get(pk=x) for x in kids]
+    results = Ring.objects.all()
+    if not kwds:
+        results = []
+    else:
+        for kwd in kwds:
+            results = [ring for ring in results if kwd in ring.keywords.all()]
+
+    context = RequestContext(request, {
+                                       'kwds': kwds,
+                                       'results': results,
                                        })
     return HttpResponse(template.render(context))
 

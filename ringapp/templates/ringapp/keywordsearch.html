@@ -1,0 +1,31 @@
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Keyword search{% endblock %}
+
+{% block body_block %}
+
+<div class="container">
+    <div class="col-md-4 content">
+	<h1>Search for rings by keyword</h1>
+	<p>Rings have been labeled, although not definitively or completely, 
+           with a variety of keywords about their construction. If you think 
+           a ring deserves to get another keyword, feel free to suggest it!</p>
+    </div>
+    <div class="col-md-8 content">
+	<form action="results/" method="get">
+	    {{ form.non_field_errors }}
+          <div class="col-md-4 content">
+	    <h3>Select keyword(s):</h3>
+	    <div class="fieldWrapper">
+		{{ form.kwd.errors }}
+		<label for="kwd"></label>
+		{{ form.kwd }}
+	    </div>
+            <p><input class="btn btn-primary" type="submit" value="Search" /></p>
+	    <p><i>(CTRL-click on desktops to select multiple items.)</i></p>            
+          </div>
+            
+	</form>
+   </div>
+</div>
+{% endblock %}
