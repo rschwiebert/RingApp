@@ -7,13 +7,8 @@
 <div class="container">
     <div class="col-md-4 content">
 	<h1>Search for commutative rings</h1>
-
-	<p>The compiled data is, naturally, incomplete. The status of a property for a given ring can be in three states:
-	"has property," "doesn't have the property," and "unknown."</p>
-        <p>Choosing <b>narrow</b> scope ensures that the results are known to match all inputs. Choosing <b>wide</b> scope excludes all rings that do not fit all inputs.</p>
-	<p>So, there may be rings in wide scope results that aren't in narrow scope results, simply because the properties in question may have "unknown" status.</p>
-<p><u>Note:</u> the commutative ring search is performed against a different set of properties than the general ring search.
-   Some properties are not defined for general rings, some have been altered ("right Artinian" has become just "Artinian"), and some are completely absent. <a href="{% url 'search' %}">Click here to switch</a> to the general database search.</p>
+        <p><u>Note:</u> the commutative ring search is performed against a different set of properties than the general ring search.
+        Some properties are not defined for general rings, some have been altered ("right Artinian" has become just "Artinian"), and some are completely absent. <a href="{% url 'search' %}">Click here to switch</a> to the general database search.</p>
     </div>
     <div class="col-md-8 content">
 	<form action="commresults/" method="get">
@@ -31,12 +26,6 @@
 	    <div class="fieldWrapper">
 		{{ form.lacks.errors }}
 		{{ form.lacks }}
-	    </div>
-	    
-            <div class="fieldWrapper">
-		{{ form.scope.errors }}
-		<label for="scope">Scope:</label>
-		{{ form.scope }}
 	    </div>
             <p><input class="btn btn-primary" type="submit" value="Search" /></p>
           </div>

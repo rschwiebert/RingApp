@@ -5,51 +5,66 @@
 {% block body_block %}
 <div class="container">
   <div class="col-md-12 content">
-    <h1>Ring search results</h1>
+    <h1>Results</h1>
     <p>You searched for rings
     {% if has_string %}
-    which ARE {{ has_string }},<br>
+    which ARE {{ has_string }}
     {% endif %}
     {% if lacks_string %}
     which ARE NOT {{ lacks_string }}
-    {% endif %}</p>
+    {% endif %}.</p>
   </div>
   <div class="col-md-6 content">
-    <h2>Search results</h2>
-    {% if main_results %}
-    {% if scope == 'n' %}
-    <p>These rings are known to satisfy all of your criteria:</p>
-    {% else %}
-    <p>These rings are consistent with your criteria, but may not satisfy your criteria when more data is supplied.</p>
-    {% endif %}
+    <h2>Search</h2>
+      <p><i>Satisfy all parameters</i></p>
+      {% if main_results %}
+      <ul>
+      {% for item in main_results %}
+        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+      {% endfor %}
+      </ul>
+      {% else %}
+          <p>(No results.)</p>
+      {% endif %}
 
-        <ul>
-        {% for item in main_results %}
-            <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+    <p><i>Consistent with parameters, but may not be real hits</i></p>
+    {% if weak_results %}
+      <ul>
+        {% for item in weak_results %}
+        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
         {% endfor %}
-        </ul>
+      </ul>
     {% else %}
-        <p>The regular search turned up no rings.</p>
-    {% endif %}
+    <p>(No results.)</p>
+    {% endif %} 
   </div>
+      
   <div class="col-md-6 content">
-    <h2>Mirror search results</h2>
-    {% if mirror_results %}
-    {% if scope == 'n' %}
-    <p>These rings are known to satisfy the mirror image of all your criteria:</p>
-    {% else %}
-    <p>These rings are consistent with the mirror version of your criteria, but may not satisfy your criteria when more data is supplied.</p>
-    {% endif %}
+    
+      <h2>Mirror search</h2>
+      <p><i>Satisfy mirror image of parameters</i></p>
+      {% if mirror_results %}
 
-
-        <ul>
-        {% for item in mirror_results %}
+          <ul>
+          {% for item in mirror_results %}
             <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>The mirror search turned up no rings.</p>
-    {% endif %}
+          {% endfor %}
+          </ul>
+      {% else %}
+          <p>(No results.)</p>
+      {% endif %}
+      <p><i>Consistent with mirror image of parameters, but may not be real hits.</i></p>
+
+      {% if m_weak_results %}
+
+      <ul>
+      {% for item in m_weak_results %}
+        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+      {% endfor %}
+      </ul>
+      {% else %}
+      (No results.)
+      {% endif %}
   </div>
 
 </div>

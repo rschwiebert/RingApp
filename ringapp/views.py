@@ -16,7 +16,54 @@ vlogger = logging.getLogger('ringapp.vlogger')
 
 from AdminUtils import *
 
+class SearchPage(TemplateView):
+    @property
+    def template_name(self):
+        if 'has' in self.request.GET or 'lacks' in self.request.GET:
+            return 'ringapp/results.html'
+        else:
+            return 'ringapp/search.html'
+            
+    def get_context_data(self, **kwargs):
+        context = super(SearchPage, self).get_context_data(**kwargs)
+        if 'has' not in self.request.GET and 'lacks' not in self.request.GET:
+            form = SearchForm()
+            context['form'] = form
+            return context
+        else:
+            has = lacks = tuple()
+            if 'has' in self.request.GET:
+                has = [int(thing) for thing in self.request.GET.getlist('has')]
+            if 'lacks' in self.request.GET:
+                lacks = [int(thing) for thing in self.request.GET.getlist('lacks')]
 
+            has_names = [Property.objects.get(pk=x).name for x in has]
+            lacks_names = [Property.objects.get(pk=x).name for x in lacks]
+            has_string = ' and '.join(has_names)
+            lacks_string = ' or '.join(lacks_names)
+
+            main_results = find_rings('n', has=has, lacks=lacks)
+            weak_results = find_rings('w', has=has, lacks=lacks)
+            weak_results = set(weak_results) - set(main_results)
+            
+            mirror_results = mirror_search('n', has=has, lacks=lacks)
+            m_weak_results = mirror_search('w', has=has, lacks=lacks)
+            m_weak_results = set(m_weak_results) - set(mirror_results)      
+
+            context.update({
+               'has': has,
+               'lacks': lacks,
+               'main_results': main_results,
+               'mirror_results': mirror_results,
+               'weak_results': weak_results,
+               'm_weak_results': m_weak_results,
+               'has_string': has_string,
+               'lacks_string': lacks_string,
+               })
+            return context
+        
+
+# TODO: clean this view out if new views work fine
 def searchpage(request):
     if "scope" in request.GET:  # If the form has been submitted...
         form = SearchForm(request.GET)  # A form bound to the POST data
@@ -35,6 +82,69 @@ def searchpage(request):
     })   
 
 
+class CommSearchPage(TemplateView):
+    @property
+    def template_name(self):
+        if 'has' in self.request.GET or 'lacks' in self.request.GET:
+            return 'ringapp/commresults.html'
+        else:
+            return 'ringapp/commsearch.html'
+            
+    def get_context_data(self, **kwargs):
+        context = super(CommSearchPage, self).get_context_data(**kwargs)
+        if 'has' not in self.request.GET and 'lacks' not in self.request.GET:
+            form = CommSearchForm()
+            context['form'] = form
+            return context
+        else:
+            has = lacks = tuple()
+            if 'has' in self.request.GET:
+                has = [int(thing) for thing in self.request.GET.getlist('has')]
+            if 'lacks' in self.request.GET:
+                lacks = [int(thing) for thing in self.request.GET.getlist('lacks')]
+            has_names = [CommProperty.objects.get(pk=x).name for x in has]
+            lacks_names = [CommProperty.objects.get(pk=x).name for x in lacks] 
+            has_string = ' and '.join(has_names)
+            lacks_string = ' or '.join(lacks_names)
+    
+            main_results = find_rings('n', has=has, lacks=lacks, comm=True)
+            weak_results = find_rings('w', has=has, lacks=lacks, comm=True)
+            weak_results = set(weak_results) - set(main_results)
+
+            context.update({'has': has,
+                            'lacks': lacks,
+                            'main_results': main_results,
+                            'weak_results': weak_results,
+                            'has_string': has_string,
+                            'lacks_string': lacks_string,
+                            })
+            return context
+
+class KeywordSearchPage(TemplateView):
+    @property
+    def template_name(self):
+        if 'kwd' in self.request.GET:
+            return 'ringapp/keywordresults.html'
+        else:
+            return 'ringapp/keywordsearch.html'
+            
+    def get_context_data(self, **kwargs):
+        context = super(KeywordSearchPage, self).get_context_data(**kwargs)
+        if 'kwd' not in self.request.GET:
+            form = KeywordSearchForm()
+            context['form'] = form
+            return context
+        else:
+            kids = [int(thing) for thing in self.request.GET.getlist('kwd')]
+            kwds = [Keyword.objects.get(pk=x) for x in kids]
+            results = Ring.objects.all()
+            for kwd in kwds:
+                results = [ring for ring in results if kwd in ring.keywords.all()]
+
+            context.update({'kwds': kwds, 'results': results})
+            return context
+
+# TODO: clean this view out if new views work fine
 def commsearchpage(request):
     if "scope" in request.GET:  # If the form has been submitted...
         form = CommSearchForm(request.GET)  # A form bound to the POST data
@@ -52,7 +162,7 @@ def commsearchpage(request):
         'form':  form,
     })
 
-
+# TODO: clean this view out if new views work fine
 def keywordsearchpage(request):
     if "kwd" in request.GET:  # If the form has been submitted...
         form = KeywordSearchForm(request.GET)  # A form bound to the POST data
@@ -71,7 +181,7 @@ def keywordsearchpage(request):
     })
 
 
-
+# TODO: clean this view out if new views work fine
 def results(request):
     template = loader.get_template('ringapp/results.html')
     
@@ -101,7 +211,7 @@ def results(request):
                                        })
     return HttpResponse(template.render(context))
 
-
+# TODO: clean this view out if new views work fine
 def commresults(request):
     template = loader.get_template('ringapp/commresults.html')
     scope = request.GET['scope']
@@ -126,7 +236,7 @@ def commresults(request):
                                        })
     return HttpResponse(template.render(context))
 
-
+# TODO: clean this view out if new views work fine
 def keywordresults(request):
     template = loader.get_template('ringapp/keywordresults.html')
     kids = []

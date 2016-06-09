@@ -5,19 +5,21 @@ scope_choices = [('n', 'Narrow'), ('w', 'Wide')]
 
 
 class SearchForm(forms.Form):
-    scope = forms.ChoiceField(choices=scope_choices)
     has = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'),
-                                 widget=forms.SelectMultiple(attrs={'size':'15'}))
+                                 widget=forms.SelectMultiple(attrs={'size':'15'}),
+                                 empty_label=None)
     lacks = forms.ModelChoiceField(queryset=Property.objects.all().order_by('name'),
-                                   widget=forms.SelectMultiple(attrs={'size':'15'}))
+                                   widget=forms.SelectMultiple(attrs={'size':'15'}),
+                                   empty_label=None)
 
 
 class CommSearchForm(forms.Form):
-    scope = forms.ChoiceField(choices=scope_choices)
     has = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'),
-                                 widget=forms.SelectMultiple(attrs={'size':'15'}))
+                                 widget=forms.SelectMultiple(attrs={'size':'15'}),
+                                 empty_label=None)
     lacks = forms.ModelChoiceField(queryset=CommProperty.objects.all().order_by('name'),
-                                   widget=forms.SelectMultiple(attrs={'size':'15'}))
+                                   widget=forms.SelectMultiple(attrs={'size':'15'}),
+                                   empty_label=None)
 
 
 class ContribSelector(forms.Form):
@@ -35,4 +37,5 @@ class RingSelector(forms.Form):
 
 class KeywordSearchForm(forms.Form):
     kwd = forms.ModelChoiceField(queryset=Keyword.objects.all().order_by('name'), 
-                                 widget=forms.SelectMultiple(attrs={'size':'15'}))
+                                 widget=forms.SelectMultiple(attrs={'size':'15'}),
+                                 empty_label=None)
