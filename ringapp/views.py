@@ -4,6 +4,7 @@ from django.views.generic import DetailView, ListView, TemplateView, FormView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Count
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
 from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
@@ -257,13 +258,29 @@ def keywordresults(request):
     return HttpResponse(template.render(context))
 
 
-class CommRingList(ListView):
+class RingList(ListView):
     model = Ring
-    template_name = 'commring_list.html'
+    template_name = 'ringapp/ring_list.html'
 
     def get_queryset(self):
-        return Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),
-                                   ringproperty__has_property=1)
+        queryset = list(Ring.objects.annotate(num_known=Count('ringproperty')))
+        total = float(Property.objects.count())
+        for item in queryset:
+            item.num_known = round(item.num_known / total, 2)
+        return queryset
+
+
+class CommRingList(ListView):
+    model = Ring
+    template_name = 'ringapp/commring_list.html'
+
+    def get_queryset(self):
+        queryset = Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),
+                                   ringproperty__has_property=1).annotate(num_known=Count('commringproperty'))
+        total = float(CommProperty.objects.count())
+        for item in queryset:
+            item.num_known = round(item.num_known / total, 2)
+        return queryset
 
 
 class PropertyList(ListView):

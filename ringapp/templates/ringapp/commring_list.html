@@ -1,22 +1,35 @@
 {% extends 'ringapp/base.html' %}
+{% load mathfilters %}
 
 {% block title %}Commutative rings{% endblock %}
 
 {% block body_block %}
 <div class="container">
-  <h1>Commutative rings</h1>
+  <div class="panel panel-default">
+    <div class="panel-heading"><h1>Commutative rings</h1></div>
+      <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>% Complete</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if object_list %}
+        {% for item in object_list %}
+        <tr>
+        <td><a href="{% url 'commring-detail' item.ring_id %}" >{{ item.name }}</a></td>
+        <td><div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.num_known | mul:'100' }}%;">{{ item.num_known | mul:'100' }}%</div>
+            </div></td>
+        </tr>
+        {% endfor %}
 
-  <p>You are now browsing commutative rings we have on record.</p>
-
-  {% if object_list %}
-  <ul>
-    {% for item in object_list %}
-    <li><a href="{% url 'commring-detail' item.ring_id %}">{{ item.name }}</a></li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>No rings were retrieved.</p>
-  {% endif %}
-</div>
-
+      {% else %}
+        <tr><td>(No rings were retrieved.)</td></tr>
+      {% endif %}
+      </tbody>
+      </table>
+    </div>
+  </div>
 {% endblock %}

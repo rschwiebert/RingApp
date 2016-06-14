@@ -8,7 +8,7 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'weekly'
 
     def items(self):
-        return ['index', 'search', 'csearch', 'about', 
+        return ['index', 'search', 'csearch', 'ksearch', 'about', 
                 'resources', 'contribute', 'ring-list', 'commring-list',
                 'property-list', 'commproperty-list', 'theorem-list']
 
