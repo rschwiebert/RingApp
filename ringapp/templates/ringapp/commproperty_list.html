@@ -5,20 +5,21 @@
 {% block body_block %}
 
 <div class="container">
-	<h1>Commutative ring properties</h1>
-    <div class="col-md-12 content">
-	<p>Here is a list of properties for commutative rings.</p>
-        <p>(Switch to the <a href="{% url 'property-list' %}">general ring properties index</a>.)</p>
+  <div class="panel panel-default">
+    <div class="panel-heading"><h1>Commutative ring properties</h1>
+      <p>Here is a list of properties for commutative rings.</p>
+      <p>(Switch to the <a href="{% url 'property-list' %}">general ring properties index</a>.)</p>
+    </div>
 
-	{% if object_list %}
-	    <ul>
+    <div class="list-group">
+       {% if object_list %}
 	    {% for item in object_list %}
-		<li><a href="{% url 'commproperty-detail' item.property_id %}">{{ item.name }}</a>  </li>
+		<a class="list-group-item" href="{% url 'commproperty-detail' item.property_id %}">{{ item.name }}</a>
 	    {% endfor %}
-	    </ul>
 	{% else %}
-	    <p>No properties were retrieved.</p>
+	    <li class="list-group-item">(No properties were retrieved.)</li>
 	{% endif %}
     </div>
+  </div>
 </div>
 {% endblock %}
