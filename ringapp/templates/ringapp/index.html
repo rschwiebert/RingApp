@@ -20,17 +20,17 @@
         <div class="col-md-4 content">
         <h2>Browse</h2>
         <p>See a list of rings on record.</p>
-        <p><a class="btn btn-default" href="ring-list" role="button">
+        <p><a class="btn btn-default" href="{% url 'ring-list' %}" role="button">
             All rings &raquo;</a><a class="btn btn-default"
-                                    href="commring-list" role="button">
+                                    href="{% url 'commring-list' %}" role="button">
             Commutative rings &raquo;</a></p>
         <h2>Search</h2>
         <p>You can search for rings by their properties. If you are only
             interested in commutative rings, try the specialized search with
             expanded, commutative-only properties. </p>
-        <p><a class="btn btn-default" href="search" role="button">
+        <p><a class="btn btn-default" href="{% url 'search' %}" role="button">
             All rings &raquo;</a><a class="btn btn-default"
-                                    href="commsearch" role="button">
+                                    href="{% url 'csearch' %}" role="button">
             Commutative rings &raquo;</a></p>
         </div>
         <div class="col-md-4 content">
