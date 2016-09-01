@@ -110,8 +110,11 @@ class CommSearchPage(TemplateView):
     
             main_results = find_rings('n', has=has, lacks=lacks, comm=True)
             weak_results = find_rings('w', has=has, lacks=lacks, comm=True)
-            weak_results = set(weak_results) - set(main_results)
-
+            comm = Property.objects.get(name='commutative')
+            comm_results = set(find_rings('n', has=[comm.property_id]))
+            main_results = set(main_results)
+            weak_results = (set(weak_results) - set(main_results)) & comm_results
+            
             context.update({'has': has,
                             'lacks': lacks,
                             'main_results': main_results,
