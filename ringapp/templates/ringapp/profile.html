@@ -11,8 +11,10 @@
         {% if suggestions %}
         <ul>
 	{% for suggestion in suggestions %}
-	<li>({{ suggestion.get_object_type_display }}) {{ suggestion.get_status_display }} {{ suggestion.name }} {{ suggestion.description }}</li>
-
+	<li>{{ suggestion.get_status_display|upper }} ({{ suggestion.get_object_type_display }}) {{ suggestion.name }} {{ suggestion.description }}</li>
+            {% if suggestion.response %}
+            <ul><li>{{ suggestion.response }}</li></ul>
+            {% endif %}
 	{% endfor %}
         </ul>
         {% else %}

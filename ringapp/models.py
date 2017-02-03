@@ -415,6 +415,7 @@ class Suggestion(models.Model):
                                       default=0)
     name = models.CharField(max_length=50, null=True, blank=True)
     description = models.CharField(max_length=400, null=True, blank=True)
+    response = models.CharField(max_length=200, null=True, blank=True)
     citation = models.CharField(max_length=100, null=True, blank=True)
     user = models.ForeignKey(User)
 
@@ -423,6 +424,20 @@ class Suggestion(models.Model):
             shortdesc = self.description[:30]
         else:
             shortdesc = self.description
+        return '%s %s %s' % (self.get_object_type_display(), self.name, shortdesc)
+
+
+class News(models.Model):
+    content = models.CharField(max_length=256, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'News items'
+
+    def __unicode__(self):
+        if len(self.content) > 50:
+            shortdesc = self.content[:50]
+        else:
+            shortdesc = self.content
         return '%s %s %s' % (self.get_object_type_display(), self.name, shortdesc)
 
 

@@ -19,11 +19,15 @@
     <div class="container">
         <div class="col-md-4 content">
         <h2>Browse</h2>
-        <p>See a list of rings on record.</p>
+        <p>See rings and properties on record.</p>
         <p><a class="btn btn-default" href="{% url 'ring-list' %}" role="button">
             All rings &raquo;</a><a class="btn btn-default"
                                     href="{% url 'commring-list' %}" role="button">
             Commutative rings &raquo;</a></p>
+        <p><a class="btn btn-default" href="{% url 'property-list' %}" role="button">
+            All properties &raquo;</a><a class="btn btn-default"
+                                    href="{% url 'commproperty-list' %}" role="button">
+            Commutative properties &raquo;</a></p>
         <h2>Search</h2>
         <p>You can search for rings by their properties. If you are only
             interested in commutative rings, try the specialized search with
@@ -38,10 +42,11 @@
             <p>There are a lot of ways you could help, even if you don't
                 know what specifically what yet.</p>
             <p> <a class="btn btn-default" href="contribute"
-                   role="button">Contribute content &raquo;</a><a
+                   role="button">Contribute content &raquo;</a>
+                <!-- <a
                     class="btn btn-default"
                     href="https://github.com/rschwiebert/RingApp"
-                    role="button">I do GitHub &raquo;</a></p>
+                    role="button">I do GitHub &raquo;</a></p> -->
         </div>
         <div class="col-md-4 content">
             <h2>Learn</h2>

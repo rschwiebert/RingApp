@@ -5,7 +5,7 @@ from ringapp.models import (CommRing, CommProperty, CommRingProperty,
                             CommEquivalents, CommLogic, CommInvariance)
 from ringapp.models import (Theorem, Publication, Citation, Keyword, 
                             Metaproperty, Suggestion)
-from ringapp.models import FAQ, Glossary
+from ringapp.models import FAQ, Glossary, News
 from ringapp.AdminUtils import rewriteName
 
 
@@ -176,8 +176,9 @@ class PublicationAdmin(admin.ModelAdmin):
             obj.poster = request.user.username
         obj.save()
 
+
 class SuggestionAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'object_type', 'status', 'user']
+    fields = ['name', 'description', 'object_type', 'status', 'response', 'user']
     
 
 class InvarianceAdmin(admin.ModelAdmin):
@@ -200,6 +201,10 @@ class GlossaryAdmin(admin.ModelAdmin):
     fields = ['term', 'definition', 'reference']
 
 
+class NewsAdmin(admin.ModelAdmin):
+    fields = ['content']
+
+
 admin.site.register(Ring, RingAdmin)
 admin.site.register(CommRing, CommRingAdmin)
 admin.site.register(Property, PropertyAdmin)
@@ -220,3 +225,4 @@ admin.site.register(Metaproperty, MetapropertyAdmin)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Glossary, GlossaryAdmin)
 admin.site.register(Suggestion, SuggestionAdmin)
+admin.site.register(News, NewsAdmin)
