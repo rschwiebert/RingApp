@@ -438,7 +438,7 @@ class News(models.Model):
             shortdesc = self.content[:50]
         else:
             shortdesc = self.content
-        return '%s %s %s' % (self.get_object_type_display(), self.name, shortdesc)
+        return shortdesc
 
 
 class test_Ring(models.Model):

@@ -47,6 +47,14 @@
                     class="btn btn-default"
                     href="https://github.com/rschwiebert/RingApp"
                     role="button">I do GitHub &raquo;</a></p> -->
+            <h3>Recent activity</h3>
+            <ul>
+                {% autoescape off %}
+                {% for item in newsitems %}
+                  <li>{{ item.content|safe }}</li>
+                {% endfor %}
+                {% endautoescape %}
+            </ul>
         </div>
         <div class="col-md-4 content">
             <h2>Learn</h2>

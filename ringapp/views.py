@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.template import RequestContext, loader
 from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
 from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
-from ringapp.models import Publication, Theorem, Suggestion, Keyword
+from ringapp.models import Publication, Theorem, Suggestion, Keyword, News
 from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector, KeywordSearchForm
 import re
 import random
@@ -16,6 +16,16 @@ import logging
 vlogger = logging.getLogger('ringapp.vlogger')
 
 from AdminUtils import *
+
+
+class IndexView(TemplateView):
+    template_name = 'ringapp/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['newsitems'] = News.objects.all()
+        return context
+
 
 class SearchPage(TemplateView):
     @property
@@ -124,6 +134,7 @@ class CommSearchPage(TemplateView):
                             })
             return context
 
+
 class KeywordSearchPage(TemplateView):
     @property
     def template_name(self):
@@ -148,6 +159,7 @@ class KeywordSearchPage(TemplateView):
             context.update({'kwds': kwds, 'results': results})
             return context
 
+
 # TODO: clean this view out if new views work fine
 def commsearchpage(request):
     if "scope" in request.GET:  # If the form has been submitted...
@@ -165,6 +177,7 @@ def commsearchpage(request):
     return render(request, 'ringapp/commsearch.html', {
         'form':  form,
     })
+
 
 # TODO: clean this view out if new views work fine
 def keywordsearchpage(request):
@@ -215,6 +228,7 @@ def results(request):
                                        })
     return HttpResponse(template.render(context))
 
+
 # TODO: clean this view out if new views work fine
 def commresults(request):
     template = loader.get_template('ringapp/commresults.html')
@@ -239,6 +253,7 @@ def commresults(request):
                                        'lacks_string': lacks_string,
                                        })
     return HttpResponse(template.render(context))
+
 
 # TODO: clean this view out if new views work fine
 def keywordresults(request):
@@ -466,7 +481,6 @@ class SuggestionView(SuccessMessageMixin, CreateView):
         context['cring_sugg'] = cring_sugg
         return context
         
-
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'ringapp/profile.html'

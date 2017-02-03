@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/processor/$', views.processor, name='processor'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', TemplateView.as_view(template_name='ringapp/index.html'), name='index'),
+    url(r'^$', views.IndexView.as_view(), name='index'),
     #url(r'^search/$', views.searchpage, name='search'),
     url(r'^search/$', views.SearchPage.as_view(), name='search'),
     #url(r'^commsearch/$', views.commsearchpage, name='csearch'),
