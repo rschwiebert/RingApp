@@ -9,8 +9,10 @@
     {% if kwds %}
     <p>You searched for rings with the following keywords:</p>
     {% for kwd in kwds %}
-      <span class="label label-default">{{ kwd.name }}</span>
-    {% endfor %}
+    <a href="{% url 'keyword-detail' kwd.id %}"><span class="label label-default">{{ kwd.name }}</span></a>
+    {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
+                            data-content="Keyword labels are links to more information!" data-original-title="Info"
+                            ></span>
     {% endif %}
   </div>
   <div class="col-md-6 content">

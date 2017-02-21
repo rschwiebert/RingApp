@@ -27,7 +27,7 @@ class PropertyAdmin(admin.ModelAdmin):
 
 
 class KeywordAdmin(admin.ModelAdmin):
-    fields = ['name']
+    fields = ['name', 'description']
 
 
 class RingPropertyAdmin(admin.ModelAdmin):

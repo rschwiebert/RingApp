@@ -15,8 +15,11 @@
                         {% if tags %}
                         <p>Keywords
                           {% for tag in tags %}
-                          <span class="label label-default">{{ tag.name }}</span>
-                          {% endfor %}
+                          <a href="{% url 'keyword-detail' tag.id %}">
+                              <span class="label label-default" title="{{ tag.description }}">{{ tag.name }}</span></a>
+                          {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
+                            data-content="Keyword labels are links to more information!" data-original-title="Info"
+                            ></span>
                           {% endif %}</p>
                 </div>
                 <div class="col-md-4 content">

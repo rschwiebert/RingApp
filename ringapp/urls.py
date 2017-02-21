@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^commsearch/commresults/$', views.CommSearchPage.as_view(), name='cresults'),
     #url(r'^keywordsearch/results/$', views.keywordresults, name='kresults'),
     url(r'^keywordsearch/results/$', views.KeywordSearchPage.as_view(), name='kresults'),
+    url(r'^keywords/keyword/(?P<pk>\d+)/$', views.KeywordDetailView.as_view(), name='keyword-detail'),
     url(r'^rings/$', views.RingList.as_view(), name='ring-list'),
     url(r'^commrings/$', views.CommRingList.as_view(), name='commring-list'),
     url(r'^rings/ring/(?P<ring_id>\d+)/$', views.viewring, name='ring-detail'),

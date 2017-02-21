@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 #   * Remove `managed = False` lines for those models you wish to give write DB access
 # Feel free to rename the models, but don't rename db_table values or field names.
 
+
 def rewriteName(st):
     """Makes database property names with (left)/(right) a little more readable."""
     if st[-7:] == ' (left)':
@@ -21,6 +22,7 @@ def rewriteName(st):
 class Keyword(models.Model):
     id = models.AutoField(null=False, unique=True, primary_key=True)
     name = models.CharField(max_length=50)
+    description = models.CharField(max_length=400, null=True, blank=True)
 
     class Meta:
         # managed = False
@@ -411,7 +413,7 @@ class Suggestion(models.Model):
                                                (-1, 'declined'),
                                                (0, 'pending'),
                                                (1, 'accepted'),
-                                               (2, 'withdrawn'),],
+                                               (2, 'withdrawn')],
                                       default=0)
     name = models.CharField(max_length=50, null=True, blank=True)
     description = models.CharField(max_length=400, null=True, blank=True)

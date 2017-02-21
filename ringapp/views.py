@@ -160,6 +160,11 @@ class KeywordSearchPage(TemplateView):
             return context
 
 
+class KeywordDetailView(DetailView):
+    model = Keyword
+    template_name = 'ringapp/keyword_detail.html'
+
+
 # TODO: clean this view out if new views work fine
 def commsearchpage(request):
     if "scope" in request.GET:  # If the form has been submitted...

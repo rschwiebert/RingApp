@@ -1,0 +1,23 @@
+{% extends 'ringapp/base.html' %}
+
+{% block title %}Property detail{% endblock %}
+
+{% block body_block %}
+<div class="container">
+	<h1>Keyword detail</h1>
+
+	{% if object %}
+	    <ul>
+		<p>Keyword name: {{ object.name }}<br>
+		   Description: {{ object.description }}<br>
+		   <a class="btn btn-default" role="button" href="{% url 'kresults' %}?kwd={{ object.id }}">
+			   <span class="glyphicon glyphicon-search"></span>  Rings with this keyword</a>
+		</p>
+
+		</ul>
+	{% else %}
+	    <p>Nothing was retrieved.</p>
+	{% endif %}
+</div>
+
+{% endblock %}

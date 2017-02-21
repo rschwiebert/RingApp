@@ -15,8 +15,11 @@
                         {% if tags %}
                         <p>Keywords
                           {% for tag in tags %}
-                          <span class="label label-default">{{ tag.name }}</span>
-                          {% endfor %}</p>
+                            <a href="{% url 'keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
+                          {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
+                            data-content="Keyword labels are links to more information!" data-original-title="Info"
+                            ></span></p>
+
                           {% endif %}
                 </div>
                 <div class="col-md-4 content">
@@ -32,9 +35,9 @@
 			    {% endif %}
 			    </ul>
 			</p>
-		    
+
                  </div>
-          
+
           <hr />
         </div>
         <hr />
@@ -57,7 +60,7 @@
 	        <a class="list-group-item" href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a>
 		{% endfor %}
 	      </div>
-            </div>		
+            </div>
           </div>
           <div class="col-md-4 content">
             <div class="panel panel-default">
@@ -67,8 +70,8 @@
 	        <a class="list-group-item" href="{% url 'property-detail' item.property_id %}">{{ item.name }}</a>
 		{% endfor %}
 	      </div>
-            </div>		
-	  </div>    
+            </div>
+	  </div>
 	{% else %}
 	    <p>Nothing was retrieved.</p>
 	{% endif %}
