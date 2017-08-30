@@ -62,4 +62,5 @@ urlpatterns = [
     url(r'^profile/$', views.ProfileView.as_view(), name='profile'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
+    url(r'^expanded-details/(?P<template>[-a-z]+)/$', views.DetailTemplateView.as_view()),
 ]

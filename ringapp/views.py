@@ -495,7 +495,15 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context['suggestions'] = Suggestion.objects.filter(user=self.request.user)
         
         return context
-        
+
+
+class DetailTemplateView(TemplateView):
+    template_name = None
+
+    def get_context_data(self, **kwargs):
+        self.template_name = 'ringapp/' + kwargs['template'] + '.html'
+        return super(DetailTemplateView, self).get_context_data(**kwargs)
+
 
 def contribute(request):
     if request.method == 'POST':  # If the form has been submitted...
