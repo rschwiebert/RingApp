@@ -11,7 +11,6 @@ from django.contrib.sitemaps.views import sitemap
 from ringapp.sitemaps import sitemapdict
 
 
-
 urlpatterns = [
     url(r'^login/$', login, {'template_name': 'ringapp/login.html'}, name='login'),
     url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
@@ -56,6 +55,7 @@ urlpatterns = [
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
     # url(r'^suggestions/$', views.suggestions, name='suggestions'),
     url(r'^bibliography/$', views.bibliography, name='bibliography'),
+    url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',
                                            form_class=UserCreationForm,
                                            success_url='profile/'), name='register'),

@@ -10,6 +10,7 @@
     <meta name="msvalidate.01" content="4C8BD9384A39B37522503D44EE509608" />
     <meta name="description" content="">
     <meta name="author" content="Ryan C. Schwiebert">
+    {% block meta %}{% endblock %}
 		
     <title>DaRT - {% block title %}Database of Ring Theory{% endblock %}</title>
     <link rel="icon" href="../../favicon.ico">
@@ -102,7 +103,7 @@
       </div>
     </nav>
     <div>
-            {% block body_block %}{% endblock %}
+            {% block content %}{% endblock %}
     </div>
     <hr />
     <div id="footer"><footer class="container">
