@@ -85,7 +85,7 @@
             <li id="sourcesNav"><a href="{% url 'contribute'%}">Contribute</a></li>
             <li id="sourcesNav"><a href="{% url 'resources'%}">Learn</a></li>
               
-            <li> {% if not request.user.is_authenticated %}<a class="btn btn-primary" href="{% url 'login' %}"><font color="white">Login</font></a>{% else %}<a class="btn btn-primary" href="{% url 'logout' %}"><font color="white">Logout</font></a></li>
+            <li> {% if not request.user.is_authenticated %}<a class="btn btn-primary" href="{% url 'auth_login' %}"><font color="white">Login</font></a>{% else %}<a class="btn btn-primary" href="{% url 'auth_logout' %}"><font color="white">Logout</font></a></li>
               <li><a class="btn btn-primary" href="{% url 'profile' %}"><font color="white">Profile</font></a>{% endif %}
             <name="top"/></li>             
           </ul>

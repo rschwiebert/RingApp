@@ -4,6 +4,7 @@ from django.contrib.auth.views import login, logout, password_reset
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import TemplateView, ListView, DetailView, FormView
 from django.views.generic.edit import CreateView
+from django.views.generic.base import RedirectView
 from ringapp import views
 from ringapp import models
 
@@ -12,8 +13,8 @@ from ringapp.sitemaps import sitemapdict
 
 
 urlpatterns = [
-    url(r'^login/$', login, {'template_name': 'ringapp/login.html'}, name='login'),
-    url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
+    url(r'^login/$', RedirectView.as_view(pattern_name='auth_login', permanent=True)),
+    url(r'^logout/$', RedirectView.as_view(pattern_name='auth_logout', permanent=True)),
     url(r'^password_reset/$', password_reset, name='password_reset'),
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
