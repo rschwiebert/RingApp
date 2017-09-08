@@ -1,12 +1,12 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.contrib.auth.views import login, logout, password_reset
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import TemplateView, ListView, DetailView, FormView
 from django.views.generic.edit import CreateView
 from django.views.generic.base import RedirectView
 from ringapp import views
 from ringapp import models
+from ringapp.feeds import NewsFeed
 
 from django.contrib.sitemaps.views import sitemap
 from ringapp.sitemaps import sitemapdict
@@ -15,7 +15,6 @@ from ringapp.sitemaps import sitemapdict
 urlpatterns = [
     url(r'^login/$', RedirectView.as_view(pattern_name='auth_login', permanent=True)),
     url(r'^logout/$', RedirectView.as_view(pattern_name='auth_logout', permanent=True)),
-    url(r'^password_reset/$', password_reset, name='password_reset'),
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/processor/$', views.processor, name='processor'),
@@ -64,4 +63,7 @@ urlpatterns = [
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'^expanded-details/(?P<template>[-a-z]+)/$', views.DetailTemplateView.as_view()),
+    url(r'^latest/feed/$', NewsFeed(), name='newsfeed'),
+    url(r'^news/$', views.NewsList.as_view(), name='news-list'),
+    url(r'^news/(?P<pk>\d+)/$', views.NewsDetail.as_view(), name='news-detail'),
 ]

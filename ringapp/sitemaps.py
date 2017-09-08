@@ -3,6 +3,7 @@ from ringapp.models import Ring, Property, CommProperty, Theorem
 
 from django.core.urlresolvers import reverse
 
+
 class StaticViewSitemap(Sitemap):
     priority = 0.5
     changefreq = 'weekly'
@@ -75,4 +76,4 @@ class TheoremMap(Sitemap):
 sitemapdict = {'rings': RingMap, 'commrings': CommRingMap,
                'properties': PropertyMap, 'commproperties': CommPropertyMap,
                'theorems': TheoremMap,
-               'static': StaticViewSitemap,}
+               'static': StaticViewSitemap}

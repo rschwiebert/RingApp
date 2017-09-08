@@ -552,6 +552,19 @@ class TheoremDetail(DetailView):
         return context
 
 
+class NewsList(ListView):
+    model = News
+    template_name = 'ringapp/news_list.html'
+
+    def get_queryset(self):
+        return News.objects.order_by('-id')[:20]
+
+
+class NewsDetail(DetailView):
+    model = News
+    template_name = 'ringapp/news_detail.html'
+
+
 def bibliography(request):
     template = loader.get_template('ringapp/bibliography.html')
     bib = ['%s, %s, %s, (%d).' % (x.authors,

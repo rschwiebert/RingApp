@@ -202,7 +202,7 @@ class GlossaryAdmin(admin.ModelAdmin):
 
 
 class NewsAdmin(admin.ModelAdmin):
-    fields = ['content']
+    fields = ['title', 'category', 'content']
 
 
 admin.site.register(Ring, RingAdmin)

@@ -430,7 +430,10 @@ class Suggestion(models.Model):
 
 
 class News(models.Model):
+    title = models.CharField(max_length=64, null=True, blank=True)
+    category = models.CharField(max_length=64, null=True, blank=True)
     content = models.CharField(max_length=256, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = 'News items'

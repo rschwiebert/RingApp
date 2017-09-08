@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}News item{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    {% if object %}
+	<h1>{{ object.title }}</h1>
+    <h3>({{ object.category }})  {{ object.timestamp }}</h3>
+    <p>{{ object.content|safe }}</p>
+    {% else %}<p>(This item is missing.)</p>
+	{% endif %}
+</div>
+{% endblock %}
