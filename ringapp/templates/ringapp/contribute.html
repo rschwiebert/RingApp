@@ -6,13 +6,15 @@
 {% if messages %}
 <ul class="messages">
     {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
 </ul>
 {% endif %}
 
 <div class="container"> 
-   <h1>Contribute</h1>
+    <h1>Contribute</h1>
+
+    <p>For site-specific suggestions, please use the <a href="https://github.com/rschwiebert/RingApp/issues">GitHub issue tracker</a>.</p>
 
    <div class="row">
      <div class="col-md-12 content">

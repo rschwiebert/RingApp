@@ -12,13 +12,13 @@
             <p align='center'>A repository of rings, their properties,
                 and more ring theory stuff.</p>
             <p align='center'><a class="btn btn-primary btn-lg"
-                                 href="about" role="button">
+                                 href="{% url 'about' %}" role="button">
                 Learn more &raquo;</a></p>
         </div>
     </div>
     <div class="container">
         <div class="col-md-4 content">
-        <h2>Browse</h2>
+        <h2>Browse <span class="icon-large icon-list"></span></h2>
         <p>See rings and properties on record.</p>
         <p><a class="btn btn-default" href="{% url 'ring-list' %}" role="button">
             All rings &raquo;</a><a class="btn btn-default"
@@ -28,7 +28,7 @@
             All properties &raquo;</a><a class="btn btn-default"
                                     href="{% url 'commproperty-list' %}" role="button">
             Commutative properties &raquo;</a></p>
-        <h2>Search</h2>
+        <h2>Search <span class="icon-large icon-search"></span></h2>
         <p>You can search for rings by their properties. If you are only
             interested in commutative rings, try the specialized search with
             expanded, commutative-only properties. </p>
@@ -41,17 +41,18 @@
             By keyword &raquo;</a></p>
         </div>
         <div class="col-md-4 content">
-            <h2>Contribute</h2>
+            <h2>Contribute <span class="icon-large icon-lightbulb"></span></h2>
             <p>There are a lot of ways you could help, even if you don't
                 know what specifically what yet.</p>
-            <p> <a class="btn btn-default" href="contribute"
-                   role="button">Contribute content &raquo;</a>
+            <p> <a class="btn btn-default" href="{% url 'contribute' %}"
+                   role="button">Make the site better &raquo;</a></p>
                 <!-- <a
                     class="btn btn-default"
                     href="https://github.com/rschwiebert/RingApp"
                     role="button">I do GitHub &raquo;</a></p> -->
-            <h3>Recent activity <a href="{% url 'newsfeed' %}"><span class="icon-large icon-rss"></span></a></h3>
-
+            <h3>Recent activity <span class="icon-large icon-rss"></span></h3>
+            <p> <a class="btn btn-default" href="{% url 'newsfeed' %}"
+                   role="button">Site news RSS &raquo;</a></p>
             <ul>
                 {% autoescape off %}
                 {% for item in newsitems %}
@@ -61,11 +62,11 @@
             </ul>
         </div>
         <div class="col-md-4 content">
-            <h2>Learn</h2>
+            <h2>Learn <span class="icon-large icon-book"></span></h2>
             <p>View a list of resources for studying ring theory.</p>
-            <p><a class="btn btn-default" href="resources"
+            <p><a class="btn btn-default" href="{% url 'resources' %}"
                   role="button">Start learning &raquo;</a></p>
-            <h3>Other helpful sites</h3>
+            <h3>Other helpful sites <span class="icon-large icon-link"></span></h3>
             <p>If you like this site, then you also might like these sites:</p>
             <ul>
             <li><a href="http://topology.jdabbs.com/">π-Base</a>:
