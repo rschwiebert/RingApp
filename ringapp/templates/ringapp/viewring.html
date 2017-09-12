@@ -10,7 +10,7 @@
 		<div class="col-md-8 content">
                     {% if r %}
 		    <h2>Name: {{ r.name }}</h2>
-			<p>Description: {{ r.description }}</p>
+			<p>Description: {{ r.description|safe }}</p>
 			<p>Notes: {{ r.notes }}</p>
                         {% if tags %}
                         <p>Keywords
