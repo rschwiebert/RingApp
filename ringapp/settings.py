@@ -139,6 +139,7 @@ EMAIL_USE_TLS = True
 # Registration-redux specific settings
 ACCOUNT_ACTIVATION_DAYS = 2
 REGISTRATION_DEFAULT_FROM_EMAIL = os.environ['REGISTRATION_DEFAULT_FROM_EMAIL']
+REGISTRATION_FORM = 'registration.forms.RegistrationFormUniqueEmail'
 
 LOGGING = {
     'version': 1,

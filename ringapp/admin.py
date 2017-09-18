@@ -1,12 +1,14 @@
 from django.contrib import admin
-from ringapp.models import (Ring, Property, RingProperty, 
-                            Equivalents, Logic, Invariance)
-from ringapp.models import (CommRing, CommProperty, CommRingProperty, 
-                            CommEquivalents, CommLogic, CommInvariance)
-from ringapp.models import (Theorem, Publication, Citation, Keyword, 
-                            Metaproperty, Suggestion)
-from ringapp.models import FAQ, Glossary, News
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from ringapp.models import *
 from ringapp.AdminUtils import rewriteName
+
+
+# Customizing the visible User fields in the admin
+UserAdmin.list_display = ('username', 'email', 'date_joined', 'last_login', 'is_staff')
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 class InvarianceInline(admin.TabularInline):
