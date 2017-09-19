@@ -557,7 +557,7 @@ class NewsList(ListView):
     template_name = 'ringapp/news_list.html'
 
     def get_queryset(self):
-        return News.objects.order_by('-id')[:20]
+        return News.objects.order_by('-id')
 
 
 class NewsDetail(DetailView):
