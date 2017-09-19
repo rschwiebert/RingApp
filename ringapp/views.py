@@ -460,7 +460,7 @@ class CommPropertyView(DetailView):
 
 
 class SuggestionView(SuccessMessageMixin, CreateView):
-    model=Suggestion
+    model = Suggestion
     template_name = 'ringapp/contribute.html'
     success_url = '/contribute/'
     fields = ['object_type', 'name', 'description']
