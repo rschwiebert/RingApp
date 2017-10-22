@@ -4,11 +4,9 @@ Need a commutative ring that is pseudo Frobenius but not Frobenius
 Need a commutative ring that is perfect but not semiprimary
 Need a commutative ring that is clean but not semiregular
 Need a commutative ring that is rad-nil but not Jacobson
-Need a commutative ring that is Prufer domain but not Bezout domain
 Need a commutative ring that is Schreier domain but not GCD domain
 Need a commutative ring that is ACC principal but not Noetherian
 Need a commutative ring that is self-injective but not pseudo Frobenius
-Need a commutative ring that is normal domain but not Schreier domain
 Need a commutative ring that is finitely pseudo Frobenius but not self-injective
 Need a commutative ring that is local complete intersection ring but not regular local
 Need a commutative ring that is Krull domain but not Dedekind domain

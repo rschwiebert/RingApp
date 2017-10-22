@@ -22,11 +22,6 @@ class PropertyAdmin(admin.ModelAdmin):
     fields = ['property_id', 'name', 'definition', 'comm_version']
     inlines = [InvarianceInline]
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
-
 
 class KeywordAdmin(admin.ModelAdmin):
     fields = ['name', 'description']
@@ -34,11 +29,6 @@ class KeywordAdmin(admin.ModelAdmin):
 
 class RingPropertyAdmin(admin.ModelAdmin):
     fields = ['ring', 'property', 'has_property', 'reason', 'source']
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
 
 
 class RingPropertyInline(admin.TabularInline):
@@ -54,20 +44,15 @@ class CommRingPropertyInline(admin.TabularInline):
 
 
 class RingAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'notes', 'reference', 'old_reference', 'keywords', 'kwds']
+    fields = ['name', 'description', 'notes', 'reference', 'old_reference', 'keywords', 'kwds', 'user']
     readonly_fields = ('kwds', 'old_reference')
     inlines = [
         RingPropertyInline,
     ]
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
-
 
 class CommRingAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords']
+    fields = ['name', 'description', 'notes', 'reference', 'kwds', 'keywords', 'user']
     inlines = [
         CommRingPropertyInline,
     ]
@@ -76,11 +61,6 @@ class CommRingAdmin(admin.ModelAdmin):
         prop = Property.objects.get(name='commutative')
         rids = [ring.ring_id for ring in RingProperty.objects.filter(property=prop)]
         return Ring.objects.filter(ring_id__in=rids)
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
 
 
 class EquivalentsAdmin(admin.ModelAdmin):
@@ -98,19 +78,9 @@ class CommPropertyAdmin(admin.ModelAdmin):
     fields = ['property_id', 'name', 'definition']
     inlines = [CommInvarianceInline]
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
-
 
 class CommRingPropertyAdmin(admin.ModelAdmin):
     fields = ['ring', 'property', 'has_property', 'reason', 'source']
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
 
 
 class CommEquivalentsAdmin(admin.ModelAdmin):
@@ -122,7 +92,6 @@ class LogicAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.poster = request.user.username
             conds = [obj.cond_1, obj.cond_2, obj.cond_3, obj.cond_4]
             conds = filter(lambda x: x is not None, conds)
             conc = obj.conc
@@ -137,29 +106,14 @@ class LogicAdmin(admin.ModelAdmin):
 class CommLogicAdmin(admin.ModelAdmin):
     fields = ['cond_1', 'cond_2', 'cond_3', 'cond_4', 'conc', 'readable', 'citation', 'theorem']
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
-
 
 class TheoremAdmin(admin.ModelAdmin):
     fields = ['alias', 'statement', 'reference', 'link', 'characterizes', 'comm_characterizes']
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
 
 
 class CitationAdmin(admin.ModelAdmin):
     fields = ['publication', 'location']
     ordering = ('publication',)
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
 
 
 class CitationInline(admin.TabularInline):
@@ -172,11 +126,6 @@ class PublicationAdmin(admin.ModelAdmin):
     fields = ['title', 'authors', 'details', 'pub_date']
     ordering = ('authors',)
     inlines = [CitationInline]
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.poster = request.user.username
-        obj.save()
 
 
 class SuggestionAdmin(admin.ModelAdmin):

@@ -10,6 +10,7 @@
 		<div class="col-md-8 content">
                     {% if r %}
 		    <h2>Name: {{ r.name }}</h2>
+            {% if r.user %}<p><i>This ring suggested by: {{ r.user }}</i></p> {% endif %}
 			<p>Description: {{ r.description|safe }}</p>
 			<p>Notes: {{ r.notes }}</p>
                         {% if tags %}

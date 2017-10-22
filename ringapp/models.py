@@ -203,7 +203,7 @@ class Ring(models.Model):
     keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords", blank=True)
     old_reference = models.CharField(max_length=500)
     notes = models.CharField(max_length=500, blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True)
     reference = models.ManyToManyField(Citation, verbose_name="ring reference", blank=True)
 
     class Meta:
