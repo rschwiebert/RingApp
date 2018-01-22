@@ -5,67 +5,86 @@
 {% block content %}
 <div class="container">
   <div class="col-md-12 content">
-    <h1>Results</h1>
-    <p>You searched for rings
-    {% if has_string %}
-    which ARE {{ has_string }}
+    <h1>You searched for rings</h1>
+    <p>
+    {% if has_readable %}
+    <h4>which are</h4>
+    <ul>
+      {% for item in has_readable %}
+      <li>{{ item }}
+      {% endfor %}
     {% endif %}
-    {% if lacks_string %}
-    which ARE NOT {{ lacks_string }}
-    {% endif %}.</p>
+    </ul>
+    {% if lacks_readable %}
+    <h4>which are not</h4>
+    <ul>
+      {% for item in lacks_readable %}
+      <li>{{ item }}
+      {% endfor %}
+    {% endif %}
+    </ul></p>
   </div>
-  <div class="col-md-6 content">
-    <h2>Search</h2>
+  <div class="panel panel-default col-md-6 content">
+	<div class="panel-heading"><h2>Results</h2></div>
+	<div class="panel-body">
+
       <p><i>Satisfy all parameters</i></p>
-      {% if main_results %}
-      <ul>
-      {% for item in main_results %}
-        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+      {% if results %}
+      <ul class="list-group">
+      {% for item in results %}
+        <li class="list-group-item"><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></li>
       {% endfor %}
       </ul>
       {% else %}
           <p>(No results.)</p>
       {% endif %}
-
+    </div>
+    <div class="panel-body">
     <p><i>Consistent with parameters, but may not be real hits</i></p>
     {% if weak_results %}
-      <ul>
+      <ul class="list-group">
         {% for item in weak_results %}
-        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+        <li class="list-group-item"><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></li>
         {% endfor %}
       </ul>
     {% else %}
     <p>(No results.)</p>
     {% endif %} 
   </div>
-      
-  <div class="col-md-6 content">
+  {% if is_asymm_search %}
+  </div>
+  <div class="panel panel-default col-md-6 content">
+	<div class="panel-heading"><h2>Mirror results</h2></div>
+	<div class="panel-body">
     
-      <h2>Mirror search</h2>
+
       <p><i>Satisfy mirror image of parameters</i></p>
       {% if mirror_results %}
 
-          <ul>
+          <ul class="list-group">
           {% for item in mirror_results %}
-            <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+            <li class="list-group-item"><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></li>
           {% endfor %}
           </ul>
       {% else %}
           <p>(No results.)</p>
       {% endif %}
+    </div>
+    <div class="panel-body">
       <p><i>Consistent with mirror image of parameters, but may not be real hits.</i></p>
 
-      {% if m_weak_results %}
+      {% if mirror_weak_results %}
 
-      <ul>
-      {% for item in m_weak_results %}
-        <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+      <ul class="list-group">
+      {% for item in mirror_weak_results %}
+        <li class="list-group-item"><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></li>
       {% endfor %}
       </ul>
       {% else %}
       (No results.)
       {% endif %}
+    </div>
   </div>
-
+  {% endif %}
 </div>
 {% endblock %}

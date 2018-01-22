@@ -1,414 +1,275 @@
-from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
+from publications import models as pmodels
 
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Remove `managed = False` lines for those models you wish to give write DB access
-# Feel free to rename the models, but don't rename db_table values or field names.
+import textwrap
 
 
-def rewriteName(st):
-    """Makes database property names with (left)/(right) a little more readable."""
-    if st[-7:] == ' (left)':
-        return 'left %s' % st[:-7]
-    elif st[-8:] == ' (right)':
-        return 'right %s' % st[:-8]
+def symmetrize_sides(rp):
+    if rp.has_on_left is not None and rp.has_on_right is None:
+        rp.has_on_right = rp.has_on_left
+        rp.reason_right = 'symmetry with left side'
+
+    elif rp.has_on_right is not None and rp.has_on_left is None:
+        rp.has_on_left = rp.has_on_right
+        rp.reason_left = rp.reason_right
+        rp.reason_left = 'symmetry with right side'
+
+    elif rp.has_on_left == rp.has_on_right:
+        pass
     else:
-        return st
+        raise ValidationError(_('Something attempted to record asymmetric '
+                                'RingProperty record for a symmetric property: '
+                                'ring={} property={}'.format(rp.ring, rp.property)))
+
+# Django models
 
 
 class Keyword(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
     name = models.CharField(max_length=50)
-    description = models.CharField(max_length=400, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
 
     class Meta:
-        # managed = False
-        db_table = 'keywords'
+        ordering = ('name', )
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
-class Publication(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    title = models.CharField(max_length=100)
-    authors = models.CharField(max_length=50)
-    details = models.CharField(max_length=100, null=True, blank=True)
-    pub_date = models.DateField()
-    poster = models.CharField(max_length=30)
-    time = models.DateTimeField(auto_now_add=True)
-
+class Publication(pmodels.Publication):
     class Meta:
-        # managed = False
-        db_table = 'publications'
+        db_table = 'publications_publication'
+        managed = False
+        proxy = True
+        ordering = ['authors', 'title']
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return "%s (%d)" % (self.title, self.pub_date.year)
+    def __str__(self):
+        return '{}. {}. ({})'.format(self.authors, self.title, self.year)
+
+    @property
+    def author_lasts(self):
+        if ',' not in self.authors and ' and ' in self.authors:
+            author_lasts = self.authors.split(' and ')
+        elif ',' in self.authors:
+            author_lasts = self.authors.split(', ')
+        else:
+            author_lasts = [self.authors]
+        if author_lasts[-1].startswith('and '):
+            author_lasts[-1] = author_lasts[-1][4:]
+        author_lasts = [x.split(' ')[-1] for x in author_lasts]
+        if len(author_lasts) == 1:
+            author_string = author_lasts[0]
+        elif len(author_lasts) == 2:
+            author_string = ' and '.join(author_lasts)
+        else:
+            author_lasts[-1] = 'and ' + author_lasts[-1]
+            author_string = ', '.join(author_lasts)
+        return author_string
 
 
 class Citation(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    publication = models.ForeignKey(Publication)  # Field name made lowercase.
-    location = models.CharField(max_length=50)
-    poster = models.CharField(max_length=30)
-    time = models.DateTimeField(auto_now_add=True)
+    publication = models.ForeignKey('ringapp.Publication')
+    location = models.CharField(max_length=128)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     class Meta:
-        # managed = False
-        db_table = 'citations'
+        ordering = ('publication__authors', 'publication__title')
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.publication.title)+","+str(self.location)
-
-
-class CommProperty(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'comm_properties'
-        verbose_name_plural = 'Commutative ring properties'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
+    def __str__(self):
+        return '{} @ {}'.format(self.publication, self.location)
 
 
 class Property(models.Model):
-    property_id = models.AutoField(db_column='property_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    definition = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    comm_version = models.ForeignKey(CommProperty, blank=True, null=True)
+    name = models.CharField(max_length=128)
+    definition = models.TextField(max_length=1024)
+    symmetric = models.NullBooleanField()
+    commutative_only = models.BooleanField(default=False)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     class Meta:
-        # managed = False
-        db_table = 'properties'
-        verbose_name_plural = 'Ring properties'
+        verbose_name_plural = 'Properties'
+        ordering = ('name',)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         return self.name
 
 
-class Theorem(models.Model):
-    theorem_id = models.AutoField(db_column='theorem_id', unique=True, primary_key=True)  # Field name made lowercase.
-    alias = models.CharField(max_length=100, null=True, blank=True)
-    statement = models.CharField(max_length=400)
-    reference = models.ManyToManyField(Citation, verbose_name="theorem reference")
-    link = models.URLField(blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    time = models.DateTimeField(auto_now_add=True)
-    characterizes = models.ForeignKey(Property, null=True, blank=True)
-    comm_characterizes = models.ForeignKey(CommProperty, null=True, blank=True)
-
+class PropertySide(models.Model):
     class Meta:
-        # managed = False
-        db_table = 'theorems'
+        verbose_name_plural = 'Property-side pairings'
+        unique_together = (('property', 'side'),)
+        ordering = ('property', 'side')
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.alias:
-            return self.alias
-        else:
-            if len(self.statement) < 100:
-                return self.statement
-            else:
-                return self.statement[:100] + '...'
+    property = models.ForeignKey('Property')
+    side = models.SmallIntegerField(choices=[(0, ''),
+                                             (1, 'left and right'),
+                                             (2, 'left'),
+                                             (3, 'right'),
+                                             (4, 'left or right'), ])
+
+    def clean(self):
+        """
+        Prevent symmetric properties from being associated with sides
+        """
+        if self.property.symmetric:
+            self.side = 0
+            self.save()
+
+    def __str__(self):
+        value = self.property.name
+        if self.side != 0:
+            value += ' on the {}'.format(self.get_side_display())
+
+        return value
 
 
 class Logic(models.Model):
-    logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    entry_type = models.IntegerField(blank=True, null=True)
-    cond_1 = models.IntegerField(blank=True, null=True)
-    cond_2 = models.IntegerField(blank=True, null=True)
-    cond_3 = models.IntegerField(blank=True, null=True)
-    cond_4 = models.IntegerField(blank=True, null=True)
-    conc = models.IntegerField(blank=True, null=True)
-    option = models.CharField(max_length=200, blank=True)
-    citation = models.CharField(max_length=200, blank=True, null=True)
-    theorem = models.ForeignKey(Theorem, db_column='theorem_id', blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    readable = models.CharField(max_length=120, blank=True, null=True)
-    
-    class Meta:
-        # managed = False
-        db_table = 'logic'
+    hyps = models.ManyToManyField('PropertySide', related_name='hypotheses', verbose_name="hypotheses")
+    concs = models.ManyToManyField('PropertySide', related_name='conclusions', verbose_name="conclusions")
+    variety = models.PositiveSmallIntegerField(choices=[(0, '===>'), (1, '<==>')], null=True)
+    symmetric = models.NullBooleanField()
+    citation = models.ManyToManyField('Citation', blank=True)
 
-    def save(self, *args, **kwargs):
-        self.option = 'on'
-        conds = [self.cond_1, self.cond_2, self.cond_3, self.cond_4]
-        conds = filter(lambda x: x is not None, conds)
-        self.entry_type = len(conds)
-        conc = self.conc
-        readable_conds = [Property.objects.get(pk=i).name for i in conds]
-        readable_conds = map(rewriteName, readable_conds)
-        readable_conc = rewriteName(Property.objects.get(pk=conc).name)
-        output = " and ".join(readable_conds) + " implies %s" % readable_conc
-        self.readable = output
-        super(Logic, self).save(*args, **kwargs)
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.readable is not None and self.readable != '':
-            return self.readable
-        else:
-            return "Set readable field for this entry!"
-
-
-class CommLogic(models.Model):
-    logic_id = models.AutoField(db_column='logic_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    entry_type = models.IntegerField(blank=True, null=True)
-    cond_1 = models.IntegerField(blank=True, null=True)
-    cond_2 = models.IntegerField(blank=True, null=True)
-    cond_3 = models.IntegerField(blank=True, null=True)
-    cond_4 = models.IntegerField(blank=True, null=True)
-    conc = models.IntegerField(blank=True, null=True)
-    option = models.CharField(max_length=200, blank=True)
-    citation = models.CharField(max_length=200, blank=True)
-    theorem = models.ForeignKey(Theorem, db_column='theorem_id', blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    readable = models.CharField(max_length=120, blank=True, null=True)
-    
-    class Meta:
-        # managed = False
-        db_table = 'comm_logic'
-
-    def save(self, *args, **kwargs):
-        self.option = 'on'
-        conds = [self.cond_1, self.cond_2, self.cond_3, self.cond_4]
-        conds = filter(lambda x: x is not None, conds)
-        self.entry_type = len(conds)
-        conc = self.conc
-        readable_conds = [CommProperty.objects.get(pk=i).name for i in conds]
-        readable_conc = CommProperty.objects.get(pk=conc).name
-        output = " and ".join(readable_conds) + " implies %s" % readable_conc
-        self.readable = output
-        super(CommLogic, self).save(*args, **kwargs)
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.readable is not None and self.readable != '':
-            return self.readable
-        else:
-            return "Set readable field for this entry!"
-        
-        
-class Ring(models.Model):
-    ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    description = models.CharField(max_length=1000)
-    kwds = models.CharField(max_length=200, blank=True, null=True)
-    keywords = models.ManyToManyField(Keyword, verbose_name="ring keywords", blank=True)
-    old_reference = models.CharField(max_length=500)
-    notes = models.CharField(max_length=500, blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
-    reference = models.ManyToManyField(Citation, verbose_name="ring reference", blank=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        hyps = ' and '.join([str(rp) for rp in self.hyps.all()])
+        concs = ' and '.join([str(rp) for rp in self.concs.all()])
+        return '{} {} {}'.format(hyps, self.get_variety_display(), concs)
+
+    def __repr__(self):
+        return '<Logic: id={}>'.format(id(self))
+
+
+class Theorem(models.Model):
+    alias = models.CharField(max_length=100, null=True, blank=True)
+    statement = models.TextField(max_length=400)
+    citation = models.ManyToManyField('Citation', blank=True)
+    link = models.URLField(blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True)
+    commutative_only = models.BooleanField(default=False)
+
+    def __str__(self):
+        if self.alias:
+            return self.alias
+        else:
+            return textwrap.shorten(self.statement, width=1000)
+
+
+class Ring(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.TextField(max_length=1000)
+    keywords = models.ManyToManyField('Keyword', blank=True)
+    notes = models.CharField(max_length=500, blank=True, null=True)
+    citation = models.ManyToManyField('Citation', blank=True)
+
+    krull_dim = models.FloatField(blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True)
+    is_commutative = models.NullBooleanField()
+
+    optional_template = models.CharField(max_length=128, blank=True, default='')
 
     class Meta:
-        # managed = False
-        db_table = 'rings'
-    
-    def __unicode__(self):  # Python 3: def __str__(self):
+        ordering = ('name',)
+
+    def __str__(self):
         return self.name
 
 
-class CommRing(Ring):
-    class Meta:
-        # managed = False
-        db_table = 'rings'
-        proxy = True
-        verbose_name_plural = 'Commutative rings'
-
-
 class RingProperty(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
-    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
-    has_property = models.IntegerField(blank=True, null=True)
-    reason = models.CharField(max_length=200, blank=True, null=True)
-    source = models.CharField(max_length=500, blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    time = models.DateTimeField(auto_now_add=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if self.property.comm_version is not None\
-            and self.ring.ringproperty_set.filter(ring=self.ring,
-                                                  property=Property.objects.get(name='commutative')).exists()\
-            and self.ring.ringproperty_set.get(ring=self.ring,
-                                               property=Property.objects.get(name='commutative')).has_property == 1\
-            and not CommRingProperty.objects.filter(ring=self.ring,
-                                                    property=self.property.comm_version).exists():
-            CommRingProperty.objects.create(ring=self.ring,
-                                            property=self.property.comm_version,
-                                            has_property=self.has_property,
-                                            reason=self.reason,
-                                            source=self.source,
-                                            poster=self.poster)
-        super(RingProperty, self).save(*args, **kwargs)
+    ring = models.ForeignKey('Ring')
+    property = models.ForeignKey('Property')
+    has_on_left = models.NullBooleanField()
+    reason_left = models.CharField(max_length=200, blank=True, null=True)
+    citation_left = models.ManyToManyField('Citation', related_name='citation_left', blank=True)
+    has_on_right = models.NullBooleanField()
+    reason_right = models.CharField(max_length=200, blank=True, null=True)
+    citation_right = models.ManyToManyField('Citation', related_name='citation_right', blank=True)
 
     class Meta:
-        # managed = False
-        db_table = 'ring_property'
         verbose_name_plural = 'Ring-property relationships'
-    
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.has_property == 1:        
-            return "%s is %s" % (self.ring.name, self.property.name)
-        elif self.has_property == 0:
-            return "%s is not %s" % (self.ring.name, self.property.name)
-        else:
-            return "A bug occurred in RingProperty unicode method."
+        unique_together = (('ring', 'property'),)
 
+    def clean(self):
+        if self.ring.is_commutative or self.property.symmetric:
+            symmetrize_sides(self)
+            self.save()
 
-class CommRingProperty(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)  # get this to autoincrement properly
-    ring = models.ForeignKey(Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
-    property = models.ForeignKey(CommProperty, db_column='property_ID',
-                                 blank=True, null=True)  # Field name made lowercase.
-    has_property = models.IntegerField(blank=True, null=True)
-    reason = models.CharField(max_length=200, blank=True, null=True)
-    source = models.CharField(max_length=500, blank=True, null=True)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    time = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        # managed = False
-        db_table = 'comm_ring_property'
-        verbose_name_plural = 'Commutative ring-property relationships'
+        if self.property.name == 'commutative' and self.has_on_left is True:
+            if self.ring.is_commutative is None:
+                self.ring.is_commutative = True
+                self.ring.save()
+            elif self.ring.is_commutative is False:
+                raise ValidationError('ring.is_commutative attribute contradicts '
+                                      'this ring-property relationship.')
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.has_property == 1:        
-            return "%s is %s" % (self.ring.name, self.property.name)
-        elif self.has_property == 0:
-            return "%s is not %s" % (self.ring.name, self.property.name)
-        else:
-            return "A bug occurred in CommRingProperty unicode method."
-        
-        
-class Equivalents(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
-    equivalent = models.CharField(max_length=500)
-    kwds = models.CharField(max_length=200)
-    source = models.CharField(max_length=100)
-    poster = models.CharField(max_length=30, blank=True, null=True)
-    
-    class Meta:
-        # managed = False
-        db_table = 'equivalents'
-    
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.property.name)+"\t"+str(self.equivalent)
-
-
-class CommEquivalents(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    property = models.ForeignKey(CommProperty, db_column='property_ID',
-                                 blank=True, null=True)  # Field name made lowercase.
-    equivalent = models.CharField(max_length=500)
-    kwds = models.CharField(max_length=200)
-    source = models.CharField(max_length=100)
-    poster = models.CharField(max_length=30, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'comm_equivalents'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return str(self.property.name)+"\t"+str(self.equivalent)
+    def __str__(self):
+        return '({}-{}) has on left:{} has on right:{}'\
+            .format(self.ring, self.property, self.has_on_left, self.has_on_right)
 
 
 class Metaproperty(models.Model):
-    type_id = models.AutoField(null=False, unique=True, primary_key=True)
-    description = models.CharField(max_length=100)
+    name = models.CharField(max_length=128)
+    definition = models.TextField(max_length=1024)
 
     class Meta:
-        # managed = False
-        db_table = 'metaproperty'
         verbose_name_plural = 'Metaproperties'
+        ordering = ('name',)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.description
+    def __str__(self):
+        return self.name
 
 
-class Invariance(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    property = models.ForeignKey(Property, db_column='property_ID')
-    metaproperty = models.ForeignKey(Metaproperty, db_column='type_id')
-    has_metaproperty = models.BooleanField(default=None, null=False)
-    example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
-    theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
-    note = models.CharField(max_length=100, blank=True, null=True)
+class PropertyMetaproperty(models.Model):
+    property = models.ForeignKey('Property')
+    metaproperty = models.ForeignKey('Metaproperty')
+    has_metaproperty = models.NullBooleanField()
+    example = models.ForeignKey('Ring', blank=True, null=True)
+    citation = models.ManyToManyField('Citation', blank=True)
+
+    commutative_only = models.BooleanField(default=False)
 
     class Meta:
-        # managed = False
-        db_table = 'property_metaproperty'
         verbose_name_plural = 'Property-metaproperty relationships'
+        unique_together = (('property', 'metaproperty'), )
 
-    def __unicode__(self):  # Python 3: def __str__(self):
+    def __str__(self):
         if self.has_metaproperty:
-            return "%s : %s" % (self.property.name, self.metaproperty.description)
+            return "%s : %s" % (self.property.name, self.metaproperty.definition)
         else:
-            return "%s : not %s" % (self.property.name, self.metaproperty.description)
+            return "%s : not %s" % (self.property.name, self.metaproperty.definition)
 
 
-class CommInvariance(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    property = models.ForeignKey(CommProperty, db_column='property_ID')
-    metaproperty = models.ForeignKey(Metaproperty, db_column='type_id')
-    has_metaproperty = models.BooleanField(default=None, null=False)
-    example = models.ForeignKey(Ring, blank=True, null=True, db_column='ring_ID')
-    theorem = models.ForeignKey(Theorem, blank=True, null=True, db_column='theorem_id')
-    note = models.CharField(max_length=100, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'comm_property_metaproperty'
-        verbose_name_plural = 'Commutative property-metaproperty relationships'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.has_metaproperty:
-            return "%s : %s" % (self.property.name, self.metaproperty.description)
-        else:
-            return "%s : not %s" % (self.property.name, self.metaproperty.description)
-
-
-class Glossary(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    term = models.CharField(max_length=100, blank=True, null=True)
-    definition = models.CharField(max_length=400, blank=True, null=True)
-    reference = models.ManyToManyField(Citation, verbose_name="glossary reference", blank=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'glossary'
-        verbose_name_plural = 'Glossary entries'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.term
-
-
-class FAQ(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    question = models.CharField(max_length=200, blank=True, null=True)
-    answer = models.CharField(max_length=400, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'faq'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.question
+# class Glossary(models.Model):
+#     term = models.CharField(max_length=100, blank=True, null=True)
+#     definition = models.CharField(max_length=400, blank=True, null=True)
+#     reference = models.ManyToManyField(Citation, verbose_name="glossary reference", blank=True)
+#
+#     class Meta:
+#         verbose_name_plural = 'Glossary entries'
+#
+#     def __str__(self):
+#         return self.term
+#
+#
+# class FAQ(models.Model):
+#     question = models.CharField(max_length=200, blank=True, null=True)
+#     answer = models.CharField(max_length=400, blank=True, null=True)
+#
+#     def __str__(self):
+#         return self.question
 
 
 class Suggestion(models.Model):
     object_type = models.SmallIntegerField(choices=[(0, 'ring'),
                                                     (1, 'citation'),
                                                     (2, 'theorem'),
-                                                    (3, 'other'), 
-                                           ])
+                                                    (3, 'other'), ])
     status = models.SmallIntegerField(choices=[(-2, 'need info'),
                                                (-1, 'declined'),
                                                (0, 'pending'),
@@ -416,67 +277,51 @@ class Suggestion(models.Model):
                                                (2, 'withdrawn')],
                                       default=0)
     name = models.CharField(max_length=50, null=True, blank=True)
-    description = models.CharField(max_length=400, null=True, blank=True)
-    response = models.CharField(max_length=200, null=True, blank=True)
-    citation = models.CharField(max_length=100, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
+    response = models.TextField(max_length=200, null=True, blank=True)
+    citation = models.CharField(max_length=200, null=True, blank=True)
     user = models.ForeignKey(User)
 
-    def __unicode__(self):
-        if len(self.description) > 30:
-            shortdesc = self.description[:30]
-        else:
-            shortdesc = self.description
-        return '%s %s %s' % (self.get_object_type_display(), self.name, shortdesc)
+    def __str__(self):
+        return textwrap.shorten('[{}] {} {}'.format(self.get_object_type_display(),
+                                                    self.name, self.description), width=75)
 
 
 class News(models.Model):
     title = models.CharField(max_length=64, null=True, blank=True)
     category = models.CharField(max_length=64, null=True, blank=True)
-    content = models.CharField(max_length=256, null=True, blank=True)
+    content = models.TextField(max_length=400, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = 'News items'
 
-    def __unicode__(self):
-        if len(self.content) > 50:
-            shortdesc = self.content[:50]
-        else:
-            shortdesc = self.content
-        return shortdesc
+    def __str__(self):
+        return textwrap.shorten('{} [{}] {}'.format(self.title, self.category, self.content), width=75)
 
 
-class test_Ring(models.Model):
-    ring_id = models.AutoField(db_column='ring_ID', unique=True, primary_key=True)  # Field name made lowercase.
-    name = models.CharField(max_length=250)
-    description = models.CharField(max_length=1000)
+def format_pub(pub):
+    s = '{}'.format(pub.authors)
+    s += '. {}.'.format(pub.title)
+    if pub.journal:
+        s += ' {}'.format(pub.journal)
+    if pub.note:
+        s += ' {}'.format(pub.note)
+    if pub.volume:
+        s += 'Vol {}'.format(pub.volume)
+    if pub.number:
+        s += ' ({})'.format(pub.number)
 
-    class Meta:
-        # managed = False
-        db_table = 'test_rings'
+    if pub.pages:
+        s += ' {}'.format(pub.pages)
 
-    def __unicode__(self):  # Python 3: def __str__(self):
-        return self.name
+    if pub.publisher:
+        s += ' {}'.format(pub.publisher)
+    s += ', {}'.format(pub.year)
+    return s
 
 
-class test_RingProperty(models.Model):
-    id = models.AutoField(null=False, unique=True, primary_key=True)
-    ring = models.ForeignKey(test_Ring, db_column='ring_ID', blank=True, null=True)  # Field name made lowercase.
-    property = models.ForeignKey(Property, db_column='property_ID', blank=True, null=True)  # Field name made lowercase.
-    has_property = models.IntegerField(blank=True, null=True)
-    reason = models.CharField(max_length=200)
-    source = models.CharField(max_length=500)
-    poster = models.CharField(max_length=25, blank=True, null=True)
-    time = models.DateTimeField(auto_now_add=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'test_ring_property'
-
-    def __unicode__(self):  # Python 3: def __str__(self):
-        if self.has_property == 1:
-            return "%s is %s" % (self.ring.name, self.property.name)
-        elif self.has_property == 0:
-            return "%s is not %s" % (self.ring.name, self.property.name)
-        else:
-            return "A bug occurred in RingProperty unicode method."
+# @receiver(pre_save, sender=RingProperty)
+# def symmetrize(sender, instance, *args, **kwargs):
+#     if instance.ring.is_commutative or instance.property.symmetric:
+#         symmetrize_sides(instance)

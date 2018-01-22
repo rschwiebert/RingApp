@@ -3,33 +3,75 @@
 {% block title %}Search rings{% endblock %}
 
 {% block content %}
-
 <div class="container">
-    <div class="col-md-4 content">
 	<h1>Search for rings</h1>
-    </div>
     <div class="col-md-8 content">
-	<form action="results/" method="get">
-	    {{ form.non_field_errors }}
-          <div class="col-md-4 content">
-	    <h3>The ring is</h3>
-	    <div class="fieldWrapper">
-		{{ form.has.errors }}
-		<label for="has"></label>
-		{{ form.has }}
-	    </div>
-	    <p><i>Multiple selections can be made in both columns.<br />(CTRL-click on desktops.)</i></p>            
-          </div>
-          <div class="col-md-4 content">
-	    <h3>The ring is not</h3>
-	    <div class="fieldWrapper">
-		{{ form.lacks.errors }}
-		<label for="lacks"></label>
-		{{ form.lacks }}
-	    </div>
-            <p><input class="btn btn-primary" type="submit" value="Search" /></p>
-          </div>
-	    
+	<form action="" method="post">
+		{% csrf_token %}
+		<div class="panel panel-default">
+			<div class="panel-heading">Asymmetric properties</div>
+			<div class="panel-body">
+			{{ asymm_formset.management_form }}
+			<div id="asymm_form_set">
+			{% for form in asymm_formset %}
+				<div class="form-group">
+					<table>
+					{{ form.non_field_errors }}
+					{{ form.as_table }}
+					</table>
+				</div>
+			{% endfor %}
+			</div>
+        </div>
+        <div class="panel-footer"><input class="btn btn-default" type="button" value="Add More" id="add_more_asymm"></div>
+		<div id="empty_asymm_form" style="display:none" class="form-group">
+			<table class='no_error'>
+				{{ asymm_formset.empty_form.non_field_errors }}
+				{{ asymm_formset.empty_form.as_table }}
+			</table>
+		</div>
+        <script>
+			$('#add_more_asymm').click(function() {
+				var form_idx = $('#id_asymm-TOTAL_FORMS').val();
+				$('#asymm_form_set').append($('#empty_asymm_form').html().replace(/__prefix__/g, form_idx));
+				$('#id_asymm-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+			});
+		</script>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">Symmetric properties</div>
+			<div class="panel-body">
+			{{ symm_formset.management_form }}
+				<div class="form-group" id="symm_form_set">
+					{% for form in symm_formset %}
+						<div class="form-group">
+							<table>
+							{{ form.non_field_errors }}
+							{{ form.as_table }}
+							</table>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="panel-footer"><input class="btn btn-default" type="button" value="Add More" id="add_more_symm"></div>
+			<div id="empty_symm_form" style="display:none">
+				<div class="form-group">
+					<table class='no_error'>
+						{{ symm_formset.empty_form.non_field_errors }}
+						{{ symm_formset.empty_form.as_table }}
+					</table>
+				</div>
+			</div>
+			<script>
+				$('#add_more_symm').click(function() {
+					var form_idx = $('#id_symm-TOTAL_FORMS').val();
+					$('#symm_form_set').append($('#empty_symm_form').html().replace(/__prefix__/g, form_idx));
+					$('#id_symm-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+				});
+			</script>
+		</div>
+		<p><input class="btn btn-primary" type="submit" value="Search" /></p>
 	</form>
    </div>
 </div>

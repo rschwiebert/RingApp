@@ -18,10 +18,10 @@
       {% if object_list %}
         {% for item in object_list %}
         <tr>
-        <td><a href="{% url 'ring-detail' item.ring_id %}" >
+        <td><a href="{% url 'ring-detail' item.id %}" >
             <div style="height:100%;width:100%">{{ item.name }}</div></a></td>
         <td><div class="progress">
-              <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.num_known | mul:'100' }}%;">{{ item.num_known | mul:'100' }}%</div>
+              <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.num_known | mul:'100' }}%;">{{ item.num_known|mul:'100'|floatformat }}%</div>
             </div></td>
         </tr>
         {% endfor %}

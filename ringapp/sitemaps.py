@@ -1,7 +1,6 @@
 from django.contrib.sitemaps import Sitemap
-from ringapp.models import Ring, Property, CommProperty, Theorem
-
 from django.core.urlresolvers import reverse
+from ringapp.models import Ring, Property, Theorem
 
 
 class StaticViewSitemap(Sitemap):
@@ -11,7 +10,7 @@ class StaticViewSitemap(Sitemap):
     def items(self):
         return ['index', 'search', 'csearch', 'ksearch', 'about', 
                 'resources', 'contribute', 'ring-list', 'commring-list',
-                'property-list', 'commproperty-list', 'theorem-list']
+                'property-list', 'theorem-list']
 
     def location(self, item):
         return reverse(item)
@@ -25,7 +24,7 @@ class RingMap(Sitemap):
         return Ring.objects.all()
     
     def location(self, obj):
-        return reverse('ring-detail', kwargs={"ring_id": obj.ring_id})
+        return reverse('ring-detail', kwargs={"pk": obj.id})
 
 
 class CommRingMap(Sitemap):
@@ -33,11 +32,10 @@ class CommRingMap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),
-                                   ringproperty__has_property=1)
+        return Ring.objects.filter(is_commutative=True)
     
     def location(self, obj):
-        return reverse('commring-detail', kwargs={"ring_id": obj.ring_id})
+        return reverse('ring-detail', kwargs={"pk": obj.id})
 
 
 class PropertyMap(Sitemap):
@@ -48,18 +46,7 @@ class PropertyMap(Sitemap):
         return Property.objects.all()
     
     def location(self, obj):
-        return reverse('property-detail', kwargs={"pk": obj.property_id})
-
-    
-class CommPropertyMap(Sitemap):
-    changefreq = "monthly"
-    priority = 0.5
-
-    def items(self):
-        return CommProperty.objects.all()
-    
-    def location(self, obj):
-        return reverse('commproperty-detail', kwargs={"pk": obj.property_id})
+        return reverse('property-detail', kwargs={"pk": obj.id})
 
 
 class TheoremMap(Sitemap):
@@ -70,10 +57,10 @@ class TheoremMap(Sitemap):
         return Theorem.objects.all()
     
     def location(self, obj):
-        return reverse('theorem-detail', kwargs={"pk": obj.theorem_id})
+        return reverse('theorem-detail', kwargs={"pk": obj.id})
 
 
 sitemapdict = {'rings': RingMap, 'commrings': CommRingMap,
-               'properties': PropertyMap, 'commproperties': CommPropertyMap,
+               'properties': PropertyMap,
                'theorems': TheoremMap,
                'static': StaticViewSitemap}

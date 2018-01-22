@@ -1,14 +1,12 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import TemplateView, ListView, DetailView, FormView
-from django.views.generic.edit import CreateView
-from django.views.generic.base import RedirectView
+from django.contrib.sitemaps.views import sitemap
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import TemplateView, ListView, RedirectView, CreateView
 from ringapp import views
 from ringapp import models
 from ringapp.feeds import NewsFeed
-
-from django.contrib.sitemaps.views import sitemap
 from ringapp.sitemaps import sitemapdict
 
 
@@ -20,50 +18,68 @@ urlpatterns = [
     url(r'^admin/processor/$', views.processor, name='processor'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.IndexView.as_view(), name='index'),
-    #url(r'^search/$', views.searchpage, name='search'),
-    url(r'^search/$', views.SearchPage.as_view(), name='search'),
-    #url(r'^commsearch/$', views.commsearchpage, name='csearch'),
-    url(r'^commsearch/$', views.CommSearchPage.as_view(), name='csearch'),
-    #url(r'^keywordsearch/$', views.keywordsearchpage, name='ksearch'),
+
+    url(r'^search/$', views.searchpage, name='search'),
+    url(r'^commsearch/$', views.commsearchpage, name='csearch'),
+    url(r'^search/results/$', views.resultspage, name='results'),
+    url(r'^commsearch/commresults/$', views.commresultspage, name='cresults'),
+
     url(r'^keywordsearch/$', views.KeywordSearchPage.as_view(), name='ksearch'),
-    #url(r'^search/results/$', views.results, name='results'),
-    url(r'^search/results/$', views.SearchPage.as_view(), name='results'),
-    #url(r'^commsearch/commresults/$', views.commresults, name='cresults'),
-    url(r'^commsearch/commresults/$', views.CommSearchPage.as_view(), name='cresults'),
-    #url(r'^keywordsearch/results/$', views.keywordresults, name='kresults'),
     url(r'^keywordsearch/results/$', views.KeywordSearchPage.as_view(), name='kresults'),
     url(r'^keywords/keyword/(?P<pk>\d+)/$', views.KeywordDetailView.as_view(), name='keyword-detail'),
+
     url(r'^rings/$', views.RingList.as_view(), name='ring-list'),
     url(r'^commrings/$', views.CommRingList.as_view(), name='commring-list'),
-    url(r'^rings/ring/(?P<ring_id>\d+)/$', views.viewring, name='ring-detail'),
-    url(r'^commrings/ring/(?P<ring_id>\d+)/$', views.viewcommring, name='commring-detail'),
+    url(r'^rings/ring/(?P<pk>\d+)/$', views.RingDetail.as_view(), name='ring-detail'),
+    url(r'^rings/ring/(?P<pk>\d+)/expanded-details/$', views.DetailTemplateView.as_view(), name='expanded-detail'),
 
     url(r'^properties/$', views.PropertyList.as_view(), name='property-list'),
     url(r'^properties/property/(?P<pk>\d+)/$', views.PropertyView.as_view(), name='property-detail'),
-    url(r'^commproperties/$', views.CommPropertyList.as_view(), name='commproperty-list'),
-    url(r'^commproperties/property/(?P<pk>\d+)/$', views.CommPropertyView.as_view(), name='commproperty-detail'),
 
-    url(r'^logics/$', ListView.as_view(model=models.Logic), name='logic-list'),
-    url(r'^logics/logic/(?P<pk>\d+)/$', DetailView.as_view(model=models.Logic), name='logic-detail'),
-    url(r'^commlogics/$', views.CommLogicList, name='commlogic-list'),
-    url(r'^commlogics/commlogic/(?P<pk>\d+)/$', DetailView.as_view(model=models.CommLogic), name='commlogic-detail'),
+    # url(r'^logics/$', ListView.as_view(model=models.Logic), name='logic-list'),
+    # url(r'^logics/logic/(?P<pk>\d+)/$', DetailView.as_view(model=models.Logic), name='logic-detail'),
     url(r'^theorems/$', ListView.as_view(model=models.Theorem), name='theorem-list'),
     url(r'^theorems/theorem/(?P<pk>\d+)/$', views.TheoremDetail.as_view(), name='theorem-detail'),
     url(r'^about/$', TemplateView.as_view(template_name='ringapp/about.html'), name='about'),
     url(r'^people/$', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),
     url(r'^resources/$', TemplateView.as_view(template_name='ringapp/resources.html'), name='resources'),
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
-    # url(r'^suggestions/$', views.suggestions, name='suggestions'),
-    url(r'^bibliography/$', views.bibliography, name='bibliography'),
+    url(r'^bibliography/$', views.CitationList.as_view(), name='bibliography'),
+
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',
                                            form_class=UserCreationForm,
                                            success_url='profile/'), name='register'),
     url(r'^profile/$', views.ProfileView.as_view(), name='profile'),
+
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
-    url(r'^expanded-details/(?P<template>[-a-z]+)/$', views.DetailTemplateView.as_view()),
     url(r'^latest/feed/$', NewsFeed(), name='newsfeed'),
     url(r'^news/$', views.NewsList.as_view(), name='news-list'),
     url(r'^news/(?P<pk>\d+)/$', views.NewsDetail.as_view(), name='news-detail'),
+
+    url(r'^commproperties/$',
+        RedirectView.as_view(pattern_name='property-list', permanent=True),
+        name='commproperty-list'),
+    url(r'^commproperties/property/(?P<pk>\d+)/$',
+        views.CommPropertyRedirect.as_view(),
+        name='commproperty-detail'),
+    url(r'^commrings/ring/(?P<pk>\d+)/$',
+        RedirectView.as_view(pattern_name='ring-detail', permanent=True),
+        name='commring-detail'),
+    url(r'^expanded-details/omearas-matrix-algebra/$',
+        RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 80}),
+                             permanent=True)),
+    url(r'^expanded-details/bergmans-exchange-ring/$',
+        RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 70}),
+                             permanent=True)),
+    url(r'^expanded-details/bergmans-primitive-ring/$',
+        RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 31}),
+                             permanent=True)),
+    url(r'^expanded-details/bergmans-right-primitive-ring/$',
+        RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 73}),
+                             permanent=True)),
+    url(r'^expanded-details/bergmans-unit-regular-ring/$',
+        RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 81}),
+                             permanent=True)),
 ]

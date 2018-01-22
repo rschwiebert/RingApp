@@ -9,11 +9,9 @@
   <div class="col-md-8 content">
     <h1>O'Meara's infinite matrix algebra</h1>
 
-
-
       <p>Recently (<i>A new setting for constructing von Neumann regular rings</i> by K. C. O'Meara,
           Communications in Algebra 45.5 (2017): 2186-2194) O'Meara described an algebra that is very
-          useful for understanding <a href="/rings/ring/81">Bergman's unit regular ring</a>,
+          useful for understanding <a href="{% url 'ring-detail' 81 %}">Bergman's unit regular ring</a>,
           and is very interesting in its own right.</p>
 
     <div class="panel panel-default">
@@ -37,7 +35,7 @@
              as a topological space. Then $B$ can be identified with the algebra of continuous linear transformations
              of $Z$.
           </p>
-          <p>Three features are useful for connecting this with <a href="/rings/ring/81">Bergman's unit-regular ring</a>.
+          <p>Three features are useful for connecting this with <a href="{% url 'ring-detail' 81 %}">Bergman's unit-regular ring</a>.
             <ul>
                 <li>The socle $soc(B)=\begin{bmatrix}soc(U)&soc(U)M+Msoc(V)\\ N&soc(V)\end{bmatrix}$.</li>
                 <li>There is a ring
@@ -68,9 +66,9 @@
             </ul>
           </p>
           <p>O'Meara shows that $\pi(K)+soc(B)$ is isomorphic to
-          <a href="/rings/ring/81">Bergman's unit-regular ring</a> $R_{81}$, and the subring
+          <a href="{% url 'ring-detail' 81 %}">Bergman's unit-regular ring</a> $R_{81}$, and the subring
             $\pi(K)\oplus \begin{bmatrix}soc(U)&0\\0&soc(V)\end{bmatrix}$ is isomorphic to
-          <a href="/rings/ring/82">Bergman's non-unit-regular subring</a> $R_{82}$.</p>
+          <a href="{% url 'ring-detail' 82 %}">Bergman's non-unit-regular subring</a> $R_{82}$.</p>
       </div>
     </div>
   </div>

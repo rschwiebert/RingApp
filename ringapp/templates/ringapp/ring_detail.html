@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Ring detail{% endblock %}
+
+{% block content %}
+<div class="container">
+	<h1>Ring detail</h1>
+        <hr/ >
+	<div class="row">
+		<div class="col-md-6 content">
+           {% if object %}
+		    <h2>Name: {{ object.name }}</h2>
+            {% if object.user %}<p><i>This ring suggested by: {{ object.user }}</i></p> {% endif %}
+			<p>Description: {{ object.description|safe }}</p>
+			{% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
+            {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details page.</a></p>{% endif %}
+			{% if krull_disp %}<p>Krull dimension: {{ krull_disp }}</p>{% endif %}
+                        {% if object.keywords.exists %}
+                        <p>Keywords
+                          {% for tag in object.keywords.all %}
+                            <a href="{% url 'keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
+                          {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
+                            data-content="Keyword labels are links to more information!" data-original-title="Info"
+                            ></span></p>
+
+                        {% endif %}
+                </div>
+        <div class="col-md-6 content">
+			<p>Reference(s):
+			    {% if object.citation.exists %}
+			    <ul>
+			    {% for ref in object.citation.all %}
+			    <li>{{ ref }}</li>
+			    {% endfor %}
+
+			    {% else %}
+			    <li>(Citation needed)</li>
+			    {% endif %}
+			    </ul>
+			</p>
+
+        </div>
+
+        <hr />
+
+        </div>
+        <hr />
+
+        <div class="row">
+        {% if object.is_commutative %}
+        <div class="col-md-4 content">
+            <div class="panel panel-default">
+            <div class="panel-heading">Known Properties</div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Name</th>
+                </tr>
+                {% for item in prop_join %}
+                <tr><td>
+                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
+                    {% if item.1 == True %}
+                    <i class="glyphicon glyphicon-ok"></i>
+                    {% elif item.1 == False %}
+                    <i class="glyphicon glyphicon-remove"></i>
+                    {% elif item.1 == None %}
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                    {% endif %}
+                    {{ item.0.name }}</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-4 content">
+            <div class="panel panel-default">
+            <div class="panel-heading">Symmetric properties</div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Name</th>
+                </tr>
+                {% for item in symmetric_props %}
+                <tr><td>
+                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
+                    {% if item.1 == True %}
+                    <i class="glyphicon glyphicon-ok"></i>
+                    {% elif item.1 == False %}
+                    <i class="glyphicon glyphicon-remove"></i>
+                    {% elif item.1 == None %}
+                    <i class="glyphicon glyphicon-question-sign"></i>
+                    {% endif %}
+                    {{ item.0.name }}</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+        <div class="col-md-4 content">
+            <div class="panel panel-default">
+            <div class="panel-heading">Asymmetric properties</div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>left</th>
+                    <th>Name</th>
+                    <th>right</th>
+                </tr>
+                {% for item in asymmetric_props %}
+                <tr>
+                    {% if item.1 == True %}
+                    <td><i class="glyphicon glyphicon-ok"></i></td>
+                    {% elif item.1 == False %}
+                    <td><i class="glyphicon glyphicon-remove"></i></td>
+                    {% elif item.1 == None %}
+                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td><a class="list-group-item" href="{% url 'property-detail' item.0.id %}">{{ item.0.name }}</a></td>
+                    {% if item.2 == True %}
+                    <td><i class="glyphicon glyphicon-ok"></i></td>
+                    {% elif item.2 == False %}
+                    <td><i class="glyphicon glyphicon-remove"></i></td>
+                    {% elif item.2 == None %}
+                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+        </div>
+        {% endif %}
+        </div>
+
+	{% else %}
+	    <p>Nothing was retrieved.</p>
+	{% endif %}
+
+</div>
+{% endblock %}
+

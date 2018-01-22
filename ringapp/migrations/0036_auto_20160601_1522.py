@@ -3,15 +3,18 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.contrib.sites.models import Site
+
 
 def rename_domain(apps, schema_editor):
-    site_1 = Site.objects.get(id=1)
+    Site = apps.get_model('sites.Site')
+    site_1, created = Site.objects.get_or_create(id=1)
     site_1.domain = 'ringtheory.herokuapp.com'
     site_1.name = 'ringtheory.herokuapp.com'
     site_1.save()
 
+
 def undo_rename_domain(apps, schema_editor):
+    Site = apps.get_model('sites.Site')
     site_1 = Site.objects.get(id=1)
     site_1.domain = 'example.com'
     site_1.name = 'example.com'
@@ -20,6 +23,7 @@ def undo_rename_domain(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
+        ('sites', '0002_alter_domain_unique'),
         ('ringapp', '0035_auto_20160526_0049'),
     ]
 

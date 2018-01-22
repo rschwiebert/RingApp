@@ -21,7 +21,7 @@
     <p>These rings are tagged with your keyword(s):</p>
     <ul>
      {% for item in results %}
-       <li><a href="{% url 'ring-detail' item.ring_id %}">{{ item.name }}</a></li>
+       <li><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></li>
      {% endfor %}
     </ul>
     {% else %}

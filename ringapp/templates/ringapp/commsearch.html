@@ -5,32 +5,44 @@
 {% block content %}
 
 <div class="container">
-    <div class="col-md-4 content">
 	<h1>Search for commutative rings</h1>
-        <p><u>Note:</u> the commutative ring search is performed against a different set of properties than the general ring search.
-        Some properties are not defined for general rings, some have been altered ("right Artinian" has become just "Artinian"), and some are completely absent. <a href="{% url 'search' %}">Click here to switch</a> to the general database search.</p>
-    </div>
+
     <div class="col-md-8 content">
-	<form action="commresults/" method="get">
-	    {{ form.non_field_errors }}
-          <div class="col-md-4 content">
-	    <h3>The ring is</h3>
-	    <div class="fieldWrapper">
-		{{ form.has.errors }}
-		{{ form.has }}
-	    </div>
-            <p><i>Multiple selections can be made in both columns.<br />(CTRL-click on desktops.)</i></p>
-          </div>
-          <div class="col-md-4 content">
-	    <h3>The ring is not</h3>
-	    <div class="fieldWrapper">
-		{{ form.lacks.errors }}
-		{{ form.lacks }}
-	    </div>
-            <p><input class="btn btn-primary" type="submit" value="Search" /></p>
-          </div>
-	    
-	</form>
-   </div>
+		<form action="" method="post">
+			{% csrf_token %}
+			<div class="panel panel-default">
+				<div class="panel-heading">Properties</div>
+				<div class="panel-body">
+					{{ comm_formset.management_form }}
+					<div id="comm_form_set">
+						{% for form in comm_formset %}
+						<div class="form-group">
+							<table>
+							{{ form.non_field_errors }}
+							{{ form.as_table }}
+							</table>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="panel-footer"><input class="btn btn-default" type="button" value="Add More" id="add_more_comm"></div>
+				<div id="empty_comm_form" style="display:none" class="form-group">
+					<table class='no_error'>
+						{{ comm_formset.empty_form.non_field_errors }}
+						{{ comm_formset.empty_form.as_table }}
+					</table>
+				</div>
+				<script>
+					$('#add_more_comm').click(function() {
+						var form_idx = $('#id_comm-TOTAL_FORMS').val();
+						$('#comm_form_set').append($('#empty_comm_form').html().replace(/__prefix__/g, form_idx));
+						$('#id_comm-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+					});
+				</script>
+			</div>
+			<input class="btn btn-primary" type="submit" value="Search" />
+
+		</form>
+	</div>
 </div>
 {% endblock %}

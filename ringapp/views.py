@@ -1,25 +1,35 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404
-from django.views.generic import DetailView, ListView, TemplateView, FormView
-from django.views.generic.edit import CreateView
+import random
+import time
+from math import isinf
+import logging
+
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Count
-from django.template import RequestContext, loader
-from ringapp.models import Ring, Property, Logic, RingProperty, Invariance
-from ringapp.models import CommProperty, CommLogic, CommRingProperty, CommInvariance
-from ringapp.models import Publication, Theorem, Suggestion, Keyword, News
-from ringapp.forms import SearchForm, CommSearchForm, ContribSelector, RingSelector, KeywordSearchForm
-import re
-import random
-import logging
-vlogger = logging.getLogger('ringapp.vlogger')
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed
+from django.shortcuts import render, redirect
+from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.http import require_GET, require_http_methods
+from django.views.generic import DetailView, ListView, TemplateView, RedirectView
+from django.views.generic.edit import CreateView
 
-from AdminUtils import *
+from ringapp.models import Ring, Property, PropertyMetaproperty
+from ringapp.models import Theorem, Suggestion, Keyword, News, Publication
+from ringapp import forms
+from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
+
+from ringapp.SearchUtils import (mirror_search_terms,
+                                 detect_asymmetric_search,
+                                 ring_search, LogicEngine,
+                                 completeness_scores)
+
+vlogger = logging.getLogger(__name__)
 
 
 class IndexView(TemplateView):
     template_name = 'ringapp/index.html'
+    http_method_names = ['get', ]
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
@@ -27,112 +37,122 @@ class IndexView(TemplateView):
         return context
 
 
-class SearchPage(TemplateView):
-    @property
-    def template_name(self):
-        if 'has' in self.request.GET or 'lacks' in self.request.GET:
-            return 'ringapp/results.html'
-        else:
-            return 'ringapp/search.html'
-            
-    def get_context_data(self, **kwargs):
-        context = super(SearchPage, self).get_context_data(**kwargs)
-        if 'has' not in self.request.GET and 'lacks' not in self.request.GET:
-            form = SearchForm()
-            context['form'] = form
-            return context
-        else:
-            has = lacks = tuple()
-            if 'has' in self.request.GET:
-                has = [int(thing) for thing in self.request.GET.getlist('has')]
-            if 'lacks' in self.request.GET:
-                lacks = [int(thing) for thing in self.request.GET.getlist('lacks')]
-
-            has_names = [Property.objects.get(pk=x).name for x in has]
-            lacks_names = [Property.objects.get(pk=x).name for x in lacks]
-            has_string = ' and '.join(has_names)
-            lacks_string = ' or '.join(lacks_names)
-
-            main_results = find_rings('n', has=has, lacks=lacks)
-            weak_results = find_rings('w', has=has, lacks=lacks)
-            weak_results = set(weak_results) - set(main_results)
-            
-            mirror_results = mirror_search('n', has=has, lacks=lacks)
-            m_weak_results = mirror_search('w', has=has, lacks=lacks)
-            m_weak_results = set(m_weak_results) - set(mirror_results)      
-
-            context.update({
-               'has': has,
-               'lacks': lacks,
-               'main_results': main_results,
-               'mirror_results': mirror_results,
-               'weak_results': weak_results,
-               'm_weak_results': m_weak_results,
-               'has_string': has_string,
-               'lacks_string': lacks_string,
-               })
-            return context
-        
-
-# TODO: clean this view out if new views work fine
+@require_http_methods(['GET', 'POST'])
 def searchpage(request):
-    if "scope" in request.GET:  # If the form has been submitted...
-        form = SearchForm(request.GET)  # A form bound to the POST data
-        if form.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            # ...
-            template = loader.get_template('ringapp/results.html')
-            datadict = form.cleaned_data
-            context = RequestContext(request, {'datadict': datadict})
-            return HttpResponse(template.render(context))
+    if request.method == 'POST':
+        asymm_formset = forms.AsymmSearchFormSet(request.POST, request.FILES, prefix='asymm')
+        symm_formset = forms.SymmSearchFormSet(request.POST, request.FILES, prefix='symm')
+
+        qdict = QueryDict('', mutable=True)
+        getkeylists = {'H': [], 'L': []}
+        for form in asymm_formset.forms + symm_formset.forms:
+            form.full_clean()
+            if form.is_valid():
+                getkey = form.cleaned_data['negator']
+                getkeylists[getkey].append(form.get_getparam())
+        for k, v in getkeylists.items():
+            qdict.setlist(k, v)
+        return redirect('{}?{}'.format(reverse('results'), qdict.urlencode()))
+
+    elif request.method == 'GET':
+        return render(request, 'ringapp/search.html', {
+            'asymm_formset': forms.AsymmSearchFormSet(prefix='asymm'),
+            'symm_formset': forms.SymmSearchFormSet(prefix='symm')
+        })
     else:
-        form = SearchForm()  # An unbound form
-
-    return render(request, 'ringapp/search.html', {
-        'form':  form,
-    })   
+        return HttpResponseNotAllowed(['get', 'post'])
 
 
-class CommSearchPage(TemplateView):
-    @property
-    def template_name(self):
-        if 'has' in self.request.GET or 'lacks' in self.request.GET:
-            return 'ringapp/commresults.html'
+@require_http_methods(['GET', 'POST'])
+def commsearchpage(request):
+    if request.method == 'POST':
+        comm_formset = forms.CommSearchFormSet(request.POST, request.FILES, prefix='comm')
+        commutative = Property.objects.get(name='commutative')
+        qdict = QueryDict('', mutable=True)
+        # Include commutativity by default in this search
+        getkeylists = {'H': [commutative.id], 'L': []}
+        for form in comm_formset:
+            form.full_clean()
+            if form.is_valid():
+                getkey = form.cleaned_data['negator']
+                getkeylists[getkey].append(form.get_getparam())
+        for k, v in getkeylists.items():
+            qdict.setlist(k, v)
+        return redirect('{}?{}'.format(reverse('results'), qdict.urlencode()))
+
+    elif request.method == 'GET':
+        return render(request, 'ringapp/commsearch.html', {
+            'comm_formset': forms.CommSearchFormSet(prefix='comm'),
+        })
+    else:
+        return HttpResponseNotAllowed(['get', 'post'])
+
+
+@require_GET
+def resultspage(request):
+    if request.method == 'GET' and ('has' in request.GET or 'lacks' in request.GET):
+        # This is an old-style search we need to support!
+        has = request.GET.getlist('has')
+        lacks = request.GET.getlist('lacks')
+        trans_has = [PROPSV1_TO_TERMSV2[pid] for pid in has]
+        trans_lacks = [PROPSV1_TO_TERMSV2[pid] for pid in lacks]
+        qdict = QueryDict('', mutable=True)
+        qdict.setlist('H', trans_has)
+        qdict.setlist('L', trans_lacks)
+        return redirect('{}?{}'.format(reverse('results'), qdict.urlencode()))
+
+    elif request.method == 'GET':
+        has = request.GET.getlist('H')
+        lacks = request.GET.getlist('L')
+        has_readable = [forms.term_to_readable(x) for x in has]
+        lacks_readable = [forms.term_to_readable(x) for x in lacks]
+
+        terms = ['H' + item for item in has]
+        terms.extend(['L' + item for item in lacks])
+        results, weak_results = ring_search(terms)
+        is_asymmetric_search = detect_asymmetric_search(terms)
+        if is_asymmetric_search:
+            mirror_results, mirror_weak_results = ring_search(mirror_search_terms(terms))
+            has_readable = [' '.join(pair) for pair in has_readable]
+            lacks_readable = [' '.join(pair) for pair in lacks_readable]
         else:
-            return 'ringapp/commsearch.html'
-            
-    def get_context_data(self, **kwargs):
-        context = super(CommSearchPage, self).get_context_data(**kwargs)
-        if 'has' not in self.request.GET and 'lacks' not in self.request.GET:
-            form = CommSearchForm()
-            context['form'] = form
-            return context
-        else:
-            has = lacks = tuple()
-            if 'has' in self.request.GET:
-                has = [int(thing) for thing in self.request.GET.getlist('has')]
-            if 'lacks' in self.request.GET:
-                lacks = [int(thing) for thing in self.request.GET.getlist('lacks')]
-            has_names = [CommProperty.objects.get(pk=x).name for x in has]
-            lacks_names = [CommProperty.objects.get(pk=x).name for x in lacks] 
-            has_string = ' and '.join(has_names)
-            lacks_string = ' or '.join(lacks_names)
-    
-            main_results = find_rings('n', has=has, lacks=lacks, comm=True)
-            weak_results = find_rings('w', has=has, lacks=lacks, comm=True)
-            comm = Property.objects.get(name='commutative')
-            comm_results = set(find_rings('n', has=[comm.property_id]))
-            main_results = set(main_results)
-            weak_results = (set(weak_results) - set(main_results)) & comm_results
-            
-            context.update({'has': has,
-                            'lacks': lacks,
-                            'main_results': main_results,
-                            'weak_results': weak_results,
-                            'has_string': has_string,
-                            'lacks_string': lacks_string,
-                            })
-            return context
+            has_readable = [pair[0] for pair in has_readable]
+            lacks_readable = [pair[0] for pair in lacks_readable]
+            mirror_results, mirror_weak_results = None, None
+
+        context = {
+            'is_asymm_search': is_asymmetric_search,
+            'results': results,
+            'weak_results': weak_results,
+            'mirror_results': mirror_results,
+            'mirror_weak_results': mirror_weak_results,
+            'has_readable': has_readable,
+            'lacks_readable': lacks_readable,
+         }
+
+        return render(request, 'ringapp/results.html', context)
+
+    else:
+        return redirect(reverse('search'))
+
+
+@require_GET
+def commresultspage(request):
+    if request.method == 'GET' and ('has' in request.GET or 'lacks' in request.GET):
+        # This is an old-style commutative search we need to support!
+        has = request.GET.getlist('has')
+        lacks = request.GET.getlist('lacks')
+        trans_has = [PROPSV1COMM_TO_TERMSV2[pid] for pid in has]
+        comm = Property.objects.get(name='commutative')
+        trans_has.append(comm.id)
+        trans_lacks = [PROPSV1COMM_TO_TERMSV2[pid] for pid in lacks]
+        qdict = QueryDict('', mutable=True)
+        qdict.setlist('H', trans_has)
+        qdict.setlist('L', trans_lacks)
+        return redirect('{}?{}'.format(reverse('results'), qdict.urlencode()))
+
+    else:
+        return redirect(reverse('csearch'))
 
 
 class KeywordSearchPage(TemplateView):
@@ -146,7 +166,7 @@ class KeywordSearchPage(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(KeywordSearchPage, self).get_context_data(**kwargs)
         if 'kwd' not in self.request.GET:
-            form = KeywordSearchForm()
+            form = forms.KeywordSearchForm()
             context['form'] = form
             return context
         else:
@@ -165,131 +185,25 @@ class KeywordDetailView(DetailView):
     template_name = 'ringapp/keyword_detail.html'
 
 
-# TODO: clean this view out if new views work fine
-def commsearchpage(request):
-    if "scope" in request.GET:  # If the form has been submitted...
-        form = CommSearchForm(request.GET)  # A form bound to the POST data
-        if form.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            # ...
-            template = loader.get_template('ringapp/commresults.html')
-            datadict = form.cleaned_data
-            context = RequestContext(request, {'datadict': datadict})
-            return HttpResponse(template.render(context))
-    else:
-        form = CommSearchForm()  # An unbound form
-
-    return render(request, 'ringapp/commsearch.html', {
-        'form':  form,
-    })
-
-
-# TODO: clean this view out if new views work fine
-def keywordsearchpage(request):
-    if "kwd" in request.GET:  # If the form has been submitted...
-        form = KeywordSearchForm(request.GET)  # A form bound to the POST data
-        if form.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            # ...
-            template = loader.get_template('ringapp/keywordresults.html')
-            datadict = form.cleaned_data
-            context = RequestContext(request, {'datadict': datadict})
-            return HttpResponse(template.render(context))
-    else:
-        form = KeywordSearchForm()  # An unbound form
-
-    return render(request, 'ringapp/keywordsearch.html', {
-        'form':  form,
-    })
-
-
-# TODO: clean this view out if new views work fine
-def results(request):
-    template = loader.get_template('ringapp/results.html')
-    
-    scope = request.GET['scope']
-    has = lacks = tuple()
-    if 'has' in request.GET.keys():
-        has = [int(thing) for thing in request.GET.getlist('has')]
-    if 'lacks' in request.GET.keys():
-        lacks = [int(thing) for thing in request.GET.getlist('lacks')]
-
-    has_names = [Property.objects.get(pk=x).name for x in has]
-    lacks_names = [Property.objects.get(pk=x).name for x in lacks]
-    has_string = ' and '.join(has_names)
-    lacks_string = ' or '.join(lacks_names)
-
-    main_results = find_rings(scope, has=has, lacks=lacks)
-    mirror_results = mirror_search(scope, has=has, lacks=lacks)
-    
-    context = RequestContext(request, {
-                                       'has': has,
-                                       'lacks': lacks,
-                                       'scope': scope,
-                                       'main_results': main_results,
-                                       'mirror_results': mirror_results,
-                                       'has_string': has_string,
-                                       'lacks_string': lacks_string,
-                                       })
-    return HttpResponse(template.render(context))
-
-
-# TODO: clean this view out if new views work fine
-def commresults(request):
-    template = loader.get_template('ringapp/commresults.html')
-    scope = request.GET['scope']
-    has = lacks = tuple()
-    if 'has' in request.GET.keys():
-        has = [int(thing) for thing in request.GET.getlist('has')]
-    if 'lacks' in request.GET.keys():
-        lacks = [int(thing) for thing in request.GET.getlist('lacks')]
-    has_names = [CommProperty.objects.get(pk=x).name for x in has]
-    lacks_names = [CommProperty.objects.get(pk=x).name for x in lacks] 
-    has_string = ' and '.join(has_names)
-    lacks_string = ' or '.join(lacks_names)
-    
-    main_results = find_rings(scope, has=has, lacks=lacks, comm=True)
-    
-    context = RequestContext(request, {'has': has,
-                                       'lacks': lacks,
-                                       'scope': scope,
-                                       'main_results': main_results,
-                                       'has_string': has_string,
-                                       'lacks_string': lacks_string,
-                                       })
-    return HttpResponse(template.render(context))
-
-
-# TODO: clean this view out if new views work fine
-def keywordresults(request):
-    template = loader.get_template('ringapp/keywordresults.html')
-    kids = []
-    if 'kwd' in request.GET.keys():
-        kids = [int(thing) for thing in request.GET.getlist('kwd')]
-    kwds = [Keyword.objects.get(pk=x) for x in kids]
-    results = Ring.objects.all()
-    if not kwds:
-        results = []
-    else:
-        for kwd in kwds:
-            results = [ring for ring in results if kwd in ring.keywords.all()]
-
-    context = RequestContext(request, {
-                                       'kwds': kwds,
-                                       'results': results,
-                                       })
-    return HttpResponse(template.render(context))
-
-
 class RingList(ListView):
     model = Ring
     template_name = 'ringapp/ring_list.html'
 
     def get_queryset(self):
-        queryset = list(Ring.objects.annotate(num_known=Count('ringproperty')))
-        total = float(Property.objects.count())
-        for item in queryset:
-            item.num_known = round(item.num_known / total, 2)
+        queryset = super().get_queryset()
+
+        # total properties defined for all rings (not just commutative ones)
+        total = 2*float(Property.objects.filter(commutative_only=False, symmetric=False).count())
+        total += Property.objects.filter(commutative_only=False, symmetric=True).count()
+
+        # now need to indicate what percentage is known for each ringproperty pairing
+        scores = completeness_scores(include_commutative=False)
+        for obj in queryset:
+            if obj.id in scores:
+                obj.num_known = round(scores[obj.id]/total, 2)
+            else:
+                obj.num_known = 0.0
+
         return queryset
 
 
@@ -298,11 +212,21 @@ class CommRingList(ListView):
     template_name = 'ringapp/commring_list.html'
 
     def get_queryset(self):
-        queryset = Ring.objects.filter(ringproperty__property=Property.objects.get(pk=1),
-                                   ringproperty__has_property=1).annotate(num_known=Count('commringproperty'))
-        total = float(CommProperty.objects.count())
-        for item in queryset:
-            item.num_known = round(item.num_known / total, 2)
+        # Just show commutative rings
+        queryset = self.model.objects.filter(is_commutative=True)
+
+        # total properties available for all rings (including commutative ones)
+        total = 2*float(Property.objects.filter(symmetric=False).count())
+        total += Property.objects.filter(symmetric=True).count()
+
+        # now need to indicate what percentage is known for each ringproperty pairing
+        scores = completeness_scores(include_commutative=True)
+        for obj in queryset:
+            if obj.id in scores:
+                obj.num_known = round(scores[obj.id]/total, 2)
+            else:
+                obj.num_known = 0.0
+
         return queryset
 
 
@@ -313,149 +237,104 @@ class PropertyList(ListView):
         return Property.objects.order_by('name')
 
 
-class CommPropertyList(ListView):
-    model = CommProperty
+class CommPropertyRedirect(RedirectView):
+    permanent = True
 
-    def get_queryset(self):
-        return CommProperty.objects.order_by('name')
-
-
-class LogicList(ListView):
-    model = Logic
-
-    def get_queryset(self):
-        Logic.objects.filter(option='on')
+    def get_redirect_url(self, *args, **kwargs):
+        # map old commproperty id to the new ids
+        kwargs['pk'] = PROPSV1COMM_TO_TERMSV2[kwargs['pk']].strip('lr')
+        return reverse('property-detail', kwargs=kwargs)
 
 
-class CommLogicList(ListView):
-    model = CommLogic
+# TODO: make this available as a special privilege
+# class LogicList(ListView):
+#     model = Logic
+#
+#     def get_queryset(self):
+#         Logic.objects.filter(option='on')
+#
 
-    def get_queryset(self):
-        CommLogic.objects.filter(option='on')
 
+class RingDetail(DetailView):
+    model = Ring
+    template_name = 'ringapp/ring_detail.html'
 
-def viewring(request, ring_id):
-    r = Ring.objects.get(ring_id=ring_id)
-    has_props = []
-    lacks_props = []
-    other_props = []
-    for p in Property.objects.all():
-        if r.ringproperty_set.filter(property=p, has_property=1):
-            has_props.append((p.name.lower(), p))
-        elif r.ringproperty_set.filter(property=p, has_property=0):
-            lacks_props.append((p.name.lower(), p))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = context['object']
+        obj_props = obj.ringproperty_set.order_by('property__name')
+        if not obj.is_commutative:
+            obj_props = obj_props.filter(property__commutative_only=False)
+
+        props = Property.objects.all()
+        if not obj.is_commutative:
+            props = props.filter(commutative_only=False)
+
+        # This effectively outer-joins
+        prop_join = {prop: (None, None, prop.symmetric) for prop in props}
+        for obj_rp in obj_props:
+            prop_join[obj_rp.property] = (obj_rp.has_on_left, obj_rp.has_on_right, obj_rp.property.symmetric)
+
+        prop_join = [(prop,) + values for prop, values in prop_join.items()]
+        prop_join.sort(key=lambda x: x[0].name)
+        symmetric_props = [item for item in prop_join if item[-1] is True]
+        asymmetric_props = [item for item in prop_join if item[-1] is False]
+
+        if obj.krull_dim:
+            if isinf(obj.krull_dim):
+                krull_disp = '$\infty$'
+            else:
+                krull_disp = str(int(obj.krull_dim))
         else:
-            other_props.append((p.name.lower(), p))
-    has_props.sort()
-    lacks_props.sort()
-    other_props.sort()
+            krull_disp = '(unknown)'
 
-    if has_props:
-        has_props = zip(*has_props)[1]
-    if lacks_props:
-        lacks_props = zip(*lacks_props)[1]
-    if other_props:
-        other_props = zip(*other_props)[1]
-    ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
-                                          x.publication.title,
-                                          x.publication.details,
-                                          x.publication.pub_date.year,
-                                          x.location) for x in r.reference.all()]
-    tags = r.keywords.all()
-    context = RequestContext(request, {
-        'r': r,
-        'has_props': has_props,
-        'lacks_props': lacks_props,
-        'other_props': other_props,
-        'ref_list': ref_list,
-        'tags': tags,
-    })
-    template = loader.get_template('ringapp/viewring.html')
-    return HttpResponse(template.render(context))
+        context['prop_join'] = prop_join
+        context['symmetric_props'] = symmetric_props
+        context['asymmetric_props'] = asymmetric_props
+        context['krull_disp'] = krull_disp
+
+        return context
 
 
-def viewcommring(request, ring_id):
-    r = Ring.objects.get(ring_id=ring_id)
-    has_props = []
-    lacks_props = []
-    other_props = []
-    for p in CommProperty.objects.all():
-        if r.commringproperty_set.filter(property=p, has_property=1):
-            has_props.append((p.name.lower(), p))
-        elif r.commringproperty_set.filter(property=p, has_property=0):
-            lacks_props.append((p.name.lower(), p))
-        else:
-            other_props.append((p.name.lower(), p))
-    has_props.sort()
-    lacks_props.sort()
-    other_props.sort()
-    if has_props:
-        has_props = zip(*has_props)[1]
-    if lacks_props:
-        lacks_props = zip(*lacks_props)[1]
-    if other_props:
-        other_props = zip(*other_props)[1]
-    ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
-                                          x.publication.title,
-                                          x.publication.details,
-                                          x.publication.pub_date.year,
-                                          x.location) for x in r.reference.all()]
-    tags = r.keywords.all()
-    context = RequestContext(request, {
-        'r': r,
-        'has_props': has_props,
-        'lacks_props': lacks_props,
-        'other_props': other_props,
-        'ref_list': ref_list,
-        'tags': tags,
-    })
-    template = loader.get_template('ringapp/viewcommring.html')
-    return HttpResponse(template.render(context))
-    
+def errorview(request):
+    return HttpResponse(status=501)
+
 
 class PropertyView(DetailView):
     model = Property
     template_name = 'ringapp/property_detail.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PropertyView, self).get_context_data(**kwargs)
-        hasnum = self.object.ringproperty_set.filter(has_property=1).count()
-        lacksnum = self.object.ringproperty_set.filter(has_property=0).count()
-        metaproperties = Invariance.objects.filter(property=self.object)
+        context = super().get_context_data(**kwargs)
+        rps = list(self.object.ringproperty_set.all())
+        if not self.object.symmetric:
+            onleft = [rp.has_on_left for rp in rps]
+            has_left_count = onleft.count(True)
+            lacks_left_count = onleft.count(False)
+            onright = [rp.has_on_right for rp in rps]
+            has_right_count = onright.count(True)
+            lacks_right_count = onright.count(False)
+            context['has_left_count'] = has_left_count
+            context['lacks_left_count'] = lacks_left_count
+            context['has_right_count'] = has_right_count
+            context['lacks_right_count'] = lacks_right_count
+        else:
+            onleft = [rp.has_on_left for rp in rps]
+            has_count = onleft.count(True)
+            lacks_count = onleft.count(False)
+            context['has_count'] = has_count
+            context['lacks_count'] = lacks_count
+
+        metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
         has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
         lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
 
         context.update({
-            'hasnum': hasnum,
-            'lacksnum': lacksnum,
             'metaproperties': metaproperties,
             'has_mp': has_mp,
             'lacks_mp': lacks_mp,
         })
 
-        return context    
-
-
-class CommPropertyView(DetailView):
-    model = CommProperty
-    template_name = 'ringapp/commproperty_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(CommPropertyView, self).get_context_data(**kwargs)
-
-        hasnum = self.object.commringproperty_set.filter(has_property=1).count()
-        lacksnum = self.object.commringproperty_set.filter(has_property=0).count()
-        metaproperties = CommInvariance.objects.filter(property=self.object)
-        has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
-        lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
-
-        context.update({
-            'hasnum': hasnum,
-            'lacksnum': lacksnum,
-            'metaproperties': metaproperties,
-            'has_mp': has_mp,
-            'lacks_mp': lacks_mp,
-        })
         return context
 
 
@@ -501,55 +380,20 @@ class DetailTemplateView(TemplateView):
     template_name = None
 
     def get_context_data(self, **kwargs):
-        self.template_name = 'ringapp/' + kwargs['template'] + '.html'
-        return super(DetailTemplateView, self).get_context_data(**kwargs)
+        context = super().get_context_data()
+        ring = Ring.objects.get(id=kwargs['pk'])
+        template = ring.optional_template
+        if template == '':
+            template = 'no_expanded_details.html'
+        self.template_name = 'ringapp/expanded_details/' + template
+        context['ring'] = ring
 
-
-def contribute(request):
-    if request.method == 'POST':  # If the form has been submitted...
-        chooser = ContribSelector(request.POST)  # A form bound to the POST data
-        if chooser.is_valid():  # All validation rules pass
-            # Process the data in form.cleaned_data
-            # ...
-            template = loader.get_template('ringapp/suggestions.html')
-            # choice = chooser.cleaned_data['option']
-            context = RequestContext(request, {})
-            return HttpResponse(template.render(context))
-    else:
-        chooser = ContribSelector()  # An unbound form
-        template = loader.get_template('ringapp/contribute.html')
-        context = RequestContext(request, {'chooser': chooser})
-        return HttpResponse(template.render(context))
-
-
-def suggestions(request):
-    template = loader.get_template('ringapp/suggestions.html')
-    data = dict(item for item in request.GET.items())
-    # cite_sugg = 
-    with open('ringapp/generated/ring_sugg.txt', 'r') as f:
-        ring_sugg = random.choice(f.readlines())
-    with open('ringapp/generated/cring_sugg.txt', 'r') as f:
-        cring_sugg = random.choice(f.readlines())
-    # data['cite_sugg'] = cite_sugg
-    data['ring_sugg'] = ring_sugg
-    data['cring_sugg'] = cring_sugg
-    context = RequestContext(request, data)
-    return HttpResponse(template.render(context))
+        return context
 
 
 class TheoremDetail(DetailView):
     template_name = 'ringapp/theorem_detail.html'
     model = Theorem
-    
-    def get_context_data(self, **kwargs):
-        context = super(TheoremDetail, self).get_context_data(**kwargs)
-        ref_list = ['%s, %s, %s, (%d). %s' % (x.publication.authors,
-                                              x.publication.title,
-                                              x.publication.details,
-                                              x.publication.pub_date.year,
-                                              x.location) for x in self.object.reference.all()]
-        context['ref_list'] = ref_list
-        return context
 
 
 class NewsList(ListView):
@@ -565,61 +409,52 @@ class NewsDetail(DetailView):
     template_name = 'ringapp/news_detail.html'
 
 
-def bibliography(request):
-    template = loader.get_template('ringapp/bibliography.html')
-    bib = ['%s, %s, %s, (%d).' % (x.authors,
-                                  x.title,
-                                  x.details,
-                                  x.pub_date.year) for x in Publication.objects.exclude(id__in=[6, 10])]
-    bib.sort()
-    context = RequestContext(request, {'bibliography': bib})
-    return HttpResponse(template.render(context))
+class CitationList(ListView):
+    model = Publication
+    template_name = 'ringapp/bibliography.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.exclude(authors='nobody')
+        qs = sorted(qs, key=lambda x: x.author_lasts)
+        return qs
 
 
+@staff_member_required
 def processor(request):
     if request.method == 'POST':  # If the form has been submitted...
-        form = RingSelector(request.POST)  # A form bound to the POST data
+        form = forms.RingSelector(request.POST)  # A form bound to the POST data
         if form.is_valid():  # All validation rules pass
             # Process the data in form.cleaned_data
-            ring_id = request.POST['ring']
-            ring = Ring.objects.get(ring_id=ring_id)
-            comm = Property.objects.get(name='commutative')
-            rps = ring.ringproperty_set.filter(property=comm, has_property=1)
-            if rps.exists():
-                modes = [False, True]
-            else:
-                modes = [False]
-            try:
-                for mode in modes:
-                    ctr = 0
-                    check = True
-                    while ctr < 15 and check is True:
-                        check = new_single_logic_forward(ring, comm=mode)
-                        ctr += 1
-                        if check == -1:
-                            raise Exception("SingleLogicForward conflict")
-                    if ctr == 15:
-                        vlogger.error('New single logic forward script ran too many times on ring_id=%s comm=%s.'
-                                      % (str(ring.ring_id), str(mode)))
-                    ctr = 0
-                    check = True
-                    while ctr < 15 and check is True:
-                        check = new_single_logic_backward(ring, comm=mode)
-                        ctr += 1
-                        if check == -1:
-                            raise Exception("SingleLogicBackward conflict")
-                    if ctr == 15:
-                        vlogger.error('New single logic backward script ran too many times on ring_id=%s comm=%s.'
-                                      % (str(ring.ring_id), str(mode)))
-                msg = "Processing of %s was successful" % str(ring)
-            except Exception:
-                msg = 'Exception occurred during processing. Alert an admin.'
+            form.full_clean()
+            ring = form.cleaned_data['ring']
 
-            template = loader.get_template('admin/processor.html')
-            context = RequestContext(request, {'form': form, 'msg': msg})
-            return HttpResponse(template.render(context))
+            log_eng = LogicEngine()
+            MAX_ITER = 5
+            counter = 0
+            num_results = 1
+
+            try:
+                while counter < MAX_ITER and num_results > 0:
+                    num_results = log_eng.process_ring(ring)
+                    counter += 1
+
+                if counter == MAX_ITER:
+                    msg = _('Processing hit maximum number of iterations: {}'.format(time.time()))
+                else:
+                    msg = _('Processing successfully completed: {}'.format(time.time()))
+
+            except Exception as exc:
+                msg = _('Processing unsuccessful: An exception occurred: {!r}'.format(exc))
+
+            context = {'form': form, 'msg': msg, 'title': _('Logic processor'),
+                       'is_popup': False, 'has_permission': True, 'site_url': '/'}
+            return render(request, 'admin/processor.html', context)
+
     else:
-        form = RingSelector()  # An unbound form
-    template = loader.get_template('admin/processor.html')
-    context = RequestContext(request, {'form': form})
-    return HttpResponse(template.render(context))
+        form = forms.RingSelector()  # An unbound form
+
+    context = {'form': form, 'title': _('Logic processor'), 'is_popup': False, 'msg': '',
+               'has_permission': True, 'site_url': '/'}
+
+    return render(request, 'admin/processor.html', context)

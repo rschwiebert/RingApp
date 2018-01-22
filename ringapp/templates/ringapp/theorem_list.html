@@ -12,9 +12,9 @@
 	    <ul>
 	    {% for item in object_list %}
 		{% if item.alias %}
-		<li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.alias }}</a></li>
+		<li><a href="{% url 'theorem-detail' item.id %}">{{ item.alias }}</a></li>
 		{% else %}
-		<li><a href="{% url 'theorem-detail' item.theorem_id %}">{{ item.statement }}</a></li>
+		<li><a href="{% url 'theorem-detail' item.id %}">{{ item.statement }}</a></li>
 		{% endif %}
 	    {% endfor %}
 	    </ul>

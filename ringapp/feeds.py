@@ -7,7 +7,7 @@ class NewsFeed(Feed):
     title = 'DaRT news'
     link = '/news/'
     description = 'A feed of the latest news announcements on the site.'
-    item_author_name  = 'R. C. Schwiebert'
+    item_author_name = 'R. C. Schwiebert'
 
     def items(self):
         return News.objects.order_by('-id')[:20]

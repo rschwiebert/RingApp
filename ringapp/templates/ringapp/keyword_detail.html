@@ -4,20 +4,15 @@
 
 {% block content %}
 <div class="container">
-	<h1>Keyword detail</h1>
+  <div class="panel panel-default">
+	<div class="panel-heading"><h1>Keyword: {{ object.name }}</h1></div>
+	<div class="panel-body">
+			<p>Description: {{ object.description }}</p>
+			<a class="btn btn-default" role="button" href="{% url 'kresults' %}?kwd={{ object.id }}">
+				   <span class="glyphicon glyphicon-search"></span>  Rings with this keyword</a>
 
-	{% if object %}
-	    <ul>
-		<p>Keyword name: {{ object.name }}<br>
-		   Description: {{ object.description }}<br>
-		   <a class="btn btn-default" role="button" href="{% url 'kresults' %}?kwd={{ object.id }}">
-			   <span class="glyphicon glyphicon-search"></span>  Rings with this keyword</a>
-		</p>
-
-		</ul>
-	{% else %}
-	    <p>Nothing was retrieved.</p>
-	{% endif %}
+	</div>
+  </div>
 </div>
 
 {% endblock %}

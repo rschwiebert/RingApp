@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
 {% load i18n admin_static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}" />{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}" />{% endblock %}
 
 {% block coltype %}colMS{% endblock %}
 
@@ -13,20 +13,14 @@
 
 <div id="content-main">
     {% if msg %}
-    <h1>Message: ->{{ msg }}<- </h1>
+    <p>Message: ->{{ msg }}<- </p>
     {% endif %}
-    <h1>Ring processor</h1>
     Select a ring for processing:
     <form action="{% url 'processor' %}" method="post">
         {% csrf_token %}
-        {{ form.non_field_errors }}
-        <div class="fieldWrapper">
-            {{ form.ring.errors }}
-            <label for="scope">Ring:</label>
-            {{ form.ring }}
-        </div>
+        {{ form.as_p }}
         <p><input type="submit" value="Run processor" /></p>
     </form>
 </div>
-<a href="/admin/ringapp/ring">Back to rings</a>
+<a href="{% url 'admin:ringapp_ring_changelist' %}">Back to rings</a>
 {% endblock %}
