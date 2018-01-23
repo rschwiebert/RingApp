@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import dj_database_url
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +29,6 @@ DEBUG = False
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/profile'
-ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -80,17 +79,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ringapp.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -123,9 +111,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Parse database configuration from $DATABASE_URL
-DATABASES['default'] = dj_database_url.config()
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -139,7 +124,7 @@ STATIC_URL = '/static/'
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Email settings
 EMAIL_HOST = os.environ['EMAIL_HOST']
@@ -153,43 +138,11 @@ ACCOUNT_ACTIVATION_DAYS = 2
 REGISTRATION_DEFAULT_FROM_EMAIL = os.environ['REGISTRATION_DEFAULT_FROM_EMAIL']
 REGISTRATION_FORM = 'registration.forms.RegistrationFormUniqueEmail'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/debug.log',
-            'formatter': 'default',
-        },
-    },
-    'formatters': {
-        'default': {
-            'format': '[%(levelname)s %(name)s %(asctime)s %(module)s] %(message)s'
-        },
-    },
-    '': {
-        'handlers': ['file'],
-        'level': 'DEBUG',
-        'propagate': True,
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'ringapp': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
     }
 }
+
+# Configure Django App for Heroku.
+django_heroku.settings(locals())

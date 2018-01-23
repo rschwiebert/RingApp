@@ -321,7 +321,7 @@ def format_pub(pub):
     return s
 
 
-# @receiver(pre_save, sender=RingProperty)
-# def symmetrize(sender, instance, *args, **kwargs):
-#     if instance.ring.is_commutative or instance.property.symmetric:
-#         symmetrize_sides(instance)
+@receiver(pre_save, sender=RingProperty)
+def symmetrize(sender, instance, *args, **kwargs):
+    if instance.ring.is_commutative or instance.property.symmetric:
+        symmetrize_sides(instance)

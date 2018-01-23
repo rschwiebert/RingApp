@@ -15,7 +15,7 @@ class EndpointTestCase(TestCase):
         ring = mommy.make(Ring)
         ring.id = 1
         ring.is_commutative = False
-        # cit = mommy.make(Citation)
+        # cit = mommy.make(Citation)  # https://github.com/lucastheis/django-publications/issues/27
         # ring.citation = [cit]
         ring.save()
         mommy.make(Keyword)
