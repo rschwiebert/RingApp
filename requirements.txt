@@ -4,6 +4,7 @@ django-heroku==0.2.0
 django-mathfilters==0.4.0
 django-publications==0.6.2
 django-registration-redux==1.8
+gunicorn==19.7.1
 model-mommy==1.4.0
 mpmath==1.0.0
 Pillow==5.0.0
