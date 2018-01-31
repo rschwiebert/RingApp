@@ -3,6 +3,7 @@ import time
 from math import isinf
 import logging
 
+from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -13,6 +14,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from django.views.generic.edit import CreateView
+
+from ratelimit import UNSAFE
+from ratelimit.decorators import ratelimit
+from ratelimit.exceptions import Ratelimited
+from ratelimit.mixins import RatelimitMixin
+from ratelimit.utils import is_ratelimited
 
 from ringapp.models import Ring, Property, PropertyMetaproperty
 from ringapp.models import Theorem, Suggestion, Keyword, News, Publication
@@ -88,6 +95,7 @@ def commsearchpage(request):
         return HttpResponseNotAllowed(['get', 'post'])
 
 
+@ratelimit(key='header:x-forwarded-for', rate='50/h', method='GET', block=True)
 @require_GET
 def resultspage(request):
     if request.method == 'GET' and ('has' in request.GET or 'lacks' in request.GET):
@@ -156,13 +164,20 @@ def commresultspage(request):
 
 
 class KeywordSearchPage(TemplateView):
+    def get(self, request, *args, **kwargs):
+        if 'kwd' in self.request.GET and is_ratelimited(request, key='header:x-forwarded-for',
+                                                        rate='20/h', increment=True,
+                                                        group=__name__+'.KeywordSearchPage'):
+            raise Ratelimited
+        return super().get(request, *args, **kwargs)
+
     @property
     def template_name(self):
         if 'kwd' in self.request.GET:
             return 'ringapp/keywordresults.html'
         else:
             return 'ringapp/keywordsearch.html'
-            
+
     def get_context_data(self, **kwargs):
         context = super(KeywordSearchPage, self).get_context_data(**kwargs)
         if 'kwd' not in self.request.GET:
@@ -338,12 +353,16 @@ class PropertyView(DetailView):
         return context
 
 
-class SuggestionView(SuccessMessageMixin, CreateView):
+class SuggestionView(RatelimitMixin, SuccessMessageMixin, CreateView):
     model = Suggestion
     template_name = 'ringapp/contribute.html'
     success_url = '/contribute/'
     fields = ['object_type', 'name', 'description']
     success_message = "Thanks... we'll look into that %(object_display)s suggestion!"
+    ratelimit_key = 'user'
+    ratelimit_rate = '20/h'
+    ratelimit_method = UNSAFE
+    ratelimit_block = True
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -458,3 +477,23 @@ def processor(request):
                'has_permission': True, 'site_url': '/'}
 
     return render(request, 'admin/processor.html', context)
+
+
+class RatelimitedLoginView(LoginView):
+    @ratelimit(key='header:x-forwarded-for', rate='5/d', block=False)
+    @ratelimit(key='post:username', rate='5/d', block=False)
+    @ratelimit(key='post:password', rate='10/d', block=False)
+    def post(self, request, *args, **kwargs):
+        """
+        Choose the right form based on ratelimiting
+        """
+        was_limited = getattr(request, 'limited', False)
+        vlogger.error('was limited was {}'.format(was_limited))
+        if not was_limited:
+            form = self.get_form(forms.AuthenticationForm)
+        else:
+            form = self.get_form(forms.RatelimitedAuthenticationForm)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)

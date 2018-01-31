@@ -46,6 +46,8 @@ urlpatterns = [
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
     url(r'^bibliography/$', views.CitationList.as_view(), name='bibliography'),
 
+    # Must come before inclusion of registration.backends urls as it overrides one.
+    url(r'^accounts/login/$', views.RatelimitedLoginView.as_view(), name='auth_login'),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^register/$', CreateView.as_view(template_name='ringapp/register.html',
                                            form_class=UserCreationForm,

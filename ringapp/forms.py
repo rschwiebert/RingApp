@@ -1,7 +1,10 @@
 import re
+from captcha.fields import ReCaptchaField
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.forms.models import formset_factory
 from ringapp.models import Property, Ring, Keyword
+
 
 SIDE_CHOICES = [
     ('l', 'on the left'),
@@ -142,3 +145,7 @@ class KeywordSearchForm(forms.Form):
     kwd = forms.ModelChoiceField(queryset=Keyword.objects.all().order_by('name'), 
                                  widget=forms.SelectMultiple(attrs={'size': '15'}),
                                  empty_label=None)
+
+
+class RatelimitedAuthenticationForm(AuthenticationForm):
+    captcha = ReCaptchaField()
