@@ -1,9 +1,8 @@
 import logging
-from django.core.cache import cache
+from django.db.models import Q
 from sympy import And
-from sympy.logic.boolalg import BooleanTrue, BooleanFalse
 from ringapp.LogicUtils import LogicEngine
-from ringapp.models import Ring, Property
+from ringapp.models import Ring, Property, RingProperty
 
 log = logging.getLogger(__name__)
 
@@ -60,28 +59,50 @@ def ring_search(terms):
              the second contains potential matches
     """
     log.info('Search request: {}'.format(terms))
-    repo = LogicEngine()
-    search_expr = get_search_expression(terms)
-    hits = []
-    maybes = []
-    for ring in Ring.objects.all():
-        known_props = cache.get('ring_props:{}'.format(ring.id))
-        if known_props is None:
-            repo.load_ringproperties(ring)
-            known_props = cache.get('ring_props:{}'.format(ring.id))
-        check = search_expr.subs(known_props)
-        if isinstance(check, BooleanTrue):
-            hits.append(ring)
-        elif isinstance(check, BooleanFalse):
-            pass
-        elif check.is_Boolean or check.is_Symbol:
-            maybes.append(ring)
+    narrow = Ring.objects.all()
+    wide = Ring.objects.all()
+
+    for term in terms:
+        qsn = RingProperty.objects.all()
+        qsw = RingProperty.objects.all()
+        if term[0] == 'H':
+            if term[-1] == 'l':
+                print('here 1')
+                qsw = qsw.filter(property_id=term[1:-1], has_on_left=False)
+                qsn = qsn.filter(property_id=term[1:-1], has_on_left=True)
+            elif term[-1] == 'r':
+                qsw = qsw.filter(property_id=term[1:-1], has_on_right=False)
+                qsn = qsn.filter(property_id=term[1:-1], has_on_right=True)
+            else:
+                qsw = qsw.filter(Q(property_id=term[1:], has_on_left=False) |
+                                 Q(property_id=term[1:], has_on_right=False))
+                qsn = qsn.filter(Q(property_id=term[1:], has_on_left=True) |
+                                 Q(property_id=term[1:], has_on_right=True))
+        elif term[0] == 'L':
+            if term[-1] == 'l':
+                qsw = qsw.filter(property_id=term[1:-1], has_on_left=True)
+                qsn = qsn.filter(property_id=term[1:-1], has_on_left=False)
+            elif term[-1] == 'r':
+                qsw = qsw.filter(property_id=term[1:-1], has_on_right=True)
+                qsn = qsn.filter(property_id=term[1:-1], has_on_right=False)
+            else:
+                qsw = qsw.filter(Q(property_id=term[1:], has_on_left=True) |
+                                 Q(property_id=term[1:], has_on_right=True))
+                qsn = qsn.filter(Q(property_id=term[1:], has_on_left=False) |
+                                 Q(property_id=term[1:], has_on_right=False))
         else:
-            log.error('Failed substitution check on expression {} '
-                      'ring property cache was {}'.format(search_expr,
-                                                          known_props))
-    log.debug('Returned {} hits and {} maybes'.format(len(hits), len(maybes)))
-    return hits, maybes
+            raise Exception('Invalid search term encountered.')
+
+        w_ids = qsw.values_list('ring_id', flat=True)
+        wide = wide.exclude(id__in=w_ids)
+
+        n_ids = qsn.values_list('ring_id', flat=True)
+        print('len w_ids {}  len n_ids {}'.format(len(set(w_ids)), len(set(n_ids))))
+        narrow = narrow.filter(id__in=n_ids)
+
+    wide = wide.exclude(id__in=[ring.id for ring in narrow])
+    log.debug('Returned {} hits and {} maybes'.format(narrow.count(), wide.count()))
+    return narrow, wide
 
 
 def completeness_scores(include_commutative=False):

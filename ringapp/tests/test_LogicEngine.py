@@ -311,7 +311,6 @@ class LogicTestCase(TestCase):
                                             has_on_left=False)
         self.assertTrue(check.exists())
 
-
     def tearDown(self):
         RingProperty.objects.all().delete()
         Logic.objects.all().delete()
