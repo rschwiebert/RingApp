@@ -147,6 +147,8 @@ CACHES = {
     }
 }
 
+ADMINS = [('webmaster', os.environ['REGISTRATION_DEFAULT_FROM_EMAIL'])]
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -160,6 +162,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'mail_admins': {
+            'level': 'WARNING',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
     },
     'loggers': {
         'django': {
@@ -171,8 +177,8 @@ LOGGING = {
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },
         '': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['console', 'mail_admins'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
         },
     },
 }

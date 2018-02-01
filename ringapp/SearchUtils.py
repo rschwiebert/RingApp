@@ -67,7 +67,6 @@ def ring_search(terms):
         qsw = RingProperty.objects.all()
         if term[0] == 'H':
             if term[-1] == 'l':
-                print('here 1')
                 qsw = qsw.filter(property_id=term[1:-1], has_on_left=False)
                 qsn = qsn.filter(property_id=term[1:-1], has_on_left=True)
             elif term[-1] == 'r':
@@ -97,7 +96,6 @@ def ring_search(terms):
         wide = wide.exclude(id__in=w_ids)
 
         n_ids = qsn.values_list('ring_id', flat=True)
-        print('len w_ids {}  len n_ids {}'.format(len(set(w_ids)), len(set(n_ids))))
         narrow = narrow.filter(id__in=n_ids)
 
     wide = wide.exclude(id__in=[ring.id for ring in narrow])
