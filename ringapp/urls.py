@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sitemaps.views import sitemap
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponse
 from django.views.generic import TemplateView, ListView, RedirectView, CreateView
 from ringapp import views
 from ringapp import models
@@ -56,6 +57,10 @@ urlpatterns = [
 
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
+    url(r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /",
+                                                 content_type="text/plain"),
+        name='robots'),
+
     url(r'^latest/feed/$', NewsFeed(), name='newsfeed'),
     url(r'^news/$', views.NewsList.as_view(), name='news-list'),
     url(r'^news/(?P<pk>\d+)/$', views.NewsDetail.as_view(), name='news-detail'),

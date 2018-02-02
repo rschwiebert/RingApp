@@ -488,7 +488,6 @@ class RatelimitedLoginView(LoginView):
         Choose the right form based on ratelimiting
         """
         was_limited = getattr(request, 'limited', False)
-        vlogger.error('was limited was {}'.format(was_limited))
         if not was_limited:
             form = self.get_form(forms.AuthenticationForm)
         else:
@@ -497,3 +496,8 @@ class RatelimitedLoginView(LoginView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+def ratelimited_view(request, exception):
+    vlogger.error('Request was ratelimited: {}'.format(request))
+    return render(request, 'ringapp/ratelimited.html', {'exception': exception})

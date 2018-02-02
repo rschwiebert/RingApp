@@ -52,7 +52,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ratelimit.middleware.RatelimitMiddleware',
 ]
+
+RATELIMIT_VIEW = 'ringapp.views.ratelimited_view'
 
 ROOT_URLCONF = 'ringapp.urls'
 SITE_ID = 1
@@ -163,7 +166,7 @@ LOGGING = {
             'formatter': 'simple'
         },
         'mail_admins': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
         }
     },
