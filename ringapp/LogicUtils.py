@@ -45,7 +45,9 @@ class LogicEngine(object):
             LogicEngine.__instance.init_maps()
             LogicEngine.__instance.init_cache()
             LogicEngine.__instance.load_logic()
-            LogicEngine.__instance.load_ringproperties()
+
+            # Too slow in practice! Worker times out...
+            # LogicEngine.__instance.load_ringproperties()
             t1 = time()
             log.info('LogicEngine constructed after {}s'.format(t1-t0))
 

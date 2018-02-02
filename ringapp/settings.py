@@ -157,7 +157,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'simple': {
-            'format': '[%(asctime)s %(levelname)s %(name)s] %(message)s'
+            'format': '[%(levelname)s %(name)s] %(message)s'
         },
     },
     'handlers': {
