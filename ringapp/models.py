@@ -240,9 +240,9 @@ class PropertyMetaproperty(models.Model):
 
     def __str__(self):
         if self.has_metaproperty:
-            return "%s : %s" % (self.property.name, self.metaproperty.definition)
+            return "%s : %s" % (self.property.name, self.metaproperty.name)
         else:
-            return "%s : not %s" % (self.property.name, self.metaproperty.definition)
+            return "%s : not %s" % (self.property.name, self.metaproperty.name)
 
 
 # class Glossary(models.Model):
