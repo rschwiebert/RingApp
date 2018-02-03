@@ -341,8 +341,8 @@ class PropertyView(DetailView):
             context['lacks_count'] = lacks_count
 
         metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
-        has_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=True)]
-        lacks_mp = [x.metaproperty for x in metaproperties.filter(has_metaproperty=False)]
+        has_mp = metaproperties.filter(has_metaproperty=True)
+        lacks_mp = metaproperties.filter(has_metaproperty=False)
 
         context.update({
             'metaproperties': metaproperties,

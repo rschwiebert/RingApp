@@ -33,17 +33,17 @@
 			This property has the following metaproperties
 			<ul>
 			{% for item in has_mp %}
-			<li>{{ item.description }}</li>
+			<li>{{ item.metaproperty.name }}</li>
 			{% endfor %}
 			</ul>
 			{% endif %}
 			{% if lacks_mp %}
-			This property does not have the following metaproperties
+		  This property <b>does not</b> have the following metaproperties
 			<ul>
 			{% for item in lacks_mp %}
-			<li>{{ item.description }}
+			<li>{{ item.metaproperty.name }}
 			{% if item.example is not None %}
-				(<a href="{% url 'ring' item.example.ring_id %}">counterexample</a>)
+				(<a href="{% url 'ring-detail' item.example.id %}">counterexample</a>)
 			{% else %}
 				(counterexample needed)
 			{% endif %}
