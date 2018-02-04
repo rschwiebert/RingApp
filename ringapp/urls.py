@@ -58,7 +58,9 @@ urlpatterns = [
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'^robots\.txt$',
-        lambda r: HttpResponse("User-agent: *\nDisallow: /search/results/",
+        lambda r: HttpResponse("User-agent: *\nDisallow: /search/results/"
+                               "\nDisallow: /commsearch/commresults/"
+                               "\nDisallow: /keywordsearch/results/",
                                content_type="text/plain"),
         name='robots'),
 
