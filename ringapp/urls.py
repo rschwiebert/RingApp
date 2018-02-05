@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sitemaps.views import sitemap
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView, RedirectView, CreateView
 from ringapp import views
 from ringapp import models
@@ -63,6 +64,7 @@ urlpatterns = [
                                "\nDisallow: /keywordsearch/results/",
                                content_type="text/plain"),
         name='robots'),
+    url(r'^favicon\.ico$', lambda r: redirect(r'static/favicon/favicon.ico'), name='favicon'),
 
     url(r'^latest/feed/$', NewsFeed(), name='newsfeed'),
     url(r'^news/$', views.NewsList.as_view(), name='news-list'),

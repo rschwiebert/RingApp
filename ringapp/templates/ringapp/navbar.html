@@ -31,8 +31,8 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url "auth_login" %}"><i class="halflings-icon white user"></i> Settings</a></li>
-                        <li><a href="{% url "auth_logout" %}"><i class="halflings-icon white off"></i> Logout</a></li>
+                        <li><a href="{% url 'auth_login' %}"><i class="halflings-icon white user"></i> Settings</a></li>
+                        <li><a href="{% url 'auth_logout' %}"><i class="halflings-icon white off"></i> Logout</a></li>
                     </ul>
                 </li>
              </ul>
@@ -49,11 +49,11 @@
                 </li>
 
                 <li class="{% ifequal request.path '/accounts/register/'%}active{% endifequal%}">
-                    <a href="{% url "registration_register" %}">Signup</a>
+                    <a href="{% url 'registration_register' %}">Signup</a>
                 </li>
 
                 <li >
-                    <a href="{% url "auth_login" %}"  class="button skeleton">
+                    <a href="{% url 'auth_login' %}"  class="button skeleton">
                     <i class="halflings-icon white user"></i>
                     Login
                 </a>

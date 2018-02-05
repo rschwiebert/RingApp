@@ -15,7 +15,7 @@
 		<a class="list-group-item" href="{% url 'property-detail' item.id %}">{{ item.name }}</a>
 	    {% endfor %}
 	{% else %}
-	    <li class="list-group-item">(No properties were retrieved.)</li>
+	    <p class="list-group-item">(No properties were retrieved.)</p>
 	{% endif %}
     </div>
   </div>
