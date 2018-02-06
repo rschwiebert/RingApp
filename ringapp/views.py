@@ -449,7 +449,7 @@ def processor(request):
             ring = form.cleaned_data['ring']
 
             log_eng = LogicEngine()
-            MAX_ITER = 5
+            MAX_ITER = 1
             counter = 0
             num_results = 1
 
