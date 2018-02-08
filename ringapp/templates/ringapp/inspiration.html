@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Suggestions{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Suggested additions</h1>
+    <p>Here are some candidates for things that could be filled in, either through finding an example already
+        existing in the database, or else with a new example.</p>
+    <div class="col-md-6 content">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Rings to demonstrate asymmetry of a property</h2>
+                <p>Each row is a link to the relevant search query.</p>
+            </div>
+            <div class="list-group">
+                {% if asymm_sugg %}
+                {% for item in asymm_sugg %}
+                <a class="list-group-item" href="{{ item.1 }}">{{ item.0 }}</a>
+                {% endfor %}
+                {% else %}
+                <p class="list-group-item">(This list is empty.)</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-6 content">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Rings to show irreversibility of an implication</h2>
+                <p>Each row is a link to the relevant search query.</p>
+            </div>
+            <div class="list-group">
+                {% if simple_sugg %}
+                {% for item in simple_sugg %}
+                <a class="list-group-item" href="{{ item.1 }}">{{ item.0 }}</a>
+                {% endfor %}
+                {% else %}
+                <p class="list-group-item">(This list is empty.)</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

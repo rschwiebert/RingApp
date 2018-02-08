@@ -7,6 +7,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed
 from django.shortcuts import render, redirect
@@ -30,6 +31,7 @@ from ringapp.SearchUtils import (mirror_search_terms,
                                  detect_asymmetric_search,
                                  ring_search, LogicEngine,
                                  completeness_scores)
+from ringapp.SuggestionUtils import simple_irreversible_logics, suggest_asymm_examples
 
 vlogger = logging.getLogger(__name__)
 
@@ -501,3 +503,20 @@ class RatelimitedLoginView(LoginView):
 def ratelimited_view(request, exception):
     vlogger.error('Request was ratelimited: {}'.format(request))
     return render(request, 'ringapp/ratelimited.html', {'exception': exception})
+
+
+def inspiration_view(request):
+    asymm_suggestions = cache.get('asymm_suggestions')
+    if asymm_suggestions is None:
+        asymm_suggestions = suggest_asymm_examples()
+        cache.set('asymm_suggestions', asymm_suggestions)
+
+    simple_irreversible = cache.get('simple_irreversible')
+    if simple_irreversible is None:
+        simple_irreversible = simple_irreversible_logics()
+        cache.set('simple_irreversible', simple_irreversible)
+
+    context = {'asymm_sugg': asymm_suggestions,
+               'simple_sugg': simple_irreversible}
+
+    return render(request, 'ringapp/inspiration.html', context)

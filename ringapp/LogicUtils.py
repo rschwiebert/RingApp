@@ -143,12 +143,13 @@ class LogicEngine(object):
         for k, v in local_cache.items():
             cache.set('ring_props:{}'.format(k.id), v)
 
-    def parse_logic(self, logic, switch_sides=False):
+    def parse_logic(self, logic, switch_sides=False, convert_to_converse=False):
         """
         Read the logic model and formulate the symbolic expression
         :param logic A Logic model instance
         :param switch_sides: if True, reverse the sides indicated by the
                              logic model's side field
+        :param convert_to_converse: if True, swap hyps and concs
         :return: symbolic expression
         """
 
@@ -162,6 +163,8 @@ class LogicEngine(object):
         }
         hyps = logic.hyps.all()
         concs = logic.concs.all()
+        if convert_to_converse:
+            hyps, concs = concs, hyps
 
         hyp_expr = []
         conc_expr = []

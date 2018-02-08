@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^people/$', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),
     url(r'^resources/$', TemplateView.as_view(template_name='ringapp/resources.html'), name='resources'),
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
+    url(r'^inspiration/$', views.inspiration_view, name='inspiration'),
     url(r'^bibliography/$', views.CitationList.as_view(), name='bibliography'),
 
     # Must come before inclusion of registration.backends urls as it overrides one.
