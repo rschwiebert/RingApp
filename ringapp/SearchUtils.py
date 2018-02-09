@@ -58,7 +58,7 @@ def ring_search(terms):
     :return: a pair of lists of Ring objects. The first one contains definite matches, 
              the second contains potential matches
     """
-    log.info('Search request: {}'.format(terms))
+    log.debug('Search request: {}'.format(terms))
     narrow = Ring.objects.all()
     wide = Ring.objects.all()
 

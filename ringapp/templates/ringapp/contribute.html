@@ -4,9 +4,14 @@
 
 {% block content %}
 {% if messages %}
+
 <ul class="messages">
     {% for message in messages %}
-    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        {{ message }}
+    </div>
     {% endfor %}
 </ul>
 {% endif %}
@@ -47,12 +52,9 @@
         <div class="col-md-6 content">
 		<h2>Need inspiration?</h2>
 
-		<p>The database says we could use help filling these gaps:</p>
-                <ul>
-		<li> {{ ring_sugg }}</li>
-		<li> {{ cring_sugg }}</li>
-	        </ul>
-  	<p>(There may be some latency between when these gaps get filled and these suggestions are made!)</p>
+            <p><a href="{% url 'inspiration' %}">Here is a list outlining several gaps
+                that remain to be filled.</a></p>
+
         </div>
       </div>
 </div>

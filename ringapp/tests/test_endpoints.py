@@ -29,7 +29,7 @@ class EndpointTestCase(TestCase):
                         'ksearch', 'kresults', 'newsfeed', 'news-list',
                         'people', 'property-list',
                         'register', 'resources', 'ring-list',
-                        'search', 'results', 'theorem-list']
+                        'search', 'results', 'theorem-list', 'inspiration']
 
         for item in two_hundreds:
             resp = self.client.get(reverse(item))
