@@ -298,10 +298,10 @@ class RingDetail(DetailView):
         asymmetric_props = [item for item in prop_join if item[-1] is False]
 
         if obj.krull_dim:
-            if isinf(obj.krull_dim):
+            if obj.krull_dim == 'inf':
                 krull_disp = '$\infty$'
             else:
-                krull_disp = str(int(obj.krull_dim))
+                krull_disp = obj.krull_dim
         else:
             krull_disp = '(unknown)'
 
