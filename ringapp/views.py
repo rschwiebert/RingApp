@@ -499,7 +499,7 @@ def inspiration_view(request):
     asymm_suggestions = cache.get('asymm_suggestions')
     if asymm_suggestions is None:
         asymm_suggestions = suggest_asymm_examples()
-        cache.set('asymm_suggestions', asymm_suggestions)
+        cache.set('asymm_suggestions', asymm_suggestions, 24*60*60)
 
     simple_irreversible = cache.get('simple_irreversible')
     if simple_irreversible is None:

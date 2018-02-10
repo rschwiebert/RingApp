@@ -168,7 +168,7 @@ class Ring(models.Model):
     notes = models.CharField(max_length=500, blank=True, null=True)
     citation = models.ManyToManyField('Citation', blank=True)
 
-    krull_dim = models.FloatField(blank=True, null=True)
+    krull_dim = models.CharField(max_length=16, default='(unknown)', blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
     is_commutative = models.NullBooleanField()
 
