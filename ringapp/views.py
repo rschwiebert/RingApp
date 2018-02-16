@@ -34,6 +34,7 @@ from ringapp.SearchUtils import (mirror_search_terms,
 from ringapp.SuggestionUtils import simple_irreversible_logics, suggest_asymm_examples
 
 vlogger = logging.getLogger(__name__)
+log_eng = LogicEngine()
 
 
 class IndexView(TemplateView):
@@ -440,7 +441,6 @@ def processor(request):
             form.full_clean()
             ring = form.cleaned_data['ring']
 
-            log_eng = LogicEngine()
             MAX_ITER = 1
             counter = 0
             num_results = 1
@@ -457,6 +457,13 @@ def processor(request):
 
             except Exception as exc:
                 msg = _('Processing unsuccessful: An exception occurred: {!r}'.format(exc))
+                from django.core.mail import send_mail
+                from traceback import format_stack
+                from django.conf import settings
+
+                send_mail('processor bug', repr(format_stack()),
+                          settings.REGISTRATION_DEFAULT_FROM_EMAIL,
+                          [settings.REGISTRATION_DEFAULT_FROM_EMAIL])
 
             context = {'form': form, 'msg': msg, 'title': _('Logic processor'),
                        'is_popup': False, 'has_permission': True, 'site_url': '/'}
