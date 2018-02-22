@@ -97,9 +97,14 @@
             <li id="bibliographyNav"><a href="{% url 'bibliography'%}">Citations</a></li>
             <li id="contribNav"><a href="{% url 'contribute'%}">Contribute</a></li>
             <li id="resourcesNav"><a href="{% url 'resources'%}">Learn</a></li>
-              
-            <li> {% if not request.user.is_authenticated %}<a class="btn btn-primary" href="{% url 'auth_login' %}"><font color="white">Login</font></a>{% else %}<a class="btn btn-primary" href="{% url 'auth_logout' %}"><font color="white">Logout</font></a></li>
-            <li><a class="btn btn-primary" href="{% url 'profile' %}"><font color="white">Profile</font></a></li>{% endif %}
+
+            <li> {% if not request.user.is_authenticated %}<a class="btn btn-primary"
+                                                              href="{% url 'auth_login' %}"><font
+                    color="white">Login</font></a>{% else %}<a class="btn btn-primary"
+                                                               href="{% url 'auth_logout' %}"><font
+                    color="white">Logout</font></a></li>
+            <li><a class="btn btn-primary" href="{% url 'profile' %}"><font color="white">Profile</font> <span id="notifCount" class="badge badge-danger"></span></a></li>
+            {% endif %}
           </ul>
 
 	  <!--<form class="navbar-form navbar-right">
@@ -112,7 +117,7 @@
 	  <button type="submit" class="btn btn-success">Sign in</button>
 	  </form> -->
 	</div><!--/.navbar-collapse -->
-      </div>
+      </div> <!--container-->
     </nav>
     <div>
             {% block content %}{% endblock %}
@@ -153,6 +158,26 @@ $.fn.popover.Constructor.prototype.leave = function(obj){
 
 var $aa = $('.showPopover');
 $aa.popover({ trigger: 'click hover', html: true, placement: 'auto', delay: {show: 50, hide: 200}});
+</script>
+  <!-- JS code to fetch notif count -->
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: '{% url "live_unread_notification_count" %}',
+        method: 'GET',
+        success: function(data) {
+
+            // assign the count to a variable
+            var unreadNotifs = data['unread_notifications'];
+
+            // put the count in the notifCount element
+            $('#notifCount').html(unreadNotifs);
+            if ( unreadNotifs == 0 ) {
+                $('#notifCount').hide();
+            }
+        }
+    });
+});
 </script>
   </body>
 </html>

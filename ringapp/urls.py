@@ -95,4 +95,6 @@ urlpatterns = [
     url(r'^expanded-details/bergmans-unit-regular-ring/$',
         RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 81}),
                              permanent=True)),
+    url(r'^notifications/unread_count/$', views.live_unread_notification_count, name='live_unread_notification_count'),
+    url(r'^notifications/toggle_read/', views.toggle_read, name='toggle_read_flag'),
 ]

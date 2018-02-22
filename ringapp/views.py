@@ -1,15 +1,15 @@
-import random
+import json
 import time
-from math import isinf
 import logging
 
 from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed
+from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
@@ -383,8 +383,21 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
-        context['suggestions'] = Suggestion.objects.filter(user=self.request.user)
-        
+        suggestions = Suggestion.objects.filter(user=self.request.user).order_by('-id')
+        stats = {
+            "accepted": suggestions.filter(status=1).count(),
+            "declined": suggestions.filter(status=-1).count(),
+            "pending": suggestions.filter(status=0).count(),
+            "info": suggestions.filter(status=-2).count(),
+        }
+        context['alflag'] = True
+        if not self.request.GET.get('all'):
+            suggestions = suggestions.filter(unread=True)
+            context['allflag'] = False
+
+        context['suggestions'] = suggestions
+        context['stats'] = stats
+
         return context
 
 
@@ -517,3 +530,24 @@ def inspiration_view(request):
                'simple_sugg': simple_irreversible}
 
     return render(request, 'ringapp/inspiration.html', context)
+
+
+@login_required
+def live_unread_notification_count(request):
+    unread_notifications = Suggestion.objects.filter(user=request.user, unread=True).count()
+    data = {"unread_notifications": unread_notifications}
+    json_data = json.dumps(data)
+    return HttpResponse(json_data, content_type='application/json')
+
+
+@login_required
+def toggle_read(request, *args, **kwargs):
+    # logic which toggles the field on the object
+    sugg_id = request.GET['suggestion_id']
+    try:
+        sugg = Suggestion.objects.filter(user=request.user).get(id=sugg_id)
+    except Suggestion.ObjectDoesNotExist:
+        return Http404('No modifiable entry found for this request.')
+    sugg.unread = True if request.GET['unread'] == 'true' else False
+    sugg.save()
+    return HttpResponse()

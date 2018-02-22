@@ -285,6 +285,7 @@ class Suggestion(models.Model):
     response = models.TextField(max_length=200, null=True, blank=True)
     citation = models.CharField(max_length=200, null=True, blank=True)
     user = models.ForeignKey(User)
+    unread = models.BooleanField(default=True)
 
     def __str__(self):
         return textwrap.shorten('[{}] {} {}'.format(self.get_object_type_display(),

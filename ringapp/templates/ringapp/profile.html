@@ -5,21 +5,68 @@
 {% block content %}
 
 <div class="container">
-	<h1>{{ request.user.username }}'s user profile</h1>
+    <h1>{{ request.user.username }}'s user profile</h1>
     <div class="md-col-12 content">
-	<h2>My suggestions</h2>
-        {% if suggestions %}
-        <ul>
-	{% for suggestion in suggestions %}
-	<li>{{ suggestion.get_status_display|upper }} ({{ suggestion.get_object_type_display }}) {{ suggestion.name }} {{ suggestion.description }}</li>
-            {% if suggestion.response %}
-            <ul><li>{{ suggestion.response }}</li></ul>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Suggestion messages</h2></div>
+            <div class="panel-body">
+                <p>{% if allflag is False %}<i><a href="{% url 'profile' %}?all=true">Show dismissed
+                    notifications</a></i>{% else %}<i><a href="{% url 'profile' %}">Hide dismissed notifications</a></i>{% endif %}
+                    {% if suggestions %}
+                <table class="table table-bordered">
+                    <tr>
+                        <td>Accepted: {{ stats.accepted }}</td>
+                        <td>Pending: {{ stats.pending }}</td>
+                        <td>Declined: {{ stats.declined }}</td>
+                    </tr>
+                </table>
+                </p>
+            </div>
+            <table class="table">
+                <tr>
+                    <th>Unread</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                </tr>
+                {% for suggestion in suggestions %}
+                <tr>
+
+                    <td><input class="check-input" {% if suggestion.unread %}checked{% endif %}
+                                                   type="checkbox" value="" id="notif-cb"
+                                                   data-notifid="{{ suggestion.id }}"></td>
+                    <td><span class="{% if suggestion.status == 1 %}label label-success
+                                     {% elif suggestion.status == 0 %}label label-info
+                                     {% elif suggestion.status == -1 %}label label-danger
+                                     {% elif suggestion.status == -2 %}label label-warning
+                                     {% else %}label label-default
+                                     {% endif %}">
+                        {{ suggestion.get_status_display|upper }}</span></td>
+                    <td>
+                    {{ suggestion.name }} {{ suggestion.description }}
+                    {% if suggestion.response %}
+                    <ul>
+                        <li>{{ suggestion.response }}</li>
+                    </ul>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>(No suggestions yet)</p>
             {% endif %}
-	{% endfor %}
-        </ul>
-        {% else %}
-        <p>(No suggestions yet)</p>
-        {% endif %}
+        </div>
     </div>
 </div>
+<script>
+    $('input').click(function(){
+        var suggid;
+        var state;
+        suggid = $(this).attr("data-notifid");
+        state = $(this).is(":checked");
+        $.get( '/notifications/toggle_read/', { suggestion_id: suggid, unread: state });
+        <!--$(this).prop("checked") = !$(this).prop("checked");-->
+    });
+
+</script>
 {% endblock %}
