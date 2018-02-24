@@ -6,20 +6,19 @@
 
 <div class="container">
     <h1>{{ request.user.username }}'s user profile</h1>
+    <table class="table table-bordered">
+        <tr>
+            <td>Accepted: {{ stats.accepted }}</td>
+            <td>Pending: {{ stats.pending }}</td>
+            <td>Declined: {{ stats.declined }}</td>
+        </tr>
+    </table>
     <div class="md-col-12 content">
         <div class="panel panel-default">
-            <div class="panel-heading"><h2>Suggestion messages</h2></div>
+            <div class="panel-heading"><h2>Unread messages</h2></div>
             <div class="panel-body">
-                <p>{% if allflag is False %}<i><a href="{% url 'profile' %}?all=true">Show dismissed
-                    notifications</a></i>{% else %}<i><a href="{% url 'profile' %}">Hide dismissed notifications</a></i>{% endif %}
-                    {% if suggestions %}
-                <table class="table table-bordered">
-                    <tr>
-                        <td>Accepted: {{ stats.accepted }}</td>
-                        <td>Pending: {{ stats.pending }}</td>
-                        <td>Declined: {{ stats.declined }}</td>
-                    </tr>
-                </table>
+                    {% if unread_suggestions %}
+
                 </p>
             </div>
             <table class="table">
@@ -28,11 +27,11 @@
                     <th>Status</th>
                     <th>Message</th>
                 </tr>
-                {% for suggestion in suggestions %}
+                {% for suggestion in unread_suggestions %}
                 <tr>
 
-                    <td><input class="check-input" {% if suggestion.unread %}checked{% endif %}
-                                                   type="checkbox" value="" id="notif-cb"
+                    <td><input class="check-input" checked
+                                                   type="checkbox" value=""
                                                    data-notifid="{{ suggestion.id }}"></td>
                     <td><span class="{% if suggestion.status == 1 %}label label-success
                                      {% elif suggestion.status == 0 %}label label-info
@@ -53,9 +52,49 @@
                 {% endfor %}
             </table>
             {% else %}
-            <p>(No suggestions yet)</p>
+            <p>(No unread messages)</p>
             {% endif %}
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><h2>Dismissed messages</h2></div>
+            <div class="panel-body">
+                    {% if old_suggestions %}
+
+            </div>
+            <table class="table">
+                <tr>
+                    <th>Unread</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                </tr>
+                {% for suggestion in old_suggestions %}
+                <tr>
+
+                    <td><input class="check-input" type="checkbox" value=""
+                                                   data-notifid="{{ suggestion.id }}"></td>
+                    <td><span class="{% if suggestion.status == 1 %}label label-success
+                                     {% elif suggestion.status == 0 %}label label-info
+                                     {% elif suggestion.status == -1 %}label label-danger
+                                     {% elif suggestion.status == -2 %}label label-warning
+                                     {% else %}label label-default
+                                     {% endif %}">
+                        {{ suggestion.get_status_display|upper }}</span></td>
+                    <td>
+                    {{ suggestion.name }} {{ suggestion.description }}
+                    {% if suggestion.response %}
+                    <ul>
+                        <li>{{ suggestion.response }}</li>
+                    </ul>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>(No dismissed suggestions yet.)</p>
+            {% endif %}
+        </div>
+
     </div>
 </div>
 <script>

@@ -75,7 +75,7 @@ class CitationInline(admin.TabularInline):
 
 
 class SuggestionAdmin(admin.ModelAdmin):
-    fields = ['name', 'description', 'object_type', 'status', 'response', 'user']
+    fields = ['name', 'description', 'object_type', 'status', 'response', 'unread', 'user']
     
 
 class PropertyMetapropertyAdmin(admin.ModelAdmin):

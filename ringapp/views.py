@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404
+from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404, HttpResponseNotModified
 from django.shortcuts import render, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
@@ -390,12 +390,9 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             "pending": suggestions.filter(status=0).count(),
             "info": suggestions.filter(status=-2).count(),
         }
-        context['alflag'] = True
-        if not self.request.GET.get('all'):
-            suggestions = suggestions.filter(unread=True)
-            context['allflag'] = False
 
-        context['suggestions'] = suggestions
+        context['unread_suggestions'] = suggestions.filter(unread=True)
+        context['old_suggestions'] = suggestions.filter(unread=False)
         context['stats'] = stats
 
         return context
@@ -534,20 +531,27 @@ def inspiration_view(request):
 
 @login_required
 def live_unread_notification_count(request):
-    unread_notifications = Suggestion.objects.filter(user=request.user, unread=True).count()
-    data = {"unread_notifications": unread_notifications}
-    json_data = json.dumps(data)
-    return HttpResponse(json_data, content_type='application/json')
+    if request.is_ajax:
+        unread_notifications = Suggestion.objects.filter(user=request.user, unread=True).count()
+        data = {"unread_notifications": unread_notifications}
+        json_data = json.dumps(data)
+        return HttpResponse(json_data, content_type='application/json')
+    else:
+        return HttpResponseNotModified(content_type='application/json')
 
 
 @login_required
+@ratelimit(key='user', rate='50/h', block=True)
 def toggle_read(request, *args, **kwargs):
-    # logic which toggles the field on the object
-    sugg_id = request.GET['suggestion_id']
-    try:
-        sugg = Suggestion.objects.filter(user=request.user).get(id=sugg_id)
-    except Suggestion.ObjectDoesNotExist:
-        return Http404('No modifiable entry found for this request.')
-    sugg.unread = True if request.GET['unread'] == 'true' else False
-    sugg.save()
-    return HttpResponse()
+    if request.is_ajax:
+        # logic which toggles the field on the object
+        sugg_id = request.GET['suggestion_id']
+        try:
+            sugg = Suggestion.objects.filter(user=request.user).get(id=sugg_id)
+        except Suggestion.ObjectDoesNotExist:
+            return Http404('No modifiable entry found for this request.')
+        sugg.unread = True if request.GET['unread'] == 'true' else False
+        sugg.save()
+        return HttpResponse()
+    else:
+        return HttpResponseNotModified()
