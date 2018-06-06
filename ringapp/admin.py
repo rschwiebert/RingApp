@@ -74,6 +74,11 @@ class CitationInline(admin.TabularInline):
     extra = 1
 
 
+class ErrataAdmin(admin.ModelAdmin):
+    mode = Erratum
+    fields = ['error_location', 'description', 'corrected_location', 'example']
+
+
 class SuggestionAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'object_type', 'status', 'response', 'unread', 'user']
     
@@ -84,6 +89,23 @@ class PropertyMetapropertyAdmin(admin.ModelAdmin):
 
 class MetapropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition']
+
+
+class DimensionAdmin(admin.ModelAdmin):
+    fields = ['name', 'definition', 'symmetric']
+
+
+class SubsetAdmin(admin.ModelAdmin):
+    fields = ['name', 'definition']
+
+
+class RingDimensionAdmin(admin.ModelAdmin):
+    fields = ['ring', 'dimension_type', 'left_dimension', 'right_dimension', 'citation']
+
+
+class RingSubsetAdmin(admin.ModelAdmin):
+    fields = ['ring', 'subset_type', 'subset', 'citation']
+
 
 #
 # class FAQAdmin(admin.ModelAdmin):
@@ -105,9 +127,14 @@ admin.site.register(RingProperty, RingPropertyAdmin)
 admin.site.register(Logic, LogicAdmin)
 admin.site.register(Theorem, TheoremAdmin)
 admin.site.register(Citation, CitationAdmin)
+admin.site.register(Erratum, ErrataAdmin)
 admin.site.register(Keyword, KeywordAdmin)
 admin.site.register(PropertyMetaproperty, PropertyMetapropertyAdmin)
 admin.site.register(Metaproperty, MetapropertyAdmin)
+admin.site.register(Dimension, DimensionAdmin)
+admin.site.register(Subset, SubsetAdmin)
+admin.site.register(RingDimension, RingDimensionAdmin)
+admin.site.register(RingSubset, RingSubsetAdmin)
 # admin.site.register(FAQ, FAQAdmin)
 # admin.site.register(Glossary, GlossaryAdmin)
 admin.site.register(Suggestion, SuggestionAdmin)

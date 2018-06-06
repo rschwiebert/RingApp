@@ -3,15 +3,23 @@
 {% block title %}Bibliography{% endblock %}
 {% block content %}
 <div class="container">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h1>Works referenced</h1></div>
-	<ul class="list-group">
-	{% for citation in object_list %}
-	    <li class="list-group-item">
-		  {{ citation.authors }}. <i>{{ citation.title }}.</i>  {{ citation.publisher }} ({{ citation.year }})
-	    </li>
-	{% endfor %}
-	</ul>
-  </div>
+    <div>
+        <h1>Citations</h1>
+        <p>This page contains a list of works cited in the project. You may also be interested in
+            <a href="{% url 'errata-list' %}">the errata page where we collect errors we have encountered in the
+                literature.</a></p>
+
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><h2>Works referenced</h2></div>
+        <ul class="list-group">
+            {% for citation in object_list %}
+            <li class="list-group-item">
+                {{ citation.authors }}. <i>{{ citation.title }}.</i> {{ citation.publisher }} ({{ citation.year }})
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}

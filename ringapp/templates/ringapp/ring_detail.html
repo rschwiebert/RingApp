@@ -4,139 +4,221 @@
 
 {% block content %}
 <div class="container">
-	<h1>Ring detail</h1>
-        <hr/ >
-	<div class="row">
-		<div class="col-md-6 content">
-           {% if object %}
-		    <h2>Name: {{ object.name }}</h2>
-            {% if object.user %}<p><i>This ring suggested by: {{ object.user }}</i></p> {% endif %}
-			<p>Description: {{ object.description|safe }}</p>
-			{% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
-            {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details page.</a></p>{% endif %}
-			{% if krull_disp %}<p>Krull dimension: {{ krull_disp }}</p>{% endif %}
-                        {% if object.keywords.exists %}
-                        <p>Keywords
-                          {% for tag in object.keywords.all %}
-                            <a href="{% url 'keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
-                          {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
-                            data-content="Keyword labels are links to more information!" data-original-title="Info"
-                            ></span></p>
-
-                        {% endif %}
-                </div>
+    <h1>Ring detail</h1>
+    <hr/ >
+    <div class="row">
         <div class="col-md-6 content">
-			<p>Reference(s):
-			    {% if object.citation.exists %}
-			    <ul>
-			    {% for ref in object.citation.all %}
-			    <li>{{ ref }}</li>
-			    {% endfor %}
+            {% if object %}
+            <h2>Name: {{ object.name }}</h2>
+            {% if object.user %}<p><i>This ring suggested by: {{ object.user }}</i></p> {% endif %}
+            <p>Description: {{ object.description|safe }}</p>
+            {% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
+            {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details
+            page.</a></p>{% endif %}
+            {% if krull_disp %}<p>Krull dimension: {{ krull_disp }}</p>{% endif %}
+            {% if object.keywords.exists %}
+            <p>Keywords
+                {% for tag in object.keywords.all %}
+                <a href="{% url 'keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
+                {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
+                                  data-content="Keyword labels are links to more information!"
+                                  data-original-title="Info"
+                ></span></p>
 
-			    {% else %}
-			    <li>(Citation needed)</li>
-			    {% endif %}
-			    </ul>
-			</p>
-
+            {% endif %}
         </div>
-
-        <hr />
-
-        </div>
-        <hr />
-
-        <div class="row">
-        {% if object.is_commutative %}
-        <div class="col-md-4 content">
-            <div class="panel panel-default">
-            <div class="panel-heading">Known Properties</div>
-            <table class="table table-bordered">
-                <tr>
-                    <th>Name</th>
-                </tr>
-                {% for item in prop_join %}
-                <tr><td>
-                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
-                    {% if item.1 == True %}
-                    <i class="glyphicon glyphicon-ok"></i>
-                    {% elif item.1 == False %}
-                    <i class="glyphicon glyphicon-remove"></i>
-                    {% elif item.1 == None %}
-                    <i class="glyphicon glyphicon-question-sign"></i>
-                    {% endif %}
-                    {{ item.0.name }}</a></td>
-                </tr>
+        <div class="col-md-6 content">
+            <p>Reference(s):
+                {% if object.citation.exists %}
+            <ul>
+                {% for ref in object.citation.all %}
+                <li>{{ ref }}</li>
                 {% endfor %}
-            </table>
-            </div>
+
+                {% else %}
+                <li>(Citation needed)</li>
+                {% endif %}
+            </ul>
+            </p>
+
         </div>
-        {% else %}
-        <div class="col-md-4 content">
-            <div class="panel panel-default">
-            <div class="panel-heading">Symmetric properties</div>
-            <table class="table table-bordered">
-                <tr>
-                    <th>Name</th>
-                </tr>
-                {% for item in symmetric_props %}
-                <tr><td>
-                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
-                    {% if item.1 == True %}
-                    <i class="glyphicon glyphicon-ok"></i>
-                    {% elif item.1 == False %}
-                    <i class="glyphicon glyphicon-remove"></i>
-                    {% elif item.1 == None %}
-                    <i class="glyphicon glyphicon-question-sign"></i>
-                    {% endif %}
-                    {{ item.0.name }}</a></td>
-                </tr>
-                {% endfor %}
-            </table>
+
+        <hr/>
+
+    </div>
+    <hr/>
+
+    <div class="row">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#properties" style="font-size:large">Properties</a></li>
+            <li><a data-toggle="tab" href="#dimensions" style="font-size:large">Dimensions</a></li>
+            <li><a data-toggle="tab" href="#subsets" style="font-size:large">Subsets</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="properties" class="tab-pane fade in active">
+                {% if object.is_commutative %}
+                <div class="col-md-4 content">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Known Properties</div>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                            {% for item in prop_join %}
+                            <tr>
+                                <td>
+                                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
+                                        {% if item.1 == True %}
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                        {% elif item.1 == False %}
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                        {% elif item.1 == None %}
+                                        <i class="glyphicon glyphicon-question-sign"></i>
+                                        {% endif %}
+                                        {{ item.0.name }}</a></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-md-4 content">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Symmetric properties</div>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Name</th>
+                            </tr>
+                            {% for item in symmetric_props %}
+                            <tr>
+                                <td>
+                                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
+                                        {% if item.1 == True %}
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                        {% elif item.1 == False %}
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                        {% elif item.1 == None %}
+                                        <i class="glyphicon glyphicon-question-sign"></i>
+                                        {% endif %}
+                                        {{ item.0.name }}</a></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4 content">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Asymmetric properties</div>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>left</th>
+                                <th>Name</th>
+                                <th>right</th>
+                            </tr>
+                            {% for item in asymmetric_props %}
+                            <tr>
+                                {% if item.1 == True %}
+                                <td><i class="glyphicon glyphicon-ok"></i></td>
+                                {% elif item.1 == False %}
+                                <td><i class="glyphicon glyphicon-remove"></i></td>
+                                {% elif item.1 == None %}
+                                <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                                <td><a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
+                                    {{ item.0.name }}</a></td>
+                                {% if item.2 == True %}
+                                <td><i class="glyphicon glyphicon-ok"></i></td>
+                                {% elif item.2 == False %}
+                                <td><i class="glyphicon glyphicon-remove"></i></td>
+                                {% elif item.2 == None %}
+                                <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+                {% else %}
+                <p>Nothing was retrieved.</p>
+                {% endif %}
+                <div class="col-md-4 content">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Legend</div>
+                        <ul class="list-group">
+                            <li class="list-group-item"><i class="glyphicon glyphicon-ok"></i> = has the property</li>
+                            <li class="list-group-item"><i class="glyphicon glyphicon-remove"></i> = does not have the
+                                property
+                            </li>
+                            <li class="list-group-item"><i class="glyphicon glyphicon-question-sign"></i> = information
+                                not in database
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-4 content">
-            <div class="panel panel-default">
-            <div class="panel-heading">Asymmetric properties</div>
-            <table class="table table-bordered">
-                <tr>
-                    <th>left</th>
-                    <th>Name</th>
-                    <th>right</th>
-                </tr>
-                {% for item in asymmetric_props %}
-                <tr>
-                    {% if item.1 == True %}
-                    <td><i class="glyphicon glyphicon-ok"></i></td>
-                    {% elif item.1 == False %}
-                    <td><i class="glyphicon glyphicon-remove"></i></td>
-                    {% elif item.1 == None %}
-                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+
+            <div id="dimensions" class="tab-pane fade">
+                <div class="panel panel-default">
+                    {% if dimensions %}
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Name</th>
+                            <th>Measure</th>
+                        </tr>
+                        {% for item in dimensions %}
+                        <tr>
+                            <td>{{ item.dimension_type.name }}<span class="glyphicon glyphicon-info-sign showPopover"
+                                                                    style="cursor:pointer;float:right"
+                                  data-content="{{ item.dimension_type.definition }}"
+                                  data-original-title="Definition"></span>
+                            </td>
+                            {% if item.dimension_type.symmetric %}
+                            <td>{{ item.left_dimension }}</td><td></td>
+                            {% else %}
+                            <td>left: {{ item.left_dimension }}</td><td>right: {{ item.right_dimension }} </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </table>
                     {% else %}
-                    <td></td>
+                    <p>(Nothing was retrieved.)</p>
                     {% endif %}
-                    <td><a class="list-group-item" href="{% url 'property-detail' item.0.id %}">{{ item.0.name }}</a></td>
-                    {% if item.2 == True %}
-                    <td><i class="glyphicon glyphicon-ok"></i></td>
-                    {% elif item.2 == False %}
-                    <td><i class="glyphicon glyphicon-remove"></i></td>
-                    {% elif item.2 == None %}
-                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                </div>
+            </div>
+            <div id="subsets" class="tab-pane fade">
+                <div class="panel panel-default">
+                    {% if subsets %}
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Name</th>
+                            <th>Description<span class="glyphicon glyphicon-info-sign showPopover"
+                                                                    style="cursor:pointer;float:right"
+                                  data-content="The whole ring is referred to as R and zero ideal may be denoted by {0}."
+                                  data-original-title="Conventions"></span></th>
+                        </tr>
+                        {% for item in subsets %}
+                        <tr>
+                            <td>{{ item.subset_type.name }}<span class="glyphicon glyphicon-info-sign showPopover"
+                                                                    style="cursor:pointer;float:right"
+                                  data-content="{{ item.subset_type.definition }}"
+                                  data-original-title="Definition"></span></td>
+                            <td>{{ item.subset }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
                     {% else %}
-                    <td></td>
+                    <p>(Nothing was retrieved.)</p>
                     {% endif %}
-                </tr>
-                {% endfor %}
-            </table>
+                </div>
             </div>
         </div>
-        {% endif %}
-        </div>
-
-	{% else %}
-	    <p>Nothing was retrieved.</p>
-	{% endif %}
-
+    </div>
 </div>
 {% endblock %}
 

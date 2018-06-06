@@ -4,13 +4,13 @@ from ringapp.models import Ring, Property, Theorem
 
 
 class StaticViewSitemap(Sitemap):
-    priority = 0.5
     changefreq = 'weekly'
+    priority = 0.5
 
     def items(self):
         return ['index', 'search', 'csearch', 'ksearch', 'about', 
                 'resources', 'contribute', 'ring-list', 'commring-list',
-                'property-list', 'theorem-list']
+                'property-list', 'theorem-list', 'errata-list']
 
     def location(self, item):
         return reverse(item)

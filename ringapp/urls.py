@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
     url(r'^inspiration/$', views.inspiration_view, name='inspiration'),
     url(r'^bibliography/$', views.CitationList.as_view(), name='bibliography'),
+    url(r'^errata/$', views.ErrataList.as_view(), name='errata-list'),
 
     # Must come before inclusion of registration.backends urls as it overrides one.
     url(r'^accounts/login/$', views.RatelimitedLoginView.as_view(), name='auth_login'),
@@ -62,7 +63,9 @@ urlpatterns = [
     url(r'^robots\.txt$',
         lambda r: HttpResponse("User-agent: *\nDisallow: /search/results/"
                                "\nDisallow: /commsearch/commresults/"
-                               "\nDisallow: /keywordsearch/results/",
+                               "\nDisallow: /keywordsearch/results/"
+                               "\nUser-agent: AhrefsBot"
+                               "\nDisallow: /",
                                content_type="text/plain"),
         name='robots'),
     url(r'^favicon\.ico$', lambda r: redirect(r'static/favicon/favicon.ico'), name='favicon'),

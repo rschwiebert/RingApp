@@ -23,7 +23,7 @@ from ratelimit.mixins import RatelimitMixin
 from ratelimit.utils import is_ratelimited
 
 from ringapp.models import Ring, Property, PropertyMetaproperty
-from ringapp.models import Theorem, Suggestion, Keyword, News, Publication
+from ringapp.models import Theorem, Suggestion, Keyword, News, Publication, Erratum
 from ringapp import forms
 from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
 
@@ -298,20 +298,20 @@ class RingDetail(DetailView):
         symmetric_props = [item for item in prop_join if item[-1] is True]
         asymmetric_props = [item for item in prop_join if item[-1] is False]
 
-        if obj.krull_dim:
-            if obj.krull_dim == 'inf':
-                krull_disp = '$\infty$'
-            else:
-                krull_disp = obj.krull_dim
-        else:
-            krull_disp = '(unknown)'
-
         context['prop_join'] = prop_join
         context['symmetric_props'] = symmetric_props
         context['asymmetric_props'] = asymmetric_props
-        context['krull_disp'] = krull_disp
+        context['dimensions'] = obj.ringdimension_set.all().order_by('dimension_type__name')
+        context['subsets'] = obj.ringsubset_set.all().order_by('subset_type__name')
 
         return context
+
+
+class ErrataList(ListView):
+    model = Erratum
+
+    def get_queryset(self):
+        return Erratum.objects.order_by('error_location')
 
 
 def errorview(request):

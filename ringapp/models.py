@@ -213,6 +213,50 @@ class RingProperty(models.Model):
             .format(self.ring, self.property, self.has_on_left, self.has_on_right)
 
 
+class Dimension(models.Model):
+    name = models.CharField(max_length=128)
+    definition = models.TextField(max_length=1024)
+    symmetric = models.NullBooleanField()
+
+    def __str__(self):
+        return '<Dimension: {}>'.format(self.name)
+
+
+class Subset(models.Model):
+    name = models.CharField(max_length=128)
+    definition = models.TextField(max_length=1024)
+
+    def __str__(self):
+        return '<Subset: {}>'.format(self.name)
+
+
+class RingDimension(models.Model):
+    ring = models.ForeignKey(Ring)
+    dimension_type = models.ForeignKey(Dimension)
+    left_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
+    right_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
+    citation = models.ManyToManyField('Citation', blank=True)
+
+    def __str__(self):
+        if self.dimension_type.symmetric:
+            return '<{} {}={}>'.format(self.ring, self.dimension_type, self.left_dimension)
+        else:
+            return '<{0} left {1}={2} right {1}={3}>'.format(self.ring,
+                                                             self.dimension_type.name,
+                                                             self.left_dimension,
+                                                             self.right_dimension)
+
+
+class RingSubset(models.Model):
+    ring = models.ForeignKey(Ring)
+    subset_type = models.ForeignKey(Subset)
+    subset = models.CharField(max_length=512, help_text='Describes the elements in the indicated subset.')
+    citation = models.ManyToManyField('Citation', blank=True)
+
+    def __str__(self):
+        return '<{}: {}>'.format(self.ring, self.subset_type.name)
+
+
 class Metaproperty(models.Model):
     name = models.CharField(max_length=128)
     definition = models.TextField(max_length=1024)
@@ -303,6 +347,23 @@ class News(models.Model):
 
     def __str__(self):
         return textwrap.shorten('{} [{}] {}'.format(self.title, self.category, self.content), width=75)
+
+
+class Erratum(models.Model):
+    error_location = models.ForeignKey('Citation', related_name='error_location',
+                                       help_text='Where the original erroneous statement appeared.')
+    description = models.TextField(max_length=400, blank=True, help_text='A description of the faulty claim and useful '
+                                                                         'information about correcting it.')
+    corrected_location = models.ManyToManyField('Citation', related_name='corrected_location',
+                                                help_text='References which correct the statement.')
+    example = models.ForeignKey('Ring', null=True, help_text='A ring acting as a counterexample to the erroneous '
+                                                             'statement.', blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Errata'
+
+    def __str__(self):
+        return '<{} - {}>'.format(self.error_location, self.description[:100])
 
 
 def format_pub(pub):

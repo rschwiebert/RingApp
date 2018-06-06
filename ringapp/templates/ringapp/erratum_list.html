@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Errata{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-6">
+			<h1>Errata for ring theory literature</h1>
+			<p>Below is a list of errors in the literature about rings. This list will probably not contain things
+				as trivial as typos, but rather mistaken claims or serious gaps in proofs.</p>
+
+			<p>Please submit your additions or corrections to <a href="{% url 'contribute' %}">the suggestion form!</a>
+			</p>
+		</div>
+		<div class="col-md-6">
+			<h2><i>Examples of Commutative Rings</i></h2>
+			<p>Since we like <i>Examples of Commutative rings</i> so much, we plan to maintain errata for the book
+				separately. Thanks to the author H. C. Hutchins for providing the original errata. (Coming soon.)</p>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div id="accordion">
+		{% for errata in object_list %}
+		<div class="card">
+			<div class="card-header" id="heading{{ errata.id }}">
+				<h5 class="mb-0">
+					<button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ errata.id }}" aria-expanded="true"
+							aria-controls="collapseOne">
+						{{ errata.error_location }}
+					</button>
+				</h5>
+			</div>
+
+			<div id="collapse{{ errata.id }}" class="collapse show" aria-labelledby="heading{{ errata.id }}" data-parent="#accordion">
+				<div class="card-body">
+					<p>{{ errata.description }}</p>
+					{% if errata.example %}
+					<p>Example: <a href="{% url 'ring-detail' errata.example.id %}">{{ errata.example }}</a></p>
+					{% endif %}
+					{% if errata.corrected_location.exists %}
+					Corrected in
+					<ul>
+						{% for entry in errata.corrected_location.all %}
+						<li>{{ entry }}</li>
+						{% endfor %}
+					</ul>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+
+</div>
+{% endblock %}
