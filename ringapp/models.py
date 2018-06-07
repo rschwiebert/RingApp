@@ -391,3 +391,16 @@ def format_pub(pub):
 def symmetrize(sender, instance, *args, **kwargs):
     if instance.ring.is_commutative or instance.property.symmetric:
         symmetrize_sides(instance)
+
+
+@receiver(pre_save, sender=RingDimension)
+def symmetrize_dimension(sender, instance, *args, **kwargs):
+    if instance.ring.is_commutative or instance.dimension_type.symmetric:
+        if not instance.left_dimension and instance.right_dimension:
+            instance.left_dimension = instance.right_dimension
+        elif not instance.right_dimension and instance.left_dimension:
+            instance.right_dimension = instance.left_dimension
+        elif (instance.right_dimension and instance.left_dimension and
+              instance.right_dimension != instance.left_dimension):
+            raise ValidationError('The {} measurements for {} ought to match.'.format(instance.dimension_type.name,
+                                                                                      instance.ring))
