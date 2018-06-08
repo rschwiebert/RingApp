@@ -237,6 +237,9 @@ class RingDimension(models.Model):
     right_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
 
+    class Meta:
+        unique_together = (('ring', 'dimension_type'),)
+
     def __str__(self):
         if self.dimension_type.symmetric:
             return '<{} {}={}>'.format(self.ring, self.dimension_type, self.left_dimension)
@@ -252,6 +255,9 @@ class RingSubset(models.Model):
     subset_type = models.ForeignKey(Subset)
     subset = models.CharField(max_length=512, help_text='Describes the elements in the indicated subset.')
     citation = models.ManyToManyField('Citation', blank=True)
+
+    class Meta:
+        unique_together = (('ring', 'subset_type'),)
 
     def __str__(self):
         return '<{}: {}>'.format(self.ring, self.subset_type.name)
