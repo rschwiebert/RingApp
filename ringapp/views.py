@@ -22,7 +22,7 @@ from ratelimit.exceptions import Ratelimited
 from ratelimit.mixins import RatelimitMixin
 from ratelimit.utils import is_ratelimited
 
-from ringapp.models import Ring, Property, PropertyMetaproperty
+from ringapp.models import Ring, Property, PropertyMetaproperty, Dimension, RingDimension
 from ringapp.models import Theorem, Suggestion, Keyword, News, Publication, Erratum
 from ringapp import forms
 from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
@@ -416,6 +416,38 @@ class DetailTemplateView(TemplateView):
 class TheoremDetail(DetailView):
     template_name = 'ringapp/theorem_detail.html'
     model = Theorem
+
+
+class DimensionView(TemplateView):
+    template_name = 'ringapp/dimension_list.html'
+    http_method_names = ['get', ]
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        dtype = request.GET.get('dimension_type')
+        sort = request.GET.get('sort')
+        objects = RingDimension.objects.none()
+        current_dtype = None
+        absent_rings = None
+        if dtype is not None:
+            objects = RingDimension.objects.filter(dimension_type_id=dtype).order_by('ring__name')
+            current_dtype = Dimension.objects.get(id=dtype)
+            present_rings = {item.ring.id for item in objects}
+            absent_rings = Ring.objects.exclude(id__in=present_rings).order_by('name')
+
+        if sort == 'l':
+            objects = objects.order_by('left_dimension', 'ring__name')
+
+        elif sort == 'r':
+            objects = objects.order_by('right_dimension', 'ring__name')
+
+        context['dim_types'] = Dimension.objects.all()
+        context['objects'] = objects
+        context['form'] = forms.DimensionSelector()
+        context['dtype'] = current_dtype
+        context['absent_rings'] = absent_rings
+
+        return self.render_to_response(context)
 
 
 class NewsList(ListView):

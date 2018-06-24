@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Dimension search{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="col-md-12 content">
+        <h1>View rings by dimension type</h1>
+        <p>If you find a measurement for a ring is missing, please report it with the
+            <a href="{% url 'contribute' %}">suggestion form</a>!</p>
+        <p>Columns can be sorted by clicking the headers. The quantities are sorted as strings, not as cardinals.</p>
+    </div>
+    <div class="col-md-4 content">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form action="" method="get">
+                    <table>
+                        {{ form.as_table }}
+                    </table>
+                    <input type="submit" value="Select"/>
+                </form>
+            </div>
+        </div>
+        {% if dtype %}
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3>Type: {{ dtype.name }}</h3></div>
+            <div class="panel-body">
+                <p>Definition: {{ dtype.definition }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-8 content">
+        <div class="panel panel-default">
+            <table class="table table-bordered">
+                {% if not objects %}
+                <p>(Make a selection from the dropdown.)</p>
+                {% else %}
+                {% if not dtype.symmetric %}
+                <tr>
+                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=l">Left dimension</a></th>
+                    <th>Name</th>
+                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=r">Right dimension</a></th>
+                </tr>
+                {% for item in objects %}
+                <tr>
+                    {% if item.left_dimension %}
+                    <td>{{ item.left_dimension }}</td>
+                    {% else %}
+                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                    {% endif %}
+                    <td><a href="{% url 'ring-detail' item.ring.id %}">{{ item.ring.name }}</a></td>
+                    {% if item.right_dimension %}
+                    <td>{{ item.right_dimension }}</td>
+                    {% else %}
+                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% for item in absent_rings %}
+                <tr>
+                    <td></td>
+                    <td><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+
+                {% else %}
+                <tr>
+                    <th>Name</th>
+                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=l">Dimension</a></th>
+                </tr>
+                {% for item in objects %}
+                <tr>
+                    <td><a href="{% url 'ring-detail' item.ring.id %}">{{ item.ring.name }}</a></td>
+                    {% if item.left_dimension %}
+                    <td>{{ item.left_dimension }}</td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% for item in absent_rings %}
+                <tr>
+                    <td><a href="{% url 'ring-detail' item.id %}">{{ item.name }}</a></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+                {% endif%}
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

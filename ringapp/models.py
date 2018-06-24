@@ -219,7 +219,7 @@ class Dimension(models.Model):
     symmetric = models.NullBooleanField()
 
     def __str__(self):
-        return '<Dimension: {}>'.format(self.name)
+        return '{}'.format(self.name)
 
 
 class Subset(models.Model):
@@ -227,7 +227,7 @@ class Subset(models.Model):
     definition = models.TextField(max_length=1024)
 
     def __str__(self):
-        return '<Subset: {}>'.format(self.name)
+        return '{}'.format(self.name)
 
 
 class RingDimension(models.Model):
@@ -242,12 +242,12 @@ class RingDimension(models.Model):
 
     def __str__(self):
         if self.dimension_type.symmetric:
-            return '<{} {}={}>'.format(self.ring, self.dimension_type, self.left_dimension)
+            return '{} {}={}'.format(self.ring, self.dimension_type, self.left_dimension)
         else:
-            return '<{0} left {1}={2} right {1}={3}>'.format(self.ring,
-                                                             self.dimension_type.name,
-                                                             self.left_dimension,
-                                                             self.right_dimension)
+            return '{0} left {1}={2} right {1}={3}'.format(self.ring,
+                                                           self.dimension_type.name,
+                                                           self.left_dimension,
+                                                           self.right_dimension)
 
 
 class RingSubset(models.Model):
@@ -260,7 +260,7 @@ class RingSubset(models.Model):
         unique_together = (('ring', 'subset_type'),)
 
     def __str__(self):
-        return '<{}: {}>'.format(self.ring, self.subset_type.name)
+        return '{}: {}'.format(self.ring, self.subset_type.name)
 
 
 class Metaproperty(models.Model):

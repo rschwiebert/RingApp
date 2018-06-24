@@ -3,7 +3,7 @@ from captcha.fields import ReCaptchaField
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.models import formset_factory
-from ringapp.models import Property, Ring, Keyword
+from ringapp.models import Property, Ring, Keyword, Dimension
 
 
 SIDE_CHOICES = [
@@ -145,6 +145,10 @@ class KeywordSearchForm(forms.Form):
     kwd = forms.ModelChoiceField(queryset=Keyword.objects.all().order_by('name'), 
                                  widget=forms.SelectMultiple(attrs={'size': '15'}),
                                  empty_label=None)
+
+
+class DimensionSelector(forms.Form):
+    dimension_type = forms.ModelChoiceField(queryset=Dimension.objects.all().order_by('name'))
 
 
 class RatelimitedAuthenticationForm(AuthenticationForm):

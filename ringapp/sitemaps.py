@@ -10,7 +10,7 @@ class StaticViewSitemap(Sitemap):
     def items(self):
         return ['index', 'search', 'csearch', 'ksearch', 'about', 
                 'resources', 'contribute', 'ring-list', 'commring-list',
-                'property-list', 'theorem-list', 'errata-list']
+                'property-list', 'theorem-list', 'errata-list', 'dimension-list']
 
     def location(self, item):
         return reverse(item)
