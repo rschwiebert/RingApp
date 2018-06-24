@@ -33,15 +33,22 @@
     </div>
     <div class="col-md-8 content">
         <div class="panel panel-default">
+                {% if objects and cfilter %}
+                <p>Displaying only commutative rings. <a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}{% if sort %}&sort={{ sort }}{% endif %}">Show all rings</a></p>
+                {% elif objects %}
+                <p><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}{% if sort %}&sort={{ sort }}{% endif %}&filter=c">Show commutative rings only</a></p>
+                {% endif %}
+
             <table class="table table-bordered">
                 {% if not objects %}
                 <p>(Make a selection from the dropdown.)</p>
                 {% else %}
+
                 {% if not dtype.symmetric %}
                 <tr>
-                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=l">Left dimension</a></th>
+                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=l{% if cfilter %}&filter=c{% endif %}">Left dimension</a></th>
                     <th>Name</th>
-                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=r">Right dimension</a></th>
+                    <th><a href="{{ request.path }}?dimension_type={{ request.GET.dimension_type }}&sort=r{% if cfilter %}&filter=c{% endif %}">Right dimension</a></th>
                 </tr>
                 {% for item in objects %}
                 <tr>

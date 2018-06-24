@@ -426,6 +426,7 @@ class DimensionView(TemplateView):
         context = self.get_context_data(**kwargs)
         dtype = request.GET.get('dimension_type')
         sort = request.GET.get('sort')
+        cfilter = request.GET.get('filter')
         objects = RingDimension.objects.none()
         current_dtype = None
         absent_rings = None
@@ -434,6 +435,9 @@ class DimensionView(TemplateView):
             current_dtype = Dimension.objects.get(id=dtype)
             present_rings = {item.ring.id for item in objects}
             absent_rings = Ring.objects.exclude(id__in=present_rings).order_by('name')
+            if cfilter == 'c':
+                objects = objects.filter(ring__is_commutative=True)
+                absent_rings = absent_rings.filter(is_commutative=True)
 
         if sort == 'l':
             objects = objects.order_by('left_dimension', 'ring__name')
@@ -446,6 +450,8 @@ class DimensionView(TemplateView):
         context['form'] = forms.DimensionSelector()
         context['dtype'] = current_dtype
         context['absent_rings'] = absent_rings
+        context['cfilter'] = cfilter
+        context['sort'] = sort
 
         return self.render_to_response(context)
 
