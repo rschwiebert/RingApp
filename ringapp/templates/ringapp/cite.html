@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Citing{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="col-md-12 content">
+        <h1>How to cite this site</h1>
+        <p>Was the Database of Ring Theory useful to you?
+            Please consider acknowledging the resource so that others can find it as well.</p>
+        <p>If you have a success story about how the site helped you in a publication or otherwise,
+            we would also be appreciative of a notice via the <a href="{% url 'contribute' %}">suggestion form</a>!</p>
+
+        {% for name, format in styles.items %}
+        <h3>{{ name }}</h3>
+        <pre>{{ format|safe }}</pre>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

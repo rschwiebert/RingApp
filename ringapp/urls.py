@@ -50,6 +50,7 @@ urlpatterns = [
     url(r'^contribute/$', views.SuggestionView.as_view(), name='contribute'),
     url(r'^inspiration/$', views.inspiration_view, name='inspiration'),
     url(r'^bibliography/$', views.CitationList.as_view(), name='bibliography'),
+    url(r'^cite/$', views.citeview, name='cite'),
     url(r'^errata/$', views.ErrataList.as_view(), name='errata-list'),
 
     # Must come before inclusion of registration.backends urls as it overrides one.
