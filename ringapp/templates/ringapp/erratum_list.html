@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Errata{% endblock %}
 {% block content %}
@@ -14,8 +15,10 @@
 		</div>
 		<div class="col-md-6">
 			<h2><i>Examples of Commutative Rings</i></h2>
-			<p>Since we like <i>Examples of Commutative rings</i> so much, we plan to maintain errata for the book
-				separately. Thanks to the author H. C. Hutchins for providing the original errata. (Coming soon.)</p>
+			<p>Since we like <i>Examples of Commutative rings</i> so much, we plan to maintain a
+				<a href="{% static 'img/correction-sheet-examples.pdf' %}"><b>dedicated
+					errata page</b></a> for it. Thanks to the author H. C. Hutchins for providing the original errata.
+			</p>
 		</div>
 	</div>
 </div>
