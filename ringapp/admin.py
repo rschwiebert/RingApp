@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
 from ringapp.models import *
 
 
@@ -30,6 +29,8 @@ class RingPropertyAdmin(admin.ModelAdmin):
     fields = [('ring', 'property'),
               ('has_on_left', 'reason_left', 'citation_left'),
               ('has_on_right', 'reason_right', 'citation_right'), ]
+    list_display = ['ring', 'property', 'has_on_left', 'has_on_right']
+    list_filter = ['ring', 'property']
 
 
 class RingPropertyInline(admin.TabularInline):
@@ -43,6 +44,8 @@ class RingPropertyInline(admin.TabularInline):
 class RingAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'notes', 'optional_template',
               ('citation', 'keywords'),  ('krull_dim', 'is_commutative', 'user')]
+    list_display = ['name', 'is_commutative', 'user']
+    list_filter = ['is_commutative', 'user']
     # inlines = [
     #     RingPropertyInline,
     # ]
@@ -53,10 +56,16 @@ class PropertySideAdmin(admin.ModelAdmin):
 
 
 class LogicAdmin(admin.ModelAdmin):
-    model = Logic
     fields = ['hyps',
               'concs',
               'variety', 'symmetric', 'citation', 'user', 'active']
+    list_display = ['hypotheses', 'conclusions', 'variety', 'symmetric', 'active']
+
+    def hypotheses(self, obj):
+        return ', '.join([str(x) for x in obj.hyps.all()])
+
+    def conclusions(self, obj):
+        return ', '.join([str(x) for x in obj.concs.all()])
 
 
 class TheoremAdmin(admin.ModelAdmin):
@@ -65,6 +74,8 @@ class TheoremAdmin(admin.ModelAdmin):
 
 class CitationAdmin(admin.ModelAdmin):
     fields = ['publication', 'location']
+    list_display = ['publication', 'location']
+    list_filter = ['publication', ]
     ordering = ('publication__authors',)
 
 
@@ -80,11 +91,15 @@ class ErrataAdmin(admin.ModelAdmin):
 
 
 class SuggestionAdmin(admin.ModelAdmin):
+    list_display = ['status', 'object_type', 'name', 'description', 'user']
     fields = ['name', 'description', 'object_type', 'status', 'response', 'unread', 'user']
+    list_filter = ['status', 'object_type', 'user']
     
 
 class PropertyMetapropertyAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'citation']
+    list_display = ['property', 'metaproperty', 'has_metaproperty']
+    list_filter = ['property', 'metaproperty']
 
 
 class MetapropertyAdmin(admin.ModelAdmin):
@@ -101,11 +116,14 @@ class SubsetAdmin(admin.ModelAdmin):
 
 class RingDimensionAdmin(admin.ModelAdmin):
     fields = ['ring', 'dimension_type', 'left_dimension', 'right_dimension', 'citation']
+    list_display = ['ring', 'dimension_type', 'left_dimension', 'right_dimension']
+    list_filter = ['ring', 'dimension_type']
 
 
 class RingSubsetAdmin(admin.ModelAdmin):
     fields = ['ring', 'subset_type', 'subset', 'citation']
-
+    list_display = ['ring', 'subset_type']
+    list_filter = ['ring', 'subset_type']
 
 #
 # class FAQAdmin(admin.ModelAdmin):
