@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Suggestions{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="col-md-6">
+        <h1>FAQs</h1>
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Do all the rings here have identity?</b></div>
+            <div class="panel-body">
+                Yes: the reason is that a great deal of the logic connecting properties here
+                uses the assumption that the ring has identity. However, we do plan to keep a list
+                of random useful examples of rings without identity.
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>How can I cite this site in a work?</b></div>
+            <div class="panel-body">
+                Please use <a href="{% url 'cite' %}">this information!</a>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Do you know there are weird things about the
+                <a href="{% url 'inspiration' %}">inspiration list?</a></b></div>
+            <div class="panel-body">
+                Yes, there are! It has a few weaknesses at present. One is that it is only refreshed every once in a
+                while, so it may take a few hours to be updated. The search should yield current results, though.
+                Another thing is that the script that generates the entries from logic stored in the database makes
+                some bad suggestions in edge cases. There are not many of these problematic entries, and feel free to
+                ask a question via the suggestion form about specifics.
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-md-6">
+        <h1>Notation/Terms</h1>
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>T(R, M)</b></div>
+            <div class="panel-body">
+                For a ring $R$ and an $R$ bimodule $M$, this denotes the <b>trivial extension</b> of $M$ by $R$.
+                Formally it is the set $R\times M$ with addition $(r,n)+(s,m)=(r+s, n+m)$ and multiplication
+                $(r,n)(s,m)=(rs, rm+ns)$.
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>D(R, S)</b></div>
+            <div class="panel-body">
+                For a ring $R$ and a ring $S$ which is an $R$ bimodule, this denotes the <b>Dorroh extension</b> of $S$ by $R$.
+                Formally it is the set $R\times S$ with addition $(r,n)+(s,m)=(r+s, n+m)$ and multiplication
+                $(r,n)(s,m)=(rs, rm+ns+nm)$.
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><b>Triangular ring</b></div>
+            <div class="panel-body">
+                Given two rings $R, S$ and an $R,S$ bimodule $M$, the set $\begin{bmatrix}R&M\\0&S\end{bmatrix}$ with
+                matrix addition and multiplication becomes a ring. Alternatively, it could be
+                $\begin{bmatrix}S&0\\M&R\end{bmatrix}$. We call this construction the <b>triangular ring</b> formed by
+                $R,M$ and $S$.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

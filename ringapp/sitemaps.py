@@ -8,7 +8,7 @@ class StaticViewSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return ['index', 'search', 'csearch', 'ksearch', 'about', 
+        return ['index', 'search', 'csearch', 'ksearch', 'about',  'faq',
                 'resources', 'contribute', 'ring-list', 'commring-list',
                 'property-list', 'theorem-list', 'errata-list', 'dimension-list']
 
