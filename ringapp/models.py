@@ -88,7 +88,7 @@ class Property(models.Model):
     definition = models.TextField(max_length=1024)
     symmetric = models.NullBooleanField()
     commutative_only = models.BooleanField(default=False)
-    user = models.ForeignKey(User, blank=True, null=True)
+    citation = models.ManyToManyField('Citation', blank=True)
 
     class Meta:
         verbose_name_plural = 'Properties'
