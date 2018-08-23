@@ -16,7 +16,7 @@ class PropertyMetapropertyInline(admin.TabularInline):
 
 
 class PropertyAdmin(admin.ModelAdmin):
-    fields = ['name', 'definition', ('symmetric', 'commutative_only', 'user')]
+    fields = ['name', 'definition', ('symmetric', 'commutative_only', 'citation')]
     inlines = [PropertyMetapropertyInline, ]
 
 

@@ -53,6 +53,8 @@ urlpatterns = [
     url(r'^cite/$', views.citeview, name='cite'),
     url(r'^errata/$', views.ErrataList.as_view(), name='errata-list'),
     url(r'^faq/$', TemplateView.as_view(template_name='ringapp/faq.html'), name='faq'),
+    url(r'^maps/$', views.ringmaplist, name='ring-maps'),
+    url(r'^maps/(?P<filename>\w+)/$', views.svgview, name='ring-map'),
 
     # Must come before inclusion of registration.backends urls as it overrides one.
     url(r'^accounts/login/$', views.RatelimitedLoginView.as_view(), name='auth_login'),

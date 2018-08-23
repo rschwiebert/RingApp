@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Suggestions{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Graphs of ring properties</h1>
+    <p>Graphs like these were the original inspiration for this site. I produced some hand-crafted
+       graphs with OpenOffice in my grad school days, and I hope to post versions of them later.
+       The database now contains more properties than those graphs did anyway, so I need to regenerate
+        with the new properties.</p>
+    <p>Please, please report mistakes and omissions via the suggestion form. Thanks!</p>
+    <div class="col-md-6 content">
+        <div class="panel panel-default">
+            <div class="list-group">
+               <a class="list-group-item" href="{% url 'ring-map' 'allprops' %}">All ring properties</a>
+               <a class="list-group-item" href="{% url 'ring-map' 'commrings' %}">Ring properties for commutative rings</a>
+               <a class="list-group-item" href="{% url 'ring-map' 'domain' %}">Ring properties for integral domains</a>
+               <a class="list-group-item" href="{% url 'ring-map' 'local' %}">Ring properties for commutative local rings</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

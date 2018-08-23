@@ -482,6 +482,17 @@ class CitationList(ListView):
         return qs
 
 
+def ringmaplist(request):
+    return render(request, 'ringapp/ringmaps.html', {})
+
+
+def svgview(request, filename):
+    if filename in ('allprops', 'commrings', 'domain', 'local', 'selfinjective', 'noetherian', 'artinian'):
+        return render(request, 'ringapp/svgdiv.html', {'filename': filename})
+    else:
+        raise Http404
+
+
 def citeview(request):
     today = date.today()
     styles = OrderedDict({
