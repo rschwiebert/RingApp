@@ -488,7 +488,8 @@ def ringmaplist(request):
 
 def svgview(request, filename):
     if filename in ('allprops', 'commrings', 'domain', 'local', 'selfinjective', 'noetherian', 'artinian'):
-        return render(request, 'ringapp/svgdiv.html', {'filename': filename})
+        context = {'template_ref': 'img/ring_maps/{}.svg'.format(filename)}
+        return render(request, 'ringapp/svgdiv.html', context)
     else:
         raise Http404
 
