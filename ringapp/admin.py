@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from ringapp.models import *
+import django.db.models as dj_models
+from django.forms.widgets import CheckboxSelectMultiple
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
 # Customizing the visible User fields in the admin
@@ -18,6 +21,9 @@ class PropertyMetapropertyInline(admin.TabularInline):
 class PropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', ('symmetric', 'commutative_only', 'citation')]
     inlines = [PropertyMetapropertyInline, ]
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class KeywordAdmin(admin.ModelAdmin):
@@ -31,6 +37,9 @@ class RingPropertyAdmin(admin.ModelAdmin):
               ('has_on_right', 'reason_right', 'citation_right'), ]
     list_display = ['ring', 'property', 'has_on_left', 'has_on_right']
     list_filter = ['ring', 'property']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class RingPropertyInline(admin.TabularInline):
@@ -46,9 +55,9 @@ class RingAdmin(admin.ModelAdmin):
               ('citation', 'keywords'),  ('krull_dim', 'is_commutative', 'user')]
     list_display = ['name', 'is_commutative', 'user']
     list_filter = ['is_commutative', 'user']
-    # inlines = [
-    #     RingPropertyInline,
-    # ]
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class PropertySideAdmin(admin.ModelAdmin):
@@ -60,6 +69,9 @@ class LogicAdmin(admin.ModelAdmin):
               'concs',
               'variety', 'symmetric', 'citation', 'user', 'active']
     list_display = ['hypotheses', 'conclusions', 'variety', 'symmetric', 'active']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
     def hypotheses(self, obj):
         return ', '.join([str(x) for x in obj.hyps.all()])
@@ -70,6 +82,9 @@ class LogicAdmin(admin.ModelAdmin):
 
 class TheoremAdmin(admin.ModelAdmin):
     fields = ['alias', 'statement', 'citation', 'link', 'commutative_only', 'user']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class CitationAdmin(admin.ModelAdmin):
@@ -100,6 +115,9 @@ class PropertyMetapropertyAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'citation']
     list_display = ['property', 'metaproperty', 'has_metaproperty']
     list_filter = ['property', 'metaproperty']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class MetapropertyAdmin(admin.ModelAdmin):
@@ -118,12 +136,18 @@ class RingDimensionAdmin(admin.ModelAdmin):
     fields = ['ring', 'dimension_type', 'left_dimension', 'right_dimension', 'citation']
     list_display = ['ring', 'dimension_type', 'left_dimension', 'right_dimension']
     list_filter = ['ring', 'dimension_type']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class RingSubsetAdmin(admin.ModelAdmin):
     fields = ['ring', 'subset_type', 'subset', 'citation']
     list_display = ['ring', 'subset_type']
     list_filter = ['ring', 'subset_type']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 #
 # class FAQAdmin(admin.ModelAdmin):
