@@ -21,7 +21,7 @@ six = "==1.11.0"
 sympy = "==1.1.1"
 typing = "==3.6.4"
 whitenoise = "==3.3.1"
-Django = "==1.11.13"
+Django = "==1.11.15"
 model_mommy = "==1.4.0"
 Pillow = "==5.0.0"
 
