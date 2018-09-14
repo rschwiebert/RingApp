@@ -149,6 +149,7 @@ class Logic(models.Model):
 class Theorem(models.Model):
     alias = models.CharField(max_length=100, null=True, blank=True)
     statement = models.TextField(max_length=400)
+    category = models.ForeignKey('TheoremCategory', null=True, blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
     link = models.URLField(blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
@@ -159,6 +160,14 @@ class Theorem(models.Model):
             return self.alias
         else:
             return textwrap.shorten(self.statement, width=1000)
+
+
+class TheoremCategory(models.Model):
+    name = models.CharField(max_length=64)
+    description = models.CharField(max_length=256, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Ring(models.Model):

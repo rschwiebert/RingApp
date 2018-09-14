@@ -42,7 +42,7 @@ urlpatterns = [
     # url(r'^logics/logic/(?P<pk>\d+)/$', DetailView.as_view(model=models.Logic), name='logic-detail'),
     url(r'^dimensions/$', views.DimensionView.as_view(), name='dimension-list'),
 
-    url(r'^theorems/$', ListView.as_view(model=models.Theorem), name='theorem-list'),
+    url(r'^theorems/$', views.TheoremListView.as_view(), name='theorem-list'),
     url(r'^theorems/theorem/(?P<pk>\d+)/$', views.TheoremDetail.as_view(), name='theorem-detail'),
     url(r'^about/$', TemplateView.as_view(template_name='ringapp/about.html'), name='about'),
     url(r'^people/$', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),

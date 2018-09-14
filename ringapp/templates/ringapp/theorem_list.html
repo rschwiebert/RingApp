@@ -4,22 +4,39 @@
 
 {% block content %}
 <div class="container">
-	<h1>Theorems in ring theory</h1>
+    <h1>Theorems in ring theory</h1>
 
-	<p>You are now browsing theorems we have on record. </p>
+    <div class="row">
+        <div class="col-md-3 content">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h2>Categories</h2></div>
+                <ul class="list-group">
+                    {% for category in category_list %}
+                    <li class="list-group-item">
+                        <a href="{{ request.path }}?category={{ category.id }}">{{ category.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9 content">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h2>{{ selected_cat.name }}</h2></div>
 
-	{% if object_list %}
-	    <ul>
-	    {% for item in object_list %}
-		{% if item.alias %}
-		<li><a href="{% url 'theorem-detail' item.id %}">{{ item.alias }}</a></li>
-		{% else %}
-		<li><a href="{% url 'theorem-detail' item.id %}">{{ item.statement }}</a></li>
-		{% endif %}
-	    {% endfor %}
-	    </ul>
-	{% else %}
-	    <p>No theorems were retrieved.</p>
-	{% endif %}
+                {% if selected_cat %}
+                <ul class="list-group">
+                    {% for object in object_list %}
+                    <li class="list-group-item">
+                        <a href="{% url 'theorem-detail' object.id %}">{{ object.alias }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>(Select an item from the list.)</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

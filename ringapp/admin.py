@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from ringapp.models import *
 import django.db.models as dj_models
-from django.forms.widgets import CheckboxSelectMultiple
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
@@ -81,10 +80,14 @@ class LogicAdmin(admin.ModelAdmin):
 
 
 class TheoremAdmin(admin.ModelAdmin):
-    fields = ['alias', 'statement', 'citation', 'link', 'commutative_only', 'user']
+    fields = ['alias', 'statement', 'category', 'citation', 'link', 'commutative_only', 'user']
     formfield_overrides = {
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
     }
+
+
+class TheoremCategoryAdmin(admin.ModelAdmin):
+    fields = ['name', 'description']
 
 
 class CitationAdmin(admin.ModelAdmin):
@@ -168,6 +171,7 @@ admin.site.register(PropertySide, PropertySideAdmin)
 admin.site.register(RingProperty, RingPropertyAdmin)
 admin.site.register(Logic, LogicAdmin)
 admin.site.register(Theorem, TheoremAdmin)
+admin.site.register(TheoremCategory, TheoremCategoryAdmin)
 admin.site.register(Citation, CitationAdmin)
 admin.site.register(Erratum, ErrataAdmin)
 admin.site.register(Keyword, KeywordAdmin)

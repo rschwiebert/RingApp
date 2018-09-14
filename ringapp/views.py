@@ -12,7 +12,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404, HttpResponseNotModified
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
@@ -24,8 +24,7 @@ from ratelimit.exceptions import Ratelimited
 from ratelimit.mixins import RatelimitMixin
 from ratelimit.utils import is_ratelimited
 
-from ringapp.models import Ring, Property, PropertyMetaproperty, Dimension, RingDimension
-from ringapp.models import Theorem, Suggestion, Keyword, News, Publication, Erratum
+from ringapp.models import *
 from ringapp import forms
 from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
 
@@ -454,6 +453,26 @@ class DimensionView(TemplateView):
         context['absent_rings'] = absent_rings
         context['cfilter'] = cfilter
         context['sort'] = sort
+
+        return self.render_to_response(context)
+
+
+class TheoremListView(TemplateView):
+    template_name = 'ringapp/theorem_list.html'
+    http_method_names = ['get', ]
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        context['category_list'] = TheoremCategory.objects.all()
+        cat_id = request.GET.get('category')
+
+        if cat_id is not None:
+            context['selected_cat'] = get_object_or_404(TheoremCategory, pk=cat_id)
+            objects = Theorem.objects.filter(category=cat_id)
+            context['object_list'] = objects
+        else:
+            context['selected_cat'] = None
+            context['object_list'] = []
 
         return self.render_to_response(context)
 
