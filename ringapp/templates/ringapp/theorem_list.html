@@ -11,6 +11,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><h2>Categories</h2></div>
                 <ul class="list-group">
+                    <li class="list-group-item"><a href="{{ request.path }}">All theorems</a></li>
                     {% for category in category_list %}
                     <li class="list-group-item">
                         <a href="{{ request.path }}?category={{ category.id }}">{{ category.name }}</a>
@@ -21,9 +22,13 @@
         </div>
         <div class="col-md-9 content">
             <div class="panel panel-default">
-                <div class="panel-heading"><h2>{{ selected_cat.name }}</h2></div>
-
                 {% if selected_cat %}
+                <div class="panel-heading"><h2>{{ selected_cat.name }}</h2>
+                <h3>{{ selected_cat.description }}</h3></div>
+                {% else %}
+                <div class="panel-heading"><h2>All theorems available</h2>
+                    <h3>(Make a selection on the left to filter.)</h3></div>
+                {% endif %}
                 <ul class="list-group">
                     {% for object in object_list %}
                     <li class="list-group-item">
@@ -31,9 +36,6 @@
                     </li>
                     {% endfor %}
                 </ul>
-                {% else %}
-                <p>(Select an item from the list.)</p>
-                {% endif %}
             </div>
         </div>
 

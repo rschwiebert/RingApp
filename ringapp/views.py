@@ -472,7 +472,7 @@ class TheoremListView(TemplateView):
             context['object_list'] = objects
         else:
             context['selected_cat'] = None
-            context['object_list'] = []
+            context['object_list'] = Theorem.objects.all()
 
         return self.render_to_response(context)
 
