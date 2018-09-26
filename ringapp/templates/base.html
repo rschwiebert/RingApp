@@ -98,7 +98,7 @@
             <li id="bibliographyNav"><a href="{% url 'bibliography'%}">Citations</a></li>
             <li id="contribNav"><a href="{% url 'contribute'%}">Contribute</a></li>
             <li id="resourcesNav"><a href="{% url 'resources'%}">Learn</a></li>
-            <li id="resourcesNav"><a href="{% url 'faq'%}">FAQ</a></li>
+            <li id="faqNav"><a href="{% url 'faq'%}">FAQ</a></li>
 
             <li> {% if not request.user.is_authenticated %}<a class="btn btn-primary"
                                                               href="{% url 'auth_login' %}"><font

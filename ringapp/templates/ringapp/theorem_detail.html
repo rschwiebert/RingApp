@@ -14,7 +14,7 @@
                </div>
                <div class="col-md-4 content">
                 <h3>Reference(s)</h3>
-		    {% if ref_list %}
+		    {% if object.citation.exists %}
 		    <ul>
 			    {% for ref in object.citation.all %}
 			    <li>{{ ref }}</li>
