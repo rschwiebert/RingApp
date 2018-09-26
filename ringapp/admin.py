@@ -80,7 +80,7 @@ class LogicAdmin(admin.ModelAdmin):
 
 
 class TheoremAdmin(admin.ModelAdmin):
-    fields = ['alias', 'statement', 'category', 'citation', 'link', 'commutative_only', 'user']
+    fields = ['alias', 'statement', 'categories', 'citation', 'link', 'commutative_only', 'user']
     formfield_overrides = {
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
     }
