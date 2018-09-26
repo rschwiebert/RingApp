@@ -149,7 +149,7 @@ class Logic(models.Model):
 class Theorem(models.Model):
     alias = models.CharField(max_length=100, null=True, blank=True)
     statement = models.TextField(max_length=400)
-    category = models.ForeignKey('TheoremCategory', null=True, blank=True)
+    categories = models.ManyToManyField('TheoremCategory', blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
     link = models.URLField(blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True)
