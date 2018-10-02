@@ -468,7 +468,7 @@ class TheoremListView(TemplateView):
 
         if cat_id is not None:
             context['selected_cat'] = get_object_or_404(TheoremCategory, pk=cat_id)
-            objects = Theorem.objects.filter(category=cat_id)
+            objects = context['selected_cat'].theorem_set.all()
             context['object_list'] = objects
         else:
             context['selected_cat'] = None
