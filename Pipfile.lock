@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "de2df2a7f2c28f121f1d623a642b5ae943be22bf73f03782ce993ab744a8d2ac"
+            "sha256": "bc3f173ffbfb3160e3d271371b316f5df992cec61257249a6b3fd69b8f701061"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -50,8 +50,8 @@
         },
         "django-publications": {
             "editable": true,
-            "git": "https://github.com/lucastheis/django-publications.git",
-            "ref": "5a75cf88cf794937711b6850ff2acb07fe005f08"
+            "git": "https://github.com/rschwiebert/django-publications.git",
+            "ref": "19dd80fef4d1defc6d553eaddab5aa028b0d4f57"
         },
         "django-ratelimit": {
             "hashes": [

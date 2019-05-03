@@ -9,7 +9,7 @@ name = "pypi"
 dj-database-url = "==0.5.0"
 django-heroku = "==0.3.1"
 django-mathfilters = "==0.4.0"
-django-publications = {editable = true, ref = "5a75cf88cf794937711b6850ff2acb07fe005f08", git = "https://github.com/lucastheis/django-publications.git"}
+django-publications = {editable = true, ref = "19dd80fef4d1defc6d553eaddab5aa028b0d4f57", git = "https://github.com/rschwiebert/django-publications.git"}
 django-ratelimit = "==1.1.0"
 django-recaptcha = "==1.3.1"
 django-registration-redux = "==1.8"
