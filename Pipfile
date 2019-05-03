@@ -12,7 +12,7 @@ django-mathfilters = "==0.4.0"
 django-publications = {editable = true, ref = "19dd80fef4d1defc6d553eaddab5aa028b0d4f57", git = "https://github.com/rschwiebert/django-publications.git"}
 django-ratelimit = "==1.1.0"
 django-recaptcha = "==1.3.1"
-django-registration-redux = "==1.8"
+django-registration-redux = "==2.6"
 gunicorn = "==19.7.1"
 mpmath = "==1.0.0"
 "psycopg2" = "==2.7.3.2"
