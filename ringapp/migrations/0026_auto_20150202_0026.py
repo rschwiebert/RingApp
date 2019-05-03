@@ -30,13 +30,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='theorem',
             name='characterizes',
-            field=models.ForeignKey(blank=True, to='ringapp.Property', null=True),
+            field=models.ForeignKey(blank=True, to='ringapp.Property', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='theorem',
             name='comm_characterizes',
-            field=models.ForeignKey(blank=True, to='ringapp.CommProperty', null=True),
+            field=models.ForeignKey(blank=True, to='ringapp.CommProperty', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

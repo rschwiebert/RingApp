@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a7495f4aa798932e2013b5bd596b22f3a5de27b306feeecf701ef21eabc64690"
+            "sha256": "de2df2a7f2c28f121f1d623a642b5ae943be22bf73f03782ce993ab744a8d2ac"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -26,11 +26,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:8176ac7985fe6737ce3d6b2531b4a2453cb7c3377c9db00bacb2b3320f4a1311",
-                "sha256:b18235d82426f09733d2de9910cee975cf52ff05e5f836681eb957d105a05a40"
+                "sha256:6fcc3cbd55b16f9a01f37de8bcbe286e0ea22e87096557f1511051780338eaea",
+                "sha256:bb407d0bb46395ca1241f829f5bd03f7e482f97f7d1936e26e98dacb201ed4ec"
             ],
             "index": "pypi",
-            "version": "==1.11.15"
+            "version": "==2.2.1"
         },
         "django-heroku": {
             "hashes": [
@@ -49,12 +49,9 @@
             "version": "==0.4.0"
         },
         "django-publications": {
-            "hashes": [
-                "sha256:5ec7704a81048acd788f1e07a26ee181ae4902981c639252225dd645ff5ec2b1",
-                "sha256:ab43e3c529e19871a6976384ba185e6bd97c60220bfabb68bae309999896a0a7"
-            ],
-            "index": "pypi",
-            "version": "==0.6.2"
+            "editable": true,
+            "git": "https://github.com/lucastheis/django-publications.git",
+            "ref": "5a75cf88cf794937711b6850ff2acb07fe005f08"
         },
         "django-ratelimit": {
             "hashes": [
@@ -88,11 +85,11 @@
         },
         "model-mommy": {
             "hashes": [
-                "sha256:6fe1d100479db42dcec8e69e6854e3eec2fa58fa030d14d6cc7466b7874e42dd",
-                "sha256:c64145b43294ab2f964108a56ea3036b3834e06d0840192ebd1cf8c0c5f6e669"
+                "sha256:0e42c8f4a37c874dd81675ef8a385d3a25877082565e0d213022898c637f6f25",
+                "sha256:8313c253617255060de474cdfcc0f7517e42deafc5619fec832a6c04b292b5d7"
             ],
             "index": "pypi",
-            "version": "==1.4.0"
+            "version": "==1.6.0"
         },
         "mpmath": {
             "hashes": [
@@ -184,6 +181,13 @@
             ],
             "index": "pypi",
             "version": "==1.11.0"
+        },
+        "sqlparse": {
+            "hashes": [
+                "sha256:40afe6b8d4b1117e7dff5504d7a8ce07d9a1b15aeeade8a2d10f130a834f8177",
+                "sha256:7c3dca29c022744e95b547e867cee89f4fce4373f3549ccd8797d8eb52cdb873"
+            ],
+            "version": "==0.3.0"
         },
         "sympy": {
             "hashes": [

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='commlogic',
             name='theorem',
-            field=models.ForeignKey(db_column='theorem_id', blank=True, to='ringapp.Theorem', null=True),
+            field=models.ForeignKey(db_column='theorem_id', blank=True, to='ringapp.Theorem', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

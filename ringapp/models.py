@@ -72,9 +72,9 @@ class Publication(pmodels.Publication):
 
 
 class Citation(models.Model):
-    publication = models.ForeignKey('ringapp.Publication')
+    publication = models.ForeignKey('ringapp.Publication', on_delete=models.CASCADE)
     location = models.CharField(max_length=128)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         ordering = ('publication__authors', 'publication__title')
@@ -104,7 +104,7 @@ class PropertySide(models.Model):
         unique_together = (('property', 'side'),)
         ordering = ('property', 'side')
 
-    property = models.ForeignKey('Property')
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
     side = models.SmallIntegerField(choices=[(0, ''),
                                              (1, 'left and right'),
                                              (2, 'left'),
@@ -134,7 +134,7 @@ class Logic(models.Model):
     symmetric = models.NullBooleanField()
     citation = models.ManyToManyField('Citation', blank=True)
 
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -152,7 +152,7 @@ class Theorem(models.Model):
     categories = models.ManyToManyField('TheoremCategory', blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
     link = models.URLField(blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     commutative_only = models.BooleanField(default=False)
 
     def __str__(self):
@@ -178,7 +178,7 @@ class Ring(models.Model):
     citation = models.ManyToManyField('Citation', blank=True)
 
     krull_dim = models.CharField(max_length=16, default='(unknown)', blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     is_commutative = models.NullBooleanField()
 
     optional_template = models.CharField(max_length=128, blank=True, default='')
@@ -191,8 +191,8 @@ class Ring(models.Model):
 
 
 class RingProperty(models.Model):
-    ring = models.ForeignKey('Ring')
-    property = models.ForeignKey('Property')
+    ring = models.ForeignKey('Ring', on_delete=models.CASCADE)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
     has_on_left = models.NullBooleanField()
     reason_left = models.CharField(max_length=200, blank=True, null=True)
     citation_left = models.ManyToManyField('Citation', related_name='citation_left', blank=True)
@@ -240,8 +240,8 @@ class Subset(models.Model):
 
 
 class RingDimension(models.Model):
-    ring = models.ForeignKey(Ring)
-    dimension_type = models.ForeignKey(Dimension)
+    ring = models.ForeignKey(Ring, on_delete=models.CASCADE)
+    dimension_type = models.ForeignKey(Dimension, on_delete=models.CASCADE)
     left_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
     right_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
@@ -260,8 +260,8 @@ class RingDimension(models.Model):
 
 
 class RingSubset(models.Model):
-    ring = models.ForeignKey(Ring)
-    subset_type = models.ForeignKey(Subset)
+    ring = models.ForeignKey(Ring, on_delete=models.CASCADE)
+    subset_type = models.ForeignKey(Subset, on_delete=models.CASCADE)
     subset = models.CharField(max_length=512, help_text='Describes the elements in the indicated subset.')
     citation = models.ManyToManyField('Citation', blank=True)
 
@@ -285,10 +285,10 @@ class Metaproperty(models.Model):
 
 
 class PropertyMetaproperty(models.Model):
-    property = models.ForeignKey('Property')
-    metaproperty = models.ForeignKey('Metaproperty')
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    metaproperty = models.ForeignKey('Metaproperty', on_delete=models.CASCADE)
     has_metaproperty = models.NullBooleanField()
-    example = models.ForeignKey('Ring', blank=True, null=True)
+    example = models.ForeignKey('Ring', blank=True, null=True, on_delete=models.CASCADE)
     citation = models.ManyToManyField('Citation', blank=True)
 
     commutative_only = models.BooleanField(default=False)
@@ -343,7 +343,7 @@ class Suggestion(models.Model):
     description = models.TextField(max_length=400, null=True, blank=True)
     response = models.TextField(max_length=200, null=True, blank=True)
     citation = models.CharField(max_length=200, null=True, blank=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     unread = models.BooleanField(default=True)
 
     def __str__(self):
@@ -366,13 +366,13 @@ class News(models.Model):
 
 class Erratum(models.Model):
     error_location = models.ForeignKey('Citation', related_name='error_location',
-                                       help_text='Where the original erroneous statement appeared.')
+                                       help_text='Where the original erroneous statement appeared.', on_delete=models.CASCADE)
     description = models.TextField(max_length=400, blank=True, help_text='A description of the faulty claim and useful '
                                                                          'information about correcting it.')
     corrected_location = models.ManyToManyField('Citation', related_name='corrected_location',
                                                 help_text='References which correct the statement.')
     example = models.ForeignKey('Ring', null=True, help_text='A ring acting as a counterexample to the erroneous '
-                                                             'statement.', blank=True)
+                                                             'statement.', blank=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = 'Errata'

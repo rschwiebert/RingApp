@@ -39,8 +39,8 @@ class LogicTestCase(TestCase):
     def test_simple_same_side_forward(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -57,8 +57,8 @@ class LogicTestCase(TestCase):
     def test_simple_same_side_backward(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps2.property,
@@ -75,8 +75,8 @@ class LogicTestCase(TestCase):
     def test_simple_exception(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -92,8 +92,8 @@ class LogicTestCase(TestCase):
     def test_simple_equivalence_forward(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=1)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -110,8 +110,8 @@ class LogicTestCase(TestCase):
     def test_simple_equivalence_backward(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=1)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps2.property,
@@ -128,8 +128,8 @@ class LogicTestCase(TestCase):
     def test_simple_equivalence_exception(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=1)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -145,8 +145,8 @@ class LogicTestCase(TestCase):
     def test_one_implies_two_pos(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, self.ps3]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, self.ps3])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -166,8 +166,8 @@ class LogicTestCase(TestCase):
     def test_one_implies_two_neg1(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, self.ps3]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, self.ps3])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps2.property,
@@ -182,8 +182,8 @@ class LogicTestCase(TestCase):
     def test_one_implies_two_neg2(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps2, self.ps3]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps2, self.ps3])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps3.property,
@@ -198,8 +198,8 @@ class LogicTestCase(TestCase):
     def test_two_implies_one_pos(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, self.ps3]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, self.ps3])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps3.property,
@@ -218,8 +218,8 @@ class LogicTestCase(TestCase):
     def test_two_implies_one_neg(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, self.ps3]
-        log.concs = [self.ps2, ]
+        log.hyps.set([self.ps1, self.ps3])
+        log.concs.set([self.ps2, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps2.property,
@@ -238,8 +238,8 @@ class LogicTestCase(TestCase):
     def test_or_implies_one(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps4]
-        log.concs = [self.ps1, ]
+        log.hyps.set([self.ps4])
+        log.concs.set([self.ps1, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps4.property,
@@ -256,8 +256,8 @@ class LogicTestCase(TestCase):
     def test_or_implies_one_neg(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps4]
-        log.concs = [self.ps1, ]
+        log.hyps.set([self.ps4])
+        log.concs.set([self.ps1, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -274,8 +274,8 @@ class LogicTestCase(TestCase):
     def test_one_implies_or(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps4, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps4, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps1.property,
@@ -295,8 +295,8 @@ class LogicTestCase(TestCase):
     def test_one_implies_or_neg(self):
         log = Logic.objects.create(symmetric=False,
                                    variety=0)
-        log.hyps = [self.ps1, ]
-        log.concs = [self.ps4, ]
+        log.hyps.set([self.ps1, ])
+        log.concs.set([self.ps4, ])
         log.save()
         RingProperty.objects.create(ring=self.ring,
                                     property=self.ps4.property,

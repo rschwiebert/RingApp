@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('source', models.CharField(max_length=500)),
                 ('poster', models.CharField(max_length=25, null=True, blank=True)),
                 ('time', models.DateTimeField(auto_now_add=True)),
-                ('property', models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.CommProperty', null=True)),
+                ('property', models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.CommProperty', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'comm_ring_property',
@@ -174,8 +174,8 @@ class Migration(migrations.Migration):
                 ('source', models.CharField(max_length=500)),
                 ('poster', models.CharField(max_length=25, null=True, blank=True)),
                 ('time', models.DateTimeField(auto_now_add=True, null=True)),
-                ('property', models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.Property', null=True)),
-                ('ring', models.ForeignKey(db_column='ring_ID', blank=True, to='ringapp.Ring', null=True)),
+                ('property', models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.Property', null=True, on_delete=models.CASCADE)),
+                ('ring', models.ForeignKey(db_column='ring_ID', blank=True, to='ringapp.Ring', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'ring_property',
@@ -201,25 +201,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='equivalents',
             name='property',
-            field=models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.Property', null=True),
+            field=models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.Property', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='commringproperty',
             name='ring',
-            field=models.ForeignKey(db_column='ring_ID', blank=True, to='ringapp.Ring', null=True),
+            field=models.ForeignKey(db_column='ring_ID', blank=True, to='ringapp.Ring', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='commequivalents',
             name='property',
-            field=models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.CommProperty', null=True),
+            field=models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.CommProperty', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='citation',
             name='publication',
-            field=models.ForeignKey(to='ringapp.Publication'),
+            field=models.ForeignKey(to='ringapp.Publication', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

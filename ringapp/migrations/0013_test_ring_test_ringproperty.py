@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
                 ('has_property', models.IntegerField(null=True, blank=True)),
                 ('reason', models.CharField(max_length=200)),
                 ('source', models.CharField(max_length=500)),
-                ('property', models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.Property', null=True)),
-                ('ring', models.ForeignKey(db_column='ring_ID', blank=True, to='ringapp.test_Ring', null=True)),
+                ('property', models.ForeignKey(db_column='property_ID', blank=True, to='ringapp.Property', null=True, on_delete=models.CASCADE)),
+                ('ring', models.ForeignKey(db_column='ring_ID', blank=True, to='ringapp.test_Ring', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'test_ring_property',

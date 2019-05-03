@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sitemaps.views import sitemap
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy, path
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView, RedirectView, CreateView
@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^admin/utilities/$', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     url(r'^admin/guides/$', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     url(r'^admin/processor/$', views.processor, name='processor'),
-    url(r'^admin/', include(admin.site.urls)),
+    path('admin/', admin.site.urls),
     url(r'^$', views.IndexView.as_view(), name='index'),
 
     url(r'^search/$', views.searchpage, name='search'),

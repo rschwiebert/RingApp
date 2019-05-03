@@ -14,13 +14,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='theorem',
             name='characterizes',
-            field=models.ForeignKey(to='ringapp.Property', null=True),
+            field=models.ForeignKey(to='ringapp.Property', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='theorem',
             name='comm_characterizes',
-            field=models.ForeignKey(to='ringapp.CommProperty', null=True),
+            field=models.ForeignKey(to='ringapp.CommProperty', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

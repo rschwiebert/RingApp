@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='property',
             name='comm_version',
-            field=models.ForeignKey(blank=True, to='ringapp.CommProperty', null=True),
+            field=models.ForeignKey(blank=True, to='ringapp.CommProperty', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(
