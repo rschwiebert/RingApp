@@ -40,37 +40,38 @@
                 <li>{{ citation }}</li>
                 {% endfor%}
             </ul>
-
-            {% if metaproperties %}
-                <h2>Metaproperties:</h2>
-                {% if has_mp %}
-                This property has the following metaproperties
-                <ul>
-                {% for item in has_mp %}
-                <li>{{ item.metaproperty.name }}</li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-                {% if lacks_mp %}
-              This property <b>does not</b> have the following metaproperties
-                <ul>
-                {% for item in lacks_mp %}
-                <li>{{ item.metaproperty.name }}
-                {% if item.example is not None %}
-                    (<a href="{% url 'ring-detail' item.example.id %}">counterexample</a>)
-                {% else %}
-                    (counterexample needed)
-                {% endif %}
-                </li>
-                {% endfor %}
-                </ul>
-                {% endif %}
-
+        {% else %}
+                <p>(No citations retrieved.)</p>
+        {% endif %}
+        {% if metaproperties %}
+            <h2>Metaproperties:</h2>
+            {% if has_mp %}
+            This property has the following metaproperties
+            <ul>
+            {% for item in has_mp %}
+            <li>{{ item.metaproperty.name }}</li>
+            {% endfor %}
+            </ul>
             {% endif %}
-
+            {% if lacks_mp %}
+          This property <b>does not</b> have the following metaproperties
+            <ul>
+            {% for item in lacks_mp %}
+            <li>{{ item.metaproperty.name }}
+            {% if item.example is not None %}
+                (<a href="{% url 'ring-detail' item.example.id %}">counterexample</a>)
             {% else %}
-                <p>Nothing was retrieved.</p>
+                (counterexample needed)
             {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+        {% else %}
+            <p>(No metaproperty information retrieved.)</p>
+        {% endif %}
+
+
         </div>
     </div>
     {% endif %}
