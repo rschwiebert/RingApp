@@ -76,7 +76,9 @@ urlpatterns = [
         name='robots'),
     url(r'^favicon\.ico$', lambda r: redirect(r'static/favicon/favicon.ico'), name='favicon'),
 
-    url(r'^latest/feed/$', NewsFeed(), name='newsfeed'),
+    url(r'^latest/feed/$',
+        RedirectView.as_view(url='https://databaseofringtheory.wordpress.com/feed/', permanent=True),
+        name='newsfeed'),
     url(r'^news/$', views.NewsList.as_view(), name='news-list'),
     url(r'^news/(?P<pk>\d+)/$', views.NewsDetail.as_view(), name='news-detail'),
 

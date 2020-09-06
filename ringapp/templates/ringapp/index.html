@@ -58,18 +58,11 @@
                 href="https://github.com/rschwiebert/RingApp"
                 role="button">I do GitHub &raquo;</a></p> -->
             <h3>Recent activity <span class="icon-large icon-rss"></span></h3>
-            <p><a class="btn btn-default" href="{% url 'newsfeed' %}"
-                  role="button">Site news RSS &raquo;</a></p>
-            {% autoescape off %}
-            {% for item in newsitems %}
-            <div class="panel panel-default">
+            <p><a class="btn btn-default" href="https://databaseofringtheory.wordpress.com/"
+                  role="button"><img src="https://www.google.com/s2/favicons?domain=wordpress.com"> News blog &raquo;</a></p>
+            <p><a class="btn btn-default" href="https://databaseofringtheory.wordpress.com/feed/"
+                  role="button">Blog RSS feed &raquo;</a></p>
 
-                <div class="panel-heading">{{ item.category }}: {{ item.title }}</div>
-                <div class="panel-body">{{ item.content|safe }}</div>
-            </div>
-
-            {% endfor %}
-            {% endautoescape %}
         </div>
         <div class="col-md-4 content">
             <h2>Support us <span class="icon-large icon-heart"></span></h2>
