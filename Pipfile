@@ -13,7 +13,7 @@ django-publications = {git = "https://github.com/rschwiebert/django-publications
 django-ratelimit = "==2.0.0"
 django-recaptcha = "==2.0.4"
 django-registration-redux = "==2.6"
-gunicorn = "==19.7.1"
+gunicorn = "==20.1.0"
 model-mommy = "==1.6.0"
 mpmath = "==1.0.0"
 psycopg2-binary = "==2.8.4"
