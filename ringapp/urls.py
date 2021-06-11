@@ -72,6 +72,8 @@ urlpatterns = [
                                "\nDisallow: /keywordsearch/results/"
                                "\nUser-agent: AhrefsBot"
                                "\nDisallow: /",
+                               "\nUser-agent: The Knowledge AI"
+                               "\nDisallow: /",
                                content_type="text/plain"),
         name='robots'),
     url(r'^favicon\.ico$', lambda r: redirect(r'static/favicon/favicon.ico'), name='favicon'),
