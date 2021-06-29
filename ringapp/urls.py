@@ -71,7 +71,7 @@ urlpatterns = [
                                "\nDisallow: /commsearch/commresults/"
                                "\nDisallow: /keywordsearch/results/"
                                "\nUser-agent: AhrefsBot"
-                               "\nDisallow: /",
+                               "\nDisallow: /"
                                "\nUser-agent: The Knowledge AI"
                                "\nDisallow: /",
                                content_type="text/plain"),
