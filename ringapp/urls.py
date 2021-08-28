@@ -73,6 +73,10 @@ urlpatterns = [
                                "\nUser-agent: AhrefsBot"
                                "\nDisallow: /"
                                "\nUser-agent: The Knowledge AI"
+                               "\nDisallow: /"
+                               "\nUser-agent: SemrushBot/7~bl"
+                               "\nDisallow: /"
+                               "\nUser-agent: clark-crawler2/Nutch-1.19-SNAPSHOT"
                                "\nDisallow: /",
                                content_type="text/plain"),
         name='robots'),
