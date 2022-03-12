@@ -25,7 +25,7 @@ sympy = "==1.9"
 typing = "==3.6.4"
 whitenoise = "==5.0.1"
 Django = "==2.2.27"
-Pillow = "==9.0.0"
+Pillow = "==9.0.1"
 
 [requires]
 python_version = "3.10"
