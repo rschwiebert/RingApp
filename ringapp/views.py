@@ -21,6 +21,7 @@ from ratelimit.exceptions import Ratelimited
 from ratelimit.utils import is_ratelimited
 
 from ringapp.models import *
+from web.models import *
 from ringapp import forms
 from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
 
