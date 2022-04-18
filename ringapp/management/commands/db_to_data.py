@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 import io
+import logging
+import pathlib
 import tempfile
+from collections import defaultdict
 
 import yaml
 import re
@@ -39,6 +42,8 @@ def tags_to_ids(data: Sequence[str]):
 
 SIDETYPENUM_TO_DISPLAY = {k: v.replace(' ', '_').upper() for (k, v) in sidetype_choices}
 SIDETYPEDISPLAY_TO_NUM = {v: k for (k, v) in SIDETYPENUM_TO_DISPLAY.items()}
+
+log = logging.getLogger('django')
 
 
 class SerializerBase(ABC):
@@ -120,24 +125,30 @@ class Serializer(SerializerBase):
 class Subserializer(SerializerBase):
     parent_serializer = None
     foreign_serializer = None
-    subfolder: str = ""
     parent_key_name = ""
     foreign_key_name = ""
+    filename = ''
 
     @property
     def prefix(self):
         return self.foreign_serializer.prefix
 
-    def filename(self, keys):
+    def filepath(self, keys):
         parent_dir = os.path.dirname(self.parent_serializer.filename(keys['parent_pk']))
-        return os.path.join(parent_dir, self.subfolder,
-                            f"{tag(self.foreign_serializer.prefix, keys['foreign_pk'])}.yaml")
+        return os.path.join(parent_dir, self.filename)
 
     def data_to_file(self, keys, data):
-        path = self.filename(keys)
+        path = self.filepath(keys)
         os.makedirs(os.path.dirname(path), exist_ok=True)
+        pathlib.Path(path).touch(exist_ok=True)
+        with open(path, 'r') as f:
+            data_to_rewrite = yaml.load(f.read(), yaml.Loader)
+        if not isinstance(data_to_rewrite, dict):
+            data_to_rewrite = dict()
+
+        data_to_rewrite[tag(self.foreign_serializer.prefix, keys['foreign_pk'])] = data
         with open(path, 'w') as f:
-            f.write(yaml.dump(data))
+            f.write(yaml.dump(data_to_rewrite))
         return path
 
     def to_storage(self, fields, keys):
@@ -160,29 +171,32 @@ class Subserializer(SerializerBase):
 
     @property
     def regex(self):
-        sample_path = self.filename(dict(parent_pk=1, foreign_pk=1))
+        sample_path = self.filepath(dict(parent_pk=1, foreign_pk=1))
         regex_string = sample_path.replace(tag(self.parent_serializer.prefix, 1),
                                            '(' + self.parent_serializer.prefix + '_[0-9]{6})')
-        regex_string = regex_string.replace(tag(self.foreign_serializer.prefix, 1),
-                                            '(' + self.foreign_serializer.prefix + '_[0-9]{6})')
         regex_string = regex_string.removeprefix(EXPORT_ROOT_DIR)
         return re.compile(regex_string)
 
-    def process_from_storage(self, path):
+    def process_from_storage(self, path) -> List[dict]:
         mat = self.regex.search(path)
         if mat is None:
             raise Exception
-        pks = tags_to_ids(mat.groups())
-        parent_pk, foreign_pk = pks
-        original_data = dict(model=self.modelkey)
+        parent_pk = tag_to_id(mat.group(1))
         with open(path) as f:
             stored = yaml.load(f, yaml.Loader)
 
-        restored = self.to_dbjson(stored, parent_pk, foreign_pk)
-        pk = restored.pop('crosstable_pk')
-        original_data['fields'] = restored
-        original_data['pk'] = pk
-        return original_data
+        restored_entries = []
+        for foreign_tag, stored_data in stored.items():
+            foreign_pk = tag_to_id(foreign_tag)
+            original_data = dict(model=self.modelkey)
+
+            restored = self.to_dbjson(stored_data, parent_pk, foreign_pk)
+            pk = restored.pop('crosstable_pk')
+            original_data['fields'] = restored
+            original_data['pk'] = pk
+            restored_entries.append(original_data)
+
+        return restored_entries
 
 
 class RingSerializer(Serializer):
@@ -219,7 +233,7 @@ class RingPropertySerializer(Subserializer):
     modelkey = 'ringapp.ringproperty'
     parent_serializer = RingSerializer()
     foreign_serializer = PropertySerializer()
-    subfolder = "properties"
+    filename = "properties.yaml"
     parent_key_name = 'ring'
     foreign_key_name = 'property'
 
@@ -238,6 +252,10 @@ class RingPropertySerializer(Subserializer):
         data['citation_right'] = tags_to_ids(data['citation_right'])
         return data
 
+    def data_to_file(self, keys, data):
+        log.warning("Because of their number, RingProperties can't be serialized using data_to_file.")
+        return
+
 
 class KeywordSerializer(Serializer):
     prefix = 'KWD'
@@ -253,7 +271,7 @@ class PropMetapropSubSerializer(Subserializer):
     modelkey = 'ringapp.propertymetaproperty'
     parent_serializer = PropertySerializer()
     foreign_serializer = MetaPropertySerializer()
-    subfolder = "metaproperties"
+    filename = "metaproperties.yaml"
     parent_key_name = 'property'
     foreign_key_name = 'metaproperty'
 
@@ -385,7 +403,7 @@ class RingDimensionSerializer(Subserializer):
     modelkey = 'ringapp.ringdimension'
     parent_serializer = RingSerializer()
     foreign_serializer = DimensionSerializer()
-    subfolder = "dimensions"
+    filename = "dimensions.yaml"
     parent_key_name = 'ring'
     foreign_key_name = 'dimension_type'
 
@@ -413,7 +431,7 @@ class RingSubsetSerializer(Subserializer):
     modelkey = 'ringapp.ringsubset'
     parent_serializer = RingSerializer()
     foreign_serializer = SubsetSerializer()
-    subfolder = "subsets"
+    filename = "subsets.yaml"
     parent_key_name = 'ring'
     foreign_key_name = 'subset_type'
 
@@ -510,7 +528,7 @@ class ModPropMetapropSubSerializer(Subserializer):
     modelkey = 'moduleapp.propertymetaproperty'
     parent_serializer = ModPropertySerializer()
     foreign_serializer = ModMetaPropertySerializer()
-    subfolder = "metaproperties"
+    filename = "metaproperties.yaml"
     parent_key_name = 'property'
     foreign_key_name = 'metaproperty'
 
@@ -536,7 +554,7 @@ class ModulePropertySerializer(Subserializer):
     modelkey = 'moduleapp.moduleproperty'
     parent_serializer = ModuleSerializer()
     foreign_serializer = ModPropertySerializer()
-    subfolder = "properties"
+    filename = "properties.yaml"
     parent_key_name = 'module'
     foreign_key_name = 'property'
 
@@ -616,7 +634,8 @@ class Command(BaseCommand):
 
         if options.get('command') == 'export':
             output = io.StringIO()
-            call_command('dumpdata', database='ringapp_data', format='jsonl',
+            log.info('Getting all data except ring properties')
+            call_command('dumpdata', database='ringapp_data', format='jsonl', exclude=['ringapp.ringproperty'],
                          stdout=output, settings=options.get('settings'))
             end = output.tell()
             output.seek(0)
@@ -625,19 +644,42 @@ class Command(BaseCommand):
                 modelname = item.get('model')
                 serializer = serializers.get(modelname, None)
                 if serializer is None:
-                    print(f'Need serializer for {modelname}')
+                    log.warning(f'Need serializer for {modelname}')
                     continue
                 serializer.process_to_storage(item)
 
+            output = io.StringIO()
+            log.info('Getting ring properties separately')
+            call_command('dumpdata', 'ringapp.RingProperty', database='ringapp_data', format='jsonl',
+                         stdout=output, settings=options.get('settings'))
+            end = output.tell()
+            output.seek(0)
+            serializer = RingPropertySerializer()
+
+            data = defaultdict(dict)
+            log.info("Starting to process entries...")
+            while output.tell() < end:
+                obj = json.loads(output.readline().strip())
+                keys = serializer.get_keys(obj)
+                property_tag = tag(PropertySerializer.prefix, keys['foreign_pk'])
+                data[keys['parent_pk']][property_tag] = serializer.to_storage(obj['fields'], keys)
+
+            for ring_pk, datadict in data.items():
+                with open(serializer.filepath({'parent_pk': ring_pk}), 'w') as f:
+                    f.write(yaml.dump(datadict))
+
         elif options.get('command') == 'import':
             entries = []
-            for path in Path().rglob('*.yaml'):
+            for path in Path(os.environ['EXPORT_ROOT_DIR']).rglob('*.yaml'):
                 path = str(path)
                 for model, serializer in serializers.items():
                     match = serializer.regex.search(path)
                     if match is not None:
                         data = serializer.process_from_storage(path)
-                        insort(entries, data, key=lambda x: serializer_order.index(x['model']))
+                        if isinstance(data, dict):
+                            data = [data, ]
+                        for datum in data:
+                            insort(entries, datum, key=lambda x: serializer_order.index(x['model']))
                         break
 
             lines = [json.dumps(item, sort_keys=True) + '\n' for item in entries]
@@ -649,7 +691,7 @@ class Command(BaseCommand):
 
         elif options.get('command') == 'test':
             for mname in serializers.keys():
-                print(f'checking {mname}')
+                log.info(f'checking {mname}')
                 output = io.StringIO()
                 call_command('dumpdata', mname, pks='1,3', database='ringapp_data',
                              format='jsonl', settings=options.get('settings'), stdout=output)
@@ -661,9 +703,9 @@ class Command(BaseCommand):
                     modelname = item.get('model')
                     serializer = serializers.get(modelname, None)
                     if serializer is None:
-                        print(f'Need serializer for {modelname}')
+                        log.warning(f'Need serializer for {modelname}')
                         continue
                     path = serializer.process_to_storage(item)
                     recovered = serializer.process_from_storage(path)
                     assert recovered == original
-                    print('...checked out')
+                    log.info('...checked out')
