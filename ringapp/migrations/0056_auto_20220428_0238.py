@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ringapp', '0055_auto_20200208_1803'),
+        ('ringapp', '0056_nullboolean_to_boolean'),
     ]
 
     operations = [

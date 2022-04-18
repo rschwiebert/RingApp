@@ -7,6 +7,7 @@ from publications import models as pmodels
 
 import textwrap
 
+from ringapp.constants import sidetype_choices
 
 def symmetrize_sides(rp):
     if rp.has_on_left is not None and rp.has_on_right is None:
@@ -103,11 +104,7 @@ class PropertySide(models.Model):
         ordering = ('property', 'side')
 
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
-    side = models.SmallIntegerField(choices=[(0, ''),
-                                             (1, 'left and right'),
-                                             (2, 'left'),
-                                             (3, 'right'),
-                                             (4, 'left or right'), ])
+    side = models.SmallIntegerField(choices=sidetype_choices)
 
     def clean(self):
         """

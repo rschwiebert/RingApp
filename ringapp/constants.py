@@ -7,3 +7,9 @@ with open('ringapp/legacy/v1_to_v2.json', 'r') as f:
 
 with open('ringapp/legacy/v1comm_to_v2.json', 'r') as f:
     PROPSV1COMM_TO_TERMSV2 = json.load(f)
+
+sidetype_choices = [(0, ''),
+                    (1, 'left and right'),
+                    (2, 'left'),
+                    (3, 'right'),
+                    (4, 'left or right'), ]
