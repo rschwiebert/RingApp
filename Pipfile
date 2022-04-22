@@ -24,7 +24,7 @@ sqlparse = "==0.3.0"
 sympy = "==1.9"
 typing = "==3.6.4"
 whitenoise = "==5.0.1"
-Django = "==2.2.27"
+Django = "==2.2.28"
 Pillow = "==9.0.1"
 
 [requires]
