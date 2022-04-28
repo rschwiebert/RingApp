@@ -51,9 +51,9 @@ class RingPropertyInline(admin.TabularInline):
 
 class RingAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'notes', 'optional_template',
-              ('citation', 'keywords'),  ('krull_dim', 'is_commutative', 'user')]
-    list_display = ['name', 'is_commutative', 'user']
-    list_filter = ['is_commutative', 'user']
+              ('citation', 'keywords'),  ('krull_dim', 'is_commutative')]
+    list_display = ['name', 'is_commutative']
+    list_filter = ['is_commutative']
     formfield_overrides = {
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
     }
@@ -66,7 +66,7 @@ class PropertySideAdmin(admin.ModelAdmin):
 class LogicAdmin(admin.ModelAdmin):
     fields = ['hyps',
               'concs',
-              'variety', 'symmetric', 'citation', 'user', 'active']
+              'variety', 'symmetric', 'citation', 'active']
     list_display = ['hypotheses', 'conclusions', 'variety', 'symmetric', 'active']
     formfield_overrides = {
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
@@ -80,7 +80,7 @@ class LogicAdmin(admin.ModelAdmin):
 
 
 class TheoremAdmin(admin.ModelAdmin):
-    fields = ['alias', 'statement', 'categories', 'citation', 'link', 'commutative_only', 'user']
+    fields = ['alias', 'statement', 'categories', 'citation', 'link', 'commutative_only']
     formfield_overrides = {
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
     }

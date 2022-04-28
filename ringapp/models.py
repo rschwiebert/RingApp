@@ -74,7 +74,6 @@ class Publication(pmodels.Publication):
 class Citation(models.Model):
     publication = models.ForeignKey('ringapp.Publication', on_delete=models.CASCADE)
     location = models.CharField(max_length=128)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         ordering = ('publication__authors', 'publication__title')
@@ -134,7 +133,6 @@ class Logic(models.Model):
     symmetric = models.BooleanField(null=True)
     citation = models.ManyToManyField('Citation', blank=True)
 
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -152,7 +150,6 @@ class Theorem(models.Model):
     categories = models.ManyToManyField('TheoremCategory', blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
     link = models.URLField(blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     commutative_only = models.BooleanField(default=False)
 
     def __str__(self):
@@ -178,7 +175,6 @@ class Ring(models.Model):
     citation = models.ManyToManyField('Citation', blank=True)
 
     krull_dim = models.CharField(max_length=16, default='(unknown)', blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     is_commutative = models.BooleanField(null=True)
 
     optional_template = models.CharField(max_length=128, blank=True, default='')
@@ -342,7 +338,6 @@ class Suggestion(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=400, null=True, blank=True)
     response = models.TextField(max_length=200, null=True, blank=True)
-    citation = models.CharField(max_length=200, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     unread = models.BooleanField(default=True)
 
