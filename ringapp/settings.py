@@ -15,7 +15,7 @@ import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+os.makedirs(os.path.join(BASE_DIR, 'db'), exist_ok=True)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -30,6 +30,7 @@ LOGIN_REDIRECT_URL = '/profile'
 
 INSTALLED_APPS = [
     'ringapp',
+    'web',
     'registration',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -78,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ringapp.wsgi.application'
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -96,7 +96,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -137,6 +136,30 @@ CACHES = {
 }
 
 ADMINS = [('webmaster', os.environ['REGISTRATION_DEFAULT_FROM_EMAIL'])]
+
+DATABASES = {
+    'default': {
+        'ATOMIC_REQUESTS': False,
+        'AUTOCOMMIT': True,
+        'CONN_MAX_AGE': 600,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': 'localhost',
+        'NAME': 'ringapp',
+        'OPTIONS': {'sslmode': 'disable'},
+        'PASSWORD': 'ringapp',
+        'PORT': 5432,
+        'TEST': {'CHARSET': None,
+                 'COLLATION': None,
+                 'MIRROR': None,
+                 'NAME': None},
+        'TIME_ZONE': None,
+        'USER': 'ringapp'},
+    'ringapp_data': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db/ringapp.db')},
+}
+
+DATABASE_ROUTERS = ('ringapp.routers.RingAppRouter',)
 
 LOGGING = {
     'version': 1,

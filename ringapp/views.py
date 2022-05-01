@@ -8,7 +8,6 @@ from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
 from django.urls import reverse
 from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404, HttpResponseNotModified
@@ -16,12 +15,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
-from django.views.generic.edit import CreateView
 
-from ratelimit import UNSAFE
 from ratelimit.decorators import ratelimit
 from ratelimit.exceptions import Ratelimited
-from ratelimit.mixins import RatelimitMixin
 from ratelimit.utils import is_ratelimited
 
 from ringapp.models import *
@@ -44,7 +40,6 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['newsitems'] = News.objects.all().order_by('-id')[:10]
         return context
 
 
@@ -357,28 +352,6 @@ class PropertyView(DetailView):
         return context
 
 
-class SuggestionView(RatelimitMixin, SuccessMessageMixin, CreateView):
-    model = Suggestion
-    template_name = 'ringapp/contribute.html'
-    success_url = '/contribute/'
-    fields = ['object_type', 'name', 'description']
-    success_message = "Thanks... we'll look into that %(object_display)s suggestion!"
-    ratelimit_key = 'user'
-    ratelimit_rate = '20/h'
-    ratelimit_method = UNSAFE
-    ratelimit_block = True
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super(SuggestionView, self).form_valid(form)    
-
-    def get_success_message(self, cleaned_data):
-        return self.success_message % dict(
-            cleaned_data,
-            object_display=self.object.get_object_type_display(),
-        )
-        
-
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'ringapp/profile.html'
 
@@ -475,19 +448,6 @@ class TheoremListView(TemplateView):
             context['object_list'] = Theorem.objects.all()
 
         return self.render_to_response(context)
-
-
-class NewsList(ListView):
-    model = News
-    template_name = 'ringapp/news_list.html'
-
-    def get_queryset(self):
-        return News.objects.order_by('-id')
-
-
-class NewsDetail(DetailView):
-    model = News
-    template_name = 'ringapp/news_detail.html'
 
 
 class CitationList(ListView):

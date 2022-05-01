@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+
 from ringapp.models import *
 import django.db.models as dj_models
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -108,12 +110,6 @@ class ErrataAdmin(admin.ModelAdmin):
     fields = ['error_location', 'description', 'corrected_location', 'example']
 
 
-class SuggestionAdmin(admin.ModelAdmin):
-    list_display = ['status', 'object_type', 'name', 'description', 'user']
-    fields = ['name', 'description', 'object_type', 'status', 'response', 'unread', 'user']
-    list_filter = ['status', 'object_type', 'user']
-    
-
 class PropertyMetapropertyAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'citation']
     list_display = ['property', 'metaproperty', 'has_metaproperty']
@@ -161,10 +157,6 @@ class RingSubsetAdmin(admin.ModelAdmin):
 #     fields = ['term', 'definition', 'reference']
 
 
-class NewsAdmin(admin.ModelAdmin):
-    fields = ['title', 'category', 'content']
-
-
 admin.site.register(Ring, RingAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(PropertySide, PropertySideAdmin)
@@ -183,5 +175,3 @@ admin.site.register(RingDimension, RingDimensionAdmin)
 admin.site.register(RingSubset, RingSubsetAdmin)
 # admin.site.register(FAQ, FAQAdmin)
 # admin.site.register(Glossary, GlossaryAdmin)
-admin.site.register(Suggestion, SuggestionAdmin)
-admin.site.register(News, NewsAdmin)

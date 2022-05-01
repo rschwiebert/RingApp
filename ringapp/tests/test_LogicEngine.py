@@ -14,6 +14,7 @@ log_eng = LogicEngine()
 
 
 class LogicTestCase(TestCase):
+    databases = ('default', 'ringapp_data', )
     def setUp(self):
         self.ring = Ring.objects.create(name='joe', is_commutative=False)
         self.ps1 = mommy.make(PropertySide, side=3)  # right

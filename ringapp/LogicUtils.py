@@ -8,6 +8,7 @@ from sympy import symbols, And, Or, Implies, Equivalent
 from sympy.logic.boolalg import BooleanTrue
 from sympy.logic.inference import satisfiable
 from ringapp import models
+import os
 
 
 log = logging.getLogger(__name__)

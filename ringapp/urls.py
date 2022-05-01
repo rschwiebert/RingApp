@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import TemplateView, RedirectView, CreateView
 from ringapp import views
+import web.views
 from ringapp.sitemaps import sitemapdict
 
 
@@ -80,8 +81,6 @@ urlpatterns = [
     path('latest/feed/',
         RedirectView.as_view(url='https://databaseofringtheory.wordpress.com/feed/', permanent=True),
         name='newsfeed'),
-    path('news/', views.NewsList.as_view(), name='news-list'),
-    path('news/<int:pk>/', views.NewsDetail.as_view(), name='news-detail'),
 
     path('commproperties/',
         RedirectView.as_view(pattern_name='property-list', permanent=True),
