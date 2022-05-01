@@ -113,7 +113,7 @@ def completeness_scores(include_commutative=False):
     """
     query = """
         SELECT id,
-               sum(score)
+               sum(score) as sum
         FROM
           (SELECT "ringapp_ringproperty"."ring_id" AS id,
                   CASE
@@ -121,7 +121,7 @@ def completeness_scores(include_commutative=False):
                            AND "ringapp_ringproperty"."has_on_left" IS NOT NULL THEN 1
                       WHEN "ringapp_property"."symmetric" IS TRUE
                            AND "ringapp_ringproperty"."has_on_left" IS NULL THEN 0
-                      WHEN "ringapp_property"."symmetric" IS FALSE THEN ("ringapp_ringproperty"."has_on_left" IS NOT NULL)::int + ("ringapp_ringproperty"."has_on_right" IS NOT NULL)::int
+                      WHEN "ringapp_property"."symmetric" IS FALSE THEN CAST("ringapp_ringproperty"."has_on_left" IS NOT NULL AS INT) + CAST("ringapp_ringproperty"."has_on_right" IS NOT NULL AS INT)
                   END AS score
            FROM "ringapp_ringproperty"
            INNER JOIN "ringapp_property" ON ("ringapp_ringproperty"."property_id" = "ringapp_property"."id")
