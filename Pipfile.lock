@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "78b5691e2ac3e3dc90267b47d7928b41a8c8426aa78cff1f05f76af7622b7757"
+            "sha256": "0c727d181989585f344db4a0708ea5030827ba336982b36831e6a1591d5c5d7b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -49,8 +49,12 @@
             "version": "==0.4.0"
         },
         "django-publications": {
-            "git": "https://github.com/rschwiebert/django-publications.git",
-            "ref": "19dd80fef4d1defc6d553eaddab5aa028b0d4f57"
+            "hashes": [
+                "sha256:2d044cdb41ad32c33c81c579e692103adb843207a35c7d4b6ce1d69c8ba351d4",
+                "sha256:356202f7ba4f3132f2701d671f24f7c3784fb2c8817671af97d7cf69e8558372"
+            ],
+            "index": "pypi",
+            "version": "==1.1.0"
         },
         "django-ratelimit": {
             "hashes": [
