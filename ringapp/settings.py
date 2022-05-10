@@ -175,3 +175,5 @@ LOGGING = {
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals(), logging=False)
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -13,7 +13,7 @@ from django.core.cache import cache
 from django.urls import reverse
 from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404, HttpResponseNotModified
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from django.views.generic.edit import CreateView
