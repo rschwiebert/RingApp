@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 from time import time
 import logging
@@ -34,7 +35,7 @@ class LogicEngine(object):
         A big singleton object whose function is to do the deduction process
         on all rings in storage using all logic in storage
         """
-        if LogicEngine.__instance is None:
+        if LogicEngine.__instance is None and os.environ.get('DISABLE_ENGINE', False) is False:
             log.info('Bootstrapping LogicEngine for the first time')
             t0 = time()
             LogicEngine.__instance = object.__new__(cls)

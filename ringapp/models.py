@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from publications import models as pmodels
 
 import textwrap
@@ -86,7 +86,7 @@ class Citation(models.Model):
 class Property(models.Model):
     name = models.CharField(max_length=128)
     definition = models.TextField(max_length=1024)
-    symmetric = models.NullBooleanField()
+    symmetric = models.BooleanField(null=True)
     commutative_only = models.BooleanField(default=False)
     citation = models.ManyToManyField('Citation', blank=True)
 
@@ -131,7 +131,7 @@ class Logic(models.Model):
     hyps = models.ManyToManyField('PropertySide', related_name='hypotheses', verbose_name="hypotheses")
     concs = models.ManyToManyField('PropertySide', related_name='conclusions', verbose_name="conclusions")
     variety = models.PositiveSmallIntegerField(choices=[(0, '===>'), (1, '<==>')], null=True)
-    symmetric = models.NullBooleanField()
+    symmetric = models.BooleanField(null=True)
     citation = models.ManyToManyField('Citation', blank=True)
 
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
@@ -179,7 +179,7 @@ class Ring(models.Model):
 
     krull_dim = models.CharField(max_length=16, default='(unknown)', blank=True, null=True)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
-    is_commutative = models.NullBooleanField()
+    is_commutative = models.BooleanField(null=True)
 
     optional_template = models.CharField(max_length=128, blank=True, default='')
 
@@ -193,10 +193,10 @@ class Ring(models.Model):
 class RingProperty(models.Model):
     ring = models.ForeignKey('Ring', on_delete=models.CASCADE)
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
-    has_on_left = models.NullBooleanField()
+    has_on_left = models.BooleanField(null=True)
     reason_left = models.CharField(max_length=200, blank=True, null=True)
     citation_left = models.ManyToManyField('Citation', related_name='citation_left', blank=True)
-    has_on_right = models.NullBooleanField()
+    has_on_right = models.BooleanField(null=True)
     reason_right = models.CharField(max_length=200, blank=True, null=True)
     citation_right = models.ManyToManyField('Citation', related_name='citation_right', blank=True)
 
@@ -225,7 +225,7 @@ class RingProperty(models.Model):
 class Dimension(models.Model):
     name = models.CharField(max_length=128)
     definition = models.TextField(max_length=1024)
-    symmetric = models.NullBooleanField()
+    symmetric = models.BooleanField(null=True)
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -287,7 +287,7 @@ class Metaproperty(models.Model):
 class PropertyMetaproperty(models.Model):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
     metaproperty = models.ForeignKey('Metaproperty', on_delete=models.CASCADE)
-    has_metaproperty = models.NullBooleanField()
+    has_metaproperty = models.BooleanField(null=True)
     example = models.ForeignKey('Ring', blank=True, null=True, on_delete=models.CASCADE)
     citation = models.ManyToManyField('Citation', blank=True)
 
