@@ -11,11 +11,19 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import boto3
 import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.makedirs(os.path.join(BASE_DIR, 'db'), exist_ok=True)
+SQLITE_PATH = os.path.join(BASE_DIR, 'db', 'ringapp.db')
+
+if not os.path.exists(SQLITE_PATH):
+    os.makedirs(os.path.dirname(SQLITE_PATH), exist_ok=True)
+    s3 = boto3.client('s3')
+    with open(SQLITE_PATH, 'wb') as f:
+        s3.download_fileobj(os.environ['S3_BUCKET_NAME'], 'ringapp.db', f)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -31,6 +39,7 @@ LOGIN_REDIRECT_URL = '/profile'
 INSTALLED_APPS = [
     'ringapp',
     'web',
+    'dart_data',
     'registration',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -200,3 +209,6 @@ LOGGING = {
 django_heroku.settings(locals(), logging=False)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# For use with the db_to_data import/export management command
+EXPORT_ROOT_DIR = os.environ.get('EXPORT_ROOT_DIR')

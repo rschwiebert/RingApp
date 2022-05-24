@@ -7,7 +7,8 @@ import re
 import json
 import os
 from copy import deepcopy
-import sys
+from pathlib import Path
+from bisect import insort
 
 from abc import ABC, abstractmethod
 from functools import partial
@@ -16,14 +17,8 @@ from typing import List, Sequence
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-
-sidetype_choices = [(0, ''),
-                    (1, 'left and right'),
-                    (2, 'left'),
-                    (3, 'right'),
-                    (4, 'left or right'), ]
-
-ROOT_DIR = '/Users/ryanschwiebert/PycharmProjects/dart-data/'
+from ringapp.constants import sidetype_choices
+from ringapp.settings import EXPORT_ROOT_DIR
 
 
 def tag(prefix: str = "", pk: int = 0):
@@ -77,7 +72,7 @@ class Serializer(SerializerBase):
         return fields
 
     def filename(self, pk):
-        directory = os.path.join(ROOT_DIR, *self.modelkey.split('.'))
+        directory = os.path.join(EXPORT_ROOT_DIR, *self.modelkey.split('.'))
         path = os.path.join(directory, f'{self.prefix}_{pk:0>6d}.yaml')
         if self.leaf is False:
             return os.path.join(os.path.splitext(path)[0], 'data.yaml')
@@ -88,7 +83,7 @@ class Serializer(SerializerBase):
     def regex(self):
         sample_path = self.filename(1)
         regex_string = sample_path.replace(tag(self.prefix, 1),  '(' + self.prefix + '_[0-9]{6})')
-        regex_string = regex_string.removeprefix(ROOT_DIR)
+        regex_string = regex_string.removeprefix(EXPORT_ROOT_DIR)
         return re.compile(regex_string)
 
     def data_to_file(self, pk, data):
@@ -170,7 +165,7 @@ class Subserializer(SerializerBase):
                                            '(' + self.parent_serializer.prefix + '_[0-9]{6})')
         regex_string = regex_string.replace(tag(self.foreign_serializer.prefix, 1),
                                             '(' + self.foreign_serializer.prefix + '_[0-9]{6})')
-        regex_string = regex_string.removeprefix(ROOT_DIR)
+        regex_string = regex_string.removeprefix(EXPORT_ROOT_DIR)
         return re.compile(regex_string)
 
     def process_from_storage(self, path):
@@ -316,6 +311,19 @@ class PublicationTypeSerializer(Serializer):
     modelkey = 'publications.type'
 
 
+class CustomLinkSerializer(Serializer):
+    prefix = 'PUBLINK'
+    modelkey = 'publications.customlink'
+
+    def to_storage(self, fields):
+        fields['publication'] = tag(PublicationSerializer.prefix, fields['publication'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['publication'] = tag_to_id(data['publication'])
+        return data
+
+
 class PropertySideSerializer(Serializer):
     prefix = 'PSIDE'
     modelkey = 'ringapp.propertyside'
@@ -445,6 +453,10 @@ class ErratumSerializer(Serializer):
 
 
 serializers = [
+    PublicationListSerializer,
+    PublicationTypeSerializer,
+    PublicationSerializer,
+    CustomLinkSerializer,
     KeywordSerializer,
     DimensionSerializer,
     SubsetSerializer,
@@ -453,19 +465,16 @@ serializers = [
     RingPropertySerializer,
     MetaPropertySerializer,
     PropMetapropSubSerializer,
+    TheoremCategorySerializer,
     CitationSerializer,
-    PublicationSerializer,
-    PublicationListSerializer,
-    PublicationTypeSerializer,
-    LogicSerializer,
-    PropertySideSerializer,
     TheoremSerializer,
     ErratumSerializer,
     RingSubsetSerializer,
     RingDimensionSerializer,
-    TheoremCategorySerializer,
+    PropertySideSerializer,
+    LogicSerializer,
 ]
-
+serializer_order = [cls.modelkey for cls in serializers]
 serializers = {cls.modelkey: cls() for cls in serializers}
 
 
@@ -477,9 +486,12 @@ class Command(BaseCommand):
         export_parser = subparsers.add_parser('export', help='database to file')
         test_parser = subparsers.add_parser('test', help='database to file')
 
-        import_parser.add_argument('path', nargs='+')
-
     def handle(self, *args, **options):
+        if EXPORT_ROOT_DIR is None:
+            raise CommandError('EXPORT_ROOT_DIR env var must be set.')
+        elif Path(EXPORT_ROOT_DIR).is_dir() is False:
+            raise CommandError('The EXPORT_ROOT_DIR must exist!')
+
         if options.get('command') == 'export':
             output = io.StringIO()
             call_command('dumpdata', database='ringapp_data', format='jsonl',
@@ -496,17 +508,17 @@ class Command(BaseCommand):
                 serializer.process_to_storage(item)
 
         elif options.get('command') == 'import':
-            lines = []
-            for path in options.get('path'):
-                print(path)
+            entries = []
+            for path in Path().rglob('*.yaml'):
+                path = str(path)
                 for model, serializer in serializers.items():
-                    print(f"matching against {serializer.regex.pattern}")
                     match = serializer.regex.search(path)
                     if match is not None:
                         data = serializer.process_from_storage(path)
-                        lines.append(json.dumps(data, sort_keys=True) + '\n')
+                        insort(entries, data, key=lambda x: serializer_order.index(x['model']))
                         break
 
+            lines = [json.dumps(item, sort_keys=True) + '\n' for item in entries]
             with tempfile.NamedTemporaryFile(mode='r+', dir=os.getcwd(), suffix='.jsonl') as f:
                 for line in lines:
                     f.write(line)
