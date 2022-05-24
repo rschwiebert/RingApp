@@ -15,6 +15,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
+from django.template.exceptions import TemplateDoesNotExist
 
 from ratelimit.decorators import ratelimit
 from ratelimit.exceptions import Ratelimited
@@ -24,6 +25,7 @@ from ringapp.models import *
 from web.models import *
 from ringapp import forms
 from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
+from ringapp.management.commands.db_to_data import tag
 
 from ringapp.SearchUtils import (mirror_search_terms,
                                  detect_asymmetric_search,
@@ -379,10 +381,13 @@ class DetailTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         ring = Ring.objects.get(id=kwargs['pk'])
-        template = ring.optional_template
-        if template == '':
-            template = 'no_expanded_details.html'
-        self.template_name = 'ringapp/expanded_details/' + template
+        try:
+            tname = f'dart_data/{tag("RING", ring.id)}_details.html'
+            render(self.request, tname)
+            self.template_name = tname
+        except TemplateDoesNotExist:
+            self.template_name = 'dart_data/no_expanded_details.html'
+
         context['ring'] = ring
 
         return context
