@@ -212,3 +212,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # For use with the db_to_data import/export management command
 EXPORT_ROOT_DIR = os.environ.get('EXPORT_ROOT_DIR')
+
+# To redirect http to https in production
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
