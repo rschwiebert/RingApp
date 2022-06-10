@@ -452,6 +452,121 @@ class ErratumSerializer(Serializer):
         return data
 
 
+class ModuleSerializer(Serializer):
+    modelkey = 'moduleapp.module'
+    prefix = "MOD"
+    leaf = False
+
+    def to_storage(self, fields):
+        fields['citation'] = ids_to_tags(ModCitationSerializer.prefix, fields['citation'])
+        # fields['keywords'] = ids_to_tags(KeywordSerializer.prefix, fields['keywords'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['citation'] = tags_to_ids(data['citation'])
+        # data['keywords'] = tags_to_ids(data['keywords'])
+        return data
+
+
+class ModPropertySerializer(Serializer):
+    prefix = 'MODPROP'
+    modelkey = 'moduleapp.property'
+    leaf = False
+
+    def to_storage(self, fields):
+        fields['citation'] = ids_to_tags(ModCitationSerializer.prefix, fields['citation'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['citation'] = tags_to_ids(data['citation'])
+        return data
+
+
+class ModLogicSerializer(Serializer):
+    prefix = 'MODLOG'
+    modelkey = 'moduleapp.logic'
+
+    def to_storage(self, fields):
+        fields['citation'] = ids_to_tags(ModCitationSerializer.prefix, fields['citation'])
+        fields['hyps'] = ids_to_tags(ModPropertySerializer.prefix, fields['hyps'])
+        fields['ring_hyps'] = ids_to_tags(PropertySideSerializer.prefix, fields['ring_hyps'])
+        fields['concs'] = ids_to_tags(ModPropertySerializer.prefix, fields['concs'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['citation'] = tags_to_ids(data['citation'])
+        data['hyps'] = tags_to_ids(data['hyps'])
+        data['ring_hyps'] = tags_to_ids(data['ring_hyps'])
+        data['concs'] = tags_to_ids(data['concs'])
+        return data
+
+
+class ModMetaPropertySerializer(Serializer):
+    prefix = 'MODMETAPROP'
+    modelkey = 'moduleapp.metaproperty'
+
+
+class ModPropMetapropSubSerializer(Subserializer):
+    modelkey = 'moduleapp.propertymetaproperty'
+    parent_serializer = ModPropertySerializer()
+    foreign_serializer = ModMetaPropertySerializer()
+    subfolder = "metaproperties"
+    parent_key_name = 'property'
+    foreign_key_name = 'metaproperty'
+
+    def to_storage(self, fields, keys):
+        fields['crosstable_pk'] = keys['crosstable_pk']
+
+        fields['property'] = tag(ModPropertySerializer.prefix, fields['property'])
+        fields['metaproperty'] = tag(ModMetaPropertySerializer.prefix, fields['metaproperty'])
+        if fields['example']:
+            fields['example'] = tag(ModuleSerializer.prefix, fields['example'])
+        return fields
+
+    def to_dbjson(self, data, parent_pk, foreign_pk):
+        data['property'] = tag_to_id(data['property'])
+        data['metaproperty'] = tag_to_id(data['metaproperty'])
+        if data['example'] is not None:
+            data['example'] = tag_to_id(data['example'])
+
+        return data
+
+
+class ModulePropertySerializer(Subserializer):
+    modelkey = 'moduleapp.moduleproperty'
+    parent_serializer = ModuleSerializer()
+    foreign_serializer = ModPropertySerializer()
+    subfolder = "properties"
+    parent_key_name = 'module'
+    foreign_key_name = 'property'
+
+    def to_storage(self, fields, keys):
+        fields['crosstable_pk'] = keys['crosstable_pk']
+        fields['citation'] = ids_to_tags(ModCitationSerializer.prefix, fields['citation'])
+        fields['property'] = tag(ModPropertySerializer.prefix, fields['property'])
+        fields['module'] = tag(ModuleSerializer.prefix, fields['module'])
+        return fields
+
+    def to_dbjson(self, data, parent_pk, foreign_pk):
+        data['module'] = parent_pk
+        data['property'] = foreign_pk
+        data['citation'] = tags_to_ids(data['citation'])
+        return data
+
+
+class ModCitationSerializer(Serializer):
+    prefix = 'MODCITE'
+    modelkey = 'moduleapp.citation'
+
+    def to_storage(self, fields):
+        fields['publication'] = tag(prefix=PublicationSerializer.prefix, pk=fields['publication'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['publication'] = tag_to_id(data['publication'])
+        return data
+
+
 serializers = [
     PublicationListSerializer,
     PublicationTypeSerializer,
@@ -473,6 +588,13 @@ serializers = [
     RingDimensionSerializer,
     PropertySideSerializer,
     LogicSerializer,
+    ModuleSerializer,
+    ModPropertySerializer,
+    ModLogicSerializer,
+    ModMetaPropertySerializer,
+    ModPropMetapropSubSerializer,
+    ModulePropertySerializer,
+    ModCitationSerializer
 ]
 serializer_order = [cls.modelkey for cls in serializers]
 serializers = {cls.modelkey: cls() for cls in serializers}

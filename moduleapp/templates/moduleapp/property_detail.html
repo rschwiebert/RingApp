@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Property detail - {{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 content">
+            <div class="panel panel-default">
+              <div class="panel-heading"><h1>Property: {{ object.name }}</h1></div>
+              <div class="panel-body">
+
+
+                {% if object %}
+                    <p>Definition: {{ object.definition }}</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'module-results' %}?H={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Modules having property: {{ has_count }}</a></li>
+                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'module-results' %}?L={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Modules not having property: {{ lacks_count }}</a></li>
+                    </ul>
+
+
+              </div>
+            </div>
+        </div>
+        {% if object.citation.all %}
+        <div class="col-md-6 content">
+            <h2>Resources for learning about this property:</h2>
+            <ul>
+                {% for citation in object.citation.all %}
+                <li>{{ citation }}</li>
+                {% endfor%}
+            </ul>
+        {% else %}
+                <p>(No citations retrieved.)</p>
+        {% endif %}
+        {% if metaproperties %}
+            <h2>Metaproperties:</h2>
+            {% if has_mp %}
+            This property has the following metaproperties
+            <ul>
+            {% for item in has_mp %}
+            <li>{{ item.metaproperty.name }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+            {% if lacks_mp %}
+          This property <b>does not</b> have the following metaproperties
+            <ul>
+            {% for item in lacks_mp %}
+            <li>{{ item.metaproperty.name }}
+            {% if item.example is not None %}
+                (<a href="{% url 'ring-detail' item.example.id %}">counterexample</a>)
+            {% else %}
+                (counterexample needed)
+            {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+        {% else %}
+            <p>(No metaproperty information retrieved.)</p>
+        {% endif %}
+
+
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
