@@ -9,7 +9,7 @@
     <div class="jumbotron">
         <div class="container">
             <h1 align='center'>Welcome to the Database of Ring Theory!</h1>
-            <p align='center'>A repository of rings, their properties,
+            <p align='center'>A repository of rings and their properties, modules and their properties,
                 and more ring theory stuff.</p>
             <p align='center'><a class="btn btn-primary btn-lg"
                                  href="{% url 'about' %}" role="button">
@@ -19,17 +19,22 @@
     <div class="container">
         <div class="col-md-4 content">
             <h2>Browse <span class="icon-large icon-list"></span></h2>
-            <p>See rings and properties on record.</p>
+            <p>See rings, modules, and properties on record.</p>
             <p><a class="btn btn-default" href="{% url 'ring-list' %}" role="button">
-                All rings &raquo;</a><a class="btn btn-default"
+                All rings &raquo;</a><a class="btn btn-default" href="{% url 'property-list' %}" role="button">
+                All ring properties &raquo;</a>
+                </p>
+            <p><a class="btn btn-default"
                                         href="{% url 'commring-list' %}" role="button">
-                Commutative rings &raquo;</a></p>
-            <p><a class="btn btn-default" href="{% url 'property-list' %}" role="button">
-                All properties &raquo;</a><a class="btn btn-default"
+                Commutative rings &raquo;</a><a class="btn btn-default"
                                              href="{% url 'commproperty-list' %}" role="button">
-                Commutative properties &raquo;</a></p>
-            <p><a class="btn btn-default" href="{% url 'dimension-list' %}" role="button">
-                By dimension &raquo;</a></p>
+                Commutative ring properties &raquo;</a></p>
+            <p><a class="btn btn-default"
+                                        href="{% url 'module-list' %}" role="button">
+                Modules &raquo;</a><a class="btn btn-default"
+                                             href="{% url 'module-property-list' %}" role="button">
+                Module properties &raquo;</a></p>
+
             <h2>Search <span class="icon-large icon-search"></span></h2>
             <p>You can search for rings by their properties. If you are only
                 interested in commutative rings, try the specialized search with
@@ -37,10 +42,14 @@
             <p><a class="btn btn-default" href="{% url 'search' %}" role="button">
                 All rings &raquo;</a><a class="btn btn-default"
                                         href="{% url 'csearch' %}" role="button">
-                Commutative rings &raquo;</a></p>
+                Commutative rings &raquo;</a><a class="btn btn-default"
+                                        href="{% url 'module-search' %}" role="button">
+                Modules &raquo;</a></p>
 
             <p><a class="btn btn-default" href="{% url 'ksearch' %}" role="button">
-                By keyword &raquo;</a></p>
+                By ring keyword &raquo;</a></p>
+            <p><a class="btn btn-default" href="{% url 'dimension-list' %}" role="button">
+                By ring dimension &raquo;</a></p>
 
             <h2>Learn <span class="icon-large icon-book"></span></h2>
             <p>View a list of resources for studying ring theory.</p>

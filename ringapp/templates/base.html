@@ -86,14 +86,30 @@
                 <li><a href="{% url 'commring-list' %}">Browse commutative rings</a></li>
                 <li><a href="{% url 'csearch' %}">Search commutative rings</a></li>
                 <hr />
+                <li><a href="{% url 'property-list'%}">Browse ring properties</a></li>
+                <li><a href="{% url 'commproperty-list'%}">Browse commutative ring properties</a></li>
+                <hr />
                 <li><a href="{% url 'ksearch' %}">Search rings by keyword</a></li>
                 <li><a href="{% url 'dimension-list' %}">Browse rings by dimension</a></li>
-
-
               </ul>
             </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                  Modules
+                  <span class="caret"></span>
+                </a>
+              <ul class="dropdown-menu" role="menu">
 
-            <li id="propertiesNav"><a href="{% url 'property-list'%}">Properties</a></li>
+                <li><a href="{% url 'module-list' %}">Browse all modules</a></li>
+                <li><a href="{% url 'module-search' %}">Search all modules</a></li>
+                <hr />
+
+                <li><a href="{% url 'module-property-list'%}">Browse module properties</a></li>
+<!--                <hr />-->
+<!--                <li><a href="{% url 'ksearch' %}">Search rings by keyword</a></li>-->
+<!--                <li><a href="{% url 'dimension-list' %}">Browse rings by dimension</a></li>-->
+              </ul>
+            </li>
             <li id="theoremsNav"><a href="{% url 'theorem-list'%}">Theorems</a></li>
             <li id="bibliographyNav"><a href="{% url 'bibliography'%}">Citations</a></li>
             <li id="contribNav"><a href="{% url 'contribute'%}">Contribute</a></li>

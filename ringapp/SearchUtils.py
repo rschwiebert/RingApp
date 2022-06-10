@@ -3,6 +3,7 @@ from django.db.models import Q
 from sympy import And
 from ringapp.LogicUtils import LogicEngine
 from ringapp.models import Ring, Property, RingProperty
+import moduleapp.models
 
 log = logging.getLogger(__name__)
 
@@ -99,6 +100,41 @@ def ring_search(terms):
         narrow = narrow.filter(id__in=n_ids)
 
     wide = wide.exclude(id__in=[ring.id for ring in narrow])
+    log.debug('Returned {} hits and {} maybes'.format(narrow.count(), wide.count()))
+    return narrow, wide
+
+
+def module_search(terms):
+    """
+    Return two lists of Module objects based on search parameters
+    :param terms: List of strings matching (H|L)[0-9]+
+                  <has/lacks><propertyid>
+    :return: a pair of lists of Module objects. The first one contains definite matches,
+             the second contains potential matches
+    """
+    log.debug('Search request: {}'.format(terms))
+    narrow = moduleapp.models.Module.objects.all()
+    wide = moduleapp.models.Module.objects.all()
+
+    for term in terms:
+        qsn = moduleapp.models.ModuleProperty.objects.all()
+        qsw = moduleapp.models.ModuleProperty.objects.all()
+        if term[0] == 'H':
+            qsw = qsw.filter(property_id=term[1:], has=False)
+            qsn = qsn.filter(property_id=term[1:], has=True)
+        elif term[0] == 'L':
+            qsw = qsw.filter(property_id=term[1:], has=True)
+            qsn = qsn.filter(property_id=term[1:], has=False)
+        else:
+            raise Exception('Invalid search term encountered.')
+
+        w_ids = qsw.values_list('module_id', flat=True)
+        wide = wide.exclude(id__in=w_ids)
+
+        n_ids = qsn.values_list('module_id', flat=True)
+        narrow = narrow.filter(id__in=n_ids)
+
+    wide = wide.exclude(id__in=[module.id for module in narrow])
     log.debug('Returned {} hits and {} maybes'.format(narrow.count(), wide.count()))
     return narrow, wide
 

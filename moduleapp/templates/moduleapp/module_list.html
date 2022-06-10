@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block title %}Modules{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading"><h1>Modules</h1></div>
+      <p><i>(All modules are right modules.)</i></p>
+      <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>% Complete</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if object_list %}
+        {% for item in object_list %}
+        <tr>
+        <td><a href="{% url 'module-detail' item.id %}" >
+            <div style="height:100%;width:100%">{{ item.name }} over the {% if item.opposite_ring %}opposite ring of{% else %}ring{% endif %} {{ item.ring.name }} </div></a></td>
+        <td><div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.percent_known | mul:'100' }}%;">{{ item.percent_known|mul:'100'|floatformat }}%</div>
+            </div></td>
+        </tr>
+        {% endfor %}
+
+      {% else %}
+        <tr><td>(No modules were retrieved.)</td></tr>
+      {% endif %}
+      </tbody>
+      </table>
+  </div>
+</div>
+
+{% endblock %}

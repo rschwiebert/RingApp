@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Module properties{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading"><h1>Module properties</h1>
+      <p>This is the comprehensive list of module types used at present.</p>
+    </div>
+    <div class="list-group">
+	{% if object_list %}
+	    {% for item in object_list %}
+		<a class="list-group-item" href="{% url 'module-property-detail' item.id %}">{{ item.name }}</a>
+	    {% endfor %}
+	{% else %}
+	    <p class="list-group-item">(No properties were retrieved.)</p>
+	{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

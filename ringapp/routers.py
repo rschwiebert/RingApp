@@ -1,7 +1,7 @@
 class RingAppRouter(object):
 
     def db_for_read(self, model, **hints):
-        if model._meta.app_label == 'ringapp':
+        if model._meta.app_label in ('ringapp', 'moduleapp'):
             return 'ringapp_data'
 
         elif model._meta.app_label == 'publications':
@@ -11,7 +11,7 @@ class RingAppRouter(object):
             return 'default'
 
     def db_for_write(self, model, **hints):
-        if model._meta.app_label == 'ringapp':
+        if model._meta.app_label in ('ringapp', 'moduleapp'):
             return 'ringapp_data'
 
         elif model._meta.app_label == 'publications':
@@ -26,7 +26,7 @@ class RingAppRouter(object):
         if model_name == 'suggestion' and db == 'default':
             return True
 
-        elif app_label in ('ringapp', 'publications'):
+        elif app_label in ('ringapp', 'moduleapp', 'publications'):
             if db == 'ringapp_data':
                 return True
             else:
