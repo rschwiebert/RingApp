@@ -208,7 +208,7 @@ LOGGING = {
 # Configure Django App for Heroku.
 django_heroku.settings(locals(), logging=False)
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # For use with the db_to_data import/export management command
 EXPORT_ROOT_DIR = os.environ.get('EXPORT_ROOT_DIR')
