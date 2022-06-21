@@ -15,11 +15,12 @@ from bisect import insort
 
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import List, Sequence
+from typing import List, Sequence, Any, Dict
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+from ringapp.SuggestionUtils import humanize_souffle, humanize_souffle_list
 from ringapp.constants import sidetype_choices
 from ringapp.settings import EXPORT_ROOT_DIR
 
@@ -106,7 +107,7 @@ class Serializer(SerializerBase):
     def get_keys(self, obj):
         return dict(pk=int(obj['pk']))
 
-    def process_from_storage(self, path):
+    def process_from_storage(self, path) -> Dict[str, Any]:
         mat = self.regex.search(path)
 
         if mat is None:
@@ -363,14 +364,15 @@ class LogicSerializer(Serializer):
 
     def to_storage(self, fields):
         fields['citation'] = ids_to_tags(CitationSerializer.prefix, fields['citation'])
-        fields['hyps'] = ids_to_tags(PropertySideSerializer.prefix, fields['hyps'])
-        fields['concs'] = ids_to_tags(PropertySideSerializer.prefix, fields['concs'])
+        hyps = humanize_souffle_list(fields['hyps'])
+        concs = humanize_souffle_list(fields['concs'])
+        variety_display = " ===> " if fields['variety'] == 0 else " <==> "
+        fields['readable'] = hyps + variety_display + concs
         return fields
 
     def to_dbjson(self, data):
         data['citation'] = tags_to_ids(data['citation'])
-        data['hyps'] = tags_to_ids(data['hyps'])
-        data['concs'] = tags_to_ids(data['concs'])
+        data.pop('readable')
         return data
 
 
@@ -505,17 +507,16 @@ class ModLogicSerializer(Serializer):
     modelkey = 'moduleapp.logic'
 
     def to_storage(self, fields):
-        fields['citation'] = ids_to_tags(ModCitationSerializer.prefix, fields['citation'])
-        fields['hyps'] = ids_to_tags(ModPropertySerializer.prefix, fields['hyps'])
-        fields['ring_hyps'] = ids_to_tags(PropertySideSerializer.prefix, fields['ring_hyps'])
-        fields['concs'] = ids_to_tags(ModPropertySerializer.prefix, fields['concs'])
+        fields['citation'] = ids_to_tags(CitationSerializer.prefix, fields['citation'])
+        hyps = humanize_souffle_list(fields['hyps'])
+        concs = humanize_souffle_list(fields['concs'])
+        variety_display = " ===> " if fields['variety'] == 0 else " <==> "
+        fields['readable'] = f"{hyps} {variety_display} {concs}"
         return fields
 
     def to_dbjson(self, data):
         data['citation'] = tags_to_ids(data['citation'])
-        data['hyps'] = tags_to_ids(data['hyps'])
-        data['ring_hyps'] = tags_to_ids(data['ring_hyps'])
-        data['concs'] = tags_to_ids(data['concs'])
+        data.pop('readable')
         return data
 
 
@@ -691,6 +692,9 @@ class Command(BaseCommand):
 
         elif options.get('command') == 'test':
             for mname in serializers.keys():
+                if mname == 'ringapp.ringproperty':
+                    log.info(f'Skipping {mname}')
+                    continue
                 log.info(f'checking {mname}')
                 output = io.StringIO()
                 call_command('dumpdata', mname, pks='1,3', database='ringapp_data',
@@ -707,5 +711,8 @@ class Command(BaseCommand):
                         continue
                     path = serializer.process_to_storage(item)
                     recovered = serializer.process_from_storage(path)
-                    assert recovered == original
+                    if isinstance(recovered, list):
+                        recovered = next(item for item in recovered if item['pk'] == original['pk'])
+                    assert recovered == original, f"not equal:\n\t{recovered}\n\t{original}"
                     log.info('...checked out')
+                    break

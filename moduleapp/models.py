@@ -1,4 +1,8 @@
+from typing import List
+
 from django.db import models
+
+from datalog.souffle_utils import logic_to_rulelist
 
 
 class Module(models.Model):
@@ -46,25 +50,35 @@ class ModuleProperty(models.Model):
 
 
 class Logic(models.Model):
-    hyps = models.ManyToManyField('moduleapp.Property', related_name='hypotheses', verbose_name="hypotheses")
-    ring_hyps = models.ManyToManyField('ringapp.PropertySide',
-                                       blank=True,
-                                       related_name='ring_hypotheses',
-                                       verbose_name="ring_hypotheses")
-    concs = models.ManyToManyField('moduleapp.Property', related_name='conclusions', verbose_name="conclusions")
+    hyps = models.CharField(max_length=255, null=True, blank=False)
+    concs = models.CharField(max_length=255, null=True, blank=False)
     variety = models.PositiveSmallIntegerField(choices=[(0, '===>'), (1, '<==>')], null=True)
     citation = models.ManyToManyField('Citation', blank=True)
 
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        hyps = ' and '.join([str(rp) for rp in self.hyps.all()])
-        ring_hyps = ' and '.join([str(rp) for rp in self.ring_hyps.all()])
-        concs = ' and '.join([str(rp) for rp in self.concs.all()])
-        return f'Module {hyps}{f" and ring {ring_hyps}" if ring_hyps else ""} {self.get_variety_display()} {concs}'
+        return f'Module {self.hyps} {self.get_variety_display()} {self.concs}'
 
     def __repr__(self):
         return '<moduleapp.Logic: id={}>'.format(id(self))
+
+    def to_souffle(self) -> List[str]:
+        """
+        A list of lines to use in a souffle-style datalog program that includes all
+        inferential rules based on this logic.
+        """
+        hyps = self.hyps.split(' AND ')
+        concs = self.concs.split(' AND ')
+
+        if self.variety == 1:
+            ruleset = logic_to_rulelist(hyps, concs) | logic_to_rulelist(concs, hyps)
+        else:
+            ruleset = logic_to_rulelist(hyps, concs)
+
+        ruleset.discard('')
+        rulelist = list(sorted(map(lambda x: x + f'  // logic {self.id}', ruleset)))
+        return rulelist
 
 
 class PropertyMetaproperty(models.Model):

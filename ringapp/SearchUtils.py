@@ -1,7 +1,7 @@
 import logging
-from django.db.models import Q
-from sympy import And
-from ringapp.LogicUtils import LogicEngine
+from typing import Tuple, List
+
+from django.db.models import Q, QuerySet
 from ringapp.models import Ring, Property, RingProperty
 import moduleapp.models
 
@@ -31,27 +31,7 @@ def mirror_search_terms(terms):
     return terms
 
 
-def get_search_expression(terms):
-    """
-    Return logical expression in sympy boolean algebra for search expression
-    :param terms: List of strings matching (H|L)[0-9]+(l|r)? 
-                  <has/lacks><ringid>[<left/right>]
-    :return: A logical statement in PROPERTY_SYMBOL_MAP variables
-    """
-    log_eng = LogicEngine()
-    term_to_symbol = log_eng.term_to_symbol
-    has_props = [term[1:] for term in terms if term.startswith('H')]
-    has_props = [term_to_symbol[term] for term in has_props]
-
-    lacks_props = [term[1:] for term in terms if term.startswith('L')]
-    lacks_props = [~term_to_symbol[term] for term in lacks_props]
-
-    props = has_props + lacks_props
-    search_expression = And(*props)
-    return search_expression
-
-
-def ring_search(terms):
+def ring_search(terms: List[str]) -> Tuple[QuerySet, QuerySet]:
     """
     Return two lists of Ring objects based on search parameters
     :param terms: List of strings matching (H|L)[0-9]+(l|r)? 

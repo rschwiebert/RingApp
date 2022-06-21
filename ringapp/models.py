@@ -8,6 +8,10 @@ from publications import models as pmodels
 import textwrap
 
 from ringapp.constants import sidetype_choices
+from datalog.souffle_utils import logic_to_rulelist, ring_mirror
+
+from typing import List
+
 
 def symmetrize_sides(rp):
     if rp.has_on_left is not None and rp.has_on_right is None:
@@ -123,8 +127,8 @@ class PropertySide(models.Model):
 
 
 class Logic(models.Model):
-    hyps = models.ManyToManyField('PropertySide', related_name='hypotheses', verbose_name="hypotheses")
-    concs = models.ManyToManyField('PropertySide', related_name='conclusions', verbose_name="conclusions")
+    hyps = models.CharField(max_length=255, null=True, blank=False)
+    concs = models.CharField(max_length=255, null=True, blank=False)
     variety = models.PositiveSmallIntegerField(choices=[(0, '===>'), (1, '<==>')], null=True)
     symmetric = models.BooleanField(null=True)
     citation = models.ManyToManyField('Citation', blank=True)
@@ -132,12 +136,30 @@ class Logic(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        hyps = ' and '.join([str(rp) for rp in self.hyps.all()])
-        concs = ' and '.join([str(rp) for rp in self.concs.all()])
-        return '{} {} {}'.format(hyps, self.get_variety_display(), concs)
+        return f'{self.hyps} {self.get_variety_display()} {self.concs}'
 
     def __repr__(self):
         return '<Logic: id={}>'.format(id(self))
+
+    def to_souffle(self) -> List[str]:
+        """
+        A list of lines to use in a souffle-style datalog program that includes all
+        inferential rules based on this logic.
+        """
+        hyps = self.hyps.split(' AND ')
+        concs = self.concs.split(' AND ')
+
+        if self.variety == 1:
+            ruleset = logic_to_rulelist(hyps, concs) | logic_to_rulelist(concs, hyps)
+        else:
+            ruleset = logic_to_rulelist(hyps, concs)
+
+        if hasattr(self, 'symmetric') and self.symmetric is False:
+            ruleset |= ring_mirror(ruleset)
+
+        ruleset.discard('')
+        rulelist = list(sorted(map(lambda x: x + f'  // logic {self.id}', ruleset)))
+        return rulelist
 
 
 class Theorem(models.Model):

@@ -1,0 +1,25 @@
+/* Establish models,inputs and outputs */
+.decl ring_known(mode: symbol,side: number,property:number)
+.input ring_known
+.decl module_known(mode: symbol,property:number)
+.input module_known
+.decl ring_deduced(mode: symbol,side: number,property:number)
+.decl module_deduced(mode: symbol,property:number)
+/* .output ring_deduced */
+.decl ring_contradictions(property: number)
+.output ring_contradictions
+.decl module_contradictions(property: number)
+.output module_contradictions
+.decl ring_discovered(mode: symbol,side: number,property:number)
+.output ring_discovered
+.decl module_discovered(mode: symbol,property:number)
+.output module_discovered
+/* BEGIN RULES */
+ring_deduced(W,X,Y) :- ring_known(W,X,Y).  // inclusion rule
+module_deduced(X,Y) :- module_known(X,Y).  // inclusion rule
+ring_contradictions(Y) :- ring_deduced("has",X,Y),ring_deduced("lacks",X,Y).
+module_contradictions(X) :- module_deduced("has",X),module_deduced("lacks",X).
+ring_discovered(X,0,Z) :- ring_deduced(X,0,Z),!ring_known(X,0,Z).
+ring_discovered(X,2,Z) :- ring_deduced(X,2,Z),!ring_known(X,2,Z).
+ring_discovered(X,3,Z) :- ring_deduced(X,3,Z),!ring_known(X,3,Z).
+module_discovered(X,Y) :- module_deduced(X,Y),!module_known(X,Y).

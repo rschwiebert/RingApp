@@ -17,13 +17,15 @@ import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.makedirs(os.path.join(BASE_DIR, 'db'), exist_ok=True)
-SQLITE_PATH = os.path.join(BASE_DIR, 'db', 'ringapp.db')
+SQLITE_NAME = 'ringapp.db'
+
+SQLITE_PATH = os.path.join(BASE_DIR, 'db', SQLITE_NAME)
 
 if not os.path.exists(SQLITE_PATH):
     os.makedirs(os.path.dirname(SQLITE_PATH), exist_ok=True)
     s3 = boto3.client('s3')
     with open(SQLITE_PATH, 'wb') as f:
-        s3.download_fileobj(os.environ['S3_BUCKET_NAME'], 'ringapp.db', f)
+        s3.download_fileobj(os.environ['S3_BUCKET_NAME'], SQLITE_NAME, f)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -166,7 +168,7 @@ DATABASES = {
         'USER': 'ringapp'},
     'ringapp_data': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db/ringapp.db')},
+        'NAME': SQLITE_PATH},
 }
 
 DATABASE_ROUTERS = ('ringapp.routers.RingAppRouter',)
@@ -198,6 +200,12 @@ LOGGING = {
         'ringapp': {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+        'moduleapp': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
         },
         '': {
             'handlers': ['console', 'mail_admins'],

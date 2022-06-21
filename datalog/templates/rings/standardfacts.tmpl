@@ -1,0 +1,39 @@
+/* Establish models,inputs and outputs */
+.decl ring_known(mode: symbol,side: number,property:number)
+.input ring_known
+.decl ring_deduced(mode: symbol,side: number,property:number)
+/* .output ring_deduced */
+.decl ring_contradictions(property: number)
+.output ring_contradictions
+.decl ring_discovered(mode: symbol,side: number,property:number)
+.output ring_discovered
+/* BEGIN RULES */
+ring_deduced(W,X,Y) :- ring_known(W,X,Y).  // inclusion rule
+ring_deduced("has",2,Y) :- ring_deduced("has",1,Y).  // logical AND
+ring_deduced("lacks",1,Y) :- ring_deduced("lacks",2,Y).  // logical AND
+ring_deduced("has",3,Y) :- ring_deduced("has",1,Y).  // logical AND
+ring_deduced("lacks",1,Y) :- ring_deduced("lacks",3,Y).  // logical AND
+ring_deduced("has",1,Y) :- ring_deduced("has",2,Y),ring_deduced("has",3,Y).  // logical AND
+ring_deduced("lacks",2,Y) :- ring_deduced("has",3,Y),ring_deduced("lacks",1,Y).  // logical AND
+ring_deduced("lacks",3,Y) :- ring_deduced("has",2,Y),ring_deduced("lacks",1,Y).  // logical AND
+ring_deduced("lacks",2,Y):-ring_deduced("has",0,1),ring_deduced("lacks",1,Y).  // logical AND
+ring_deduced("lacks",3,Y):-ring_deduced("has",0,1),ring_deduced("lacks",1,Y).  // logical AND
+ring_deduced("has",4,Y) :- ring_deduced("has",2,Y).  // logical OR
+ring_deduced("lacks",2,Y) :- ring_deduced("lacks",4,Y).  // logical OR
+ring_deduced("has",4,Y) :- ring_deduced("has",3,Y).  // logical OR
+ring_deduced("lacks",3,Y) :- ring_deduced("lacks",4,Y).  // logical OR
+ring_deduced("lacks",4,Y) :- ring_deduced("lacks",2,Y),ring_deduced("lacks",3,Y).  // logical OR
+ring_deduced("has",2,Y) :- ring_deduced("has",4,Y),ring_deduced("lacks",3,Y).  // logical OR
+ring_deduced("has",3,Y) :- ring_deduced("has",4,Y),ring_deduced("lacks",2,Y).  // logical OR
+ring_deduced("has",2,Y):-ring_deduced("has",0,1),ring_deduced("has",4,Y).  // logical OR
+ring_deduced("has",3,Y):-ring_deduced("has",0,1),ring_deduced("has",4,Y).  // logical OR
+ring_deduced("has",2,Y) :- ring_deduced("has",0,1),ring_deduced("has",3,Y).  // commutativity
+ring_deduced("lacks",0,1) :- ring_deduced("lacks",2,Y),ring_deduced("has",3,Y).  // asymmetry of a two-sided condition
+ring_deduced("lacks",3,Y) :- ring_deduced("has",0,1),ring_deduced("lacks",2,Y).  // commutativity
+ring_deduced("has",3,Y) :- ring_deduced("has",0,1),ring_deduced("has",2,Y).  // commutativity
+ring_deduced("lacks",0,1) :- ring_deduced("lacks",3,Y),ring_deduced("has",2,Y).  // asymmetry of a two-sided condition
+ring_deduced("lacks",2,Y) :- ring_deduced("has",0,1),ring_deduced("lacks",3,Y).  // commutativity
+ring_contradictions(Y) :- ring_deduced("has",X,Y),ring_deduced("lacks",X,Y).
+ring_discovered(X,0,Z) :- ring_deduced(X,0,Z),!ring_known(X,0,Z).
+ring_discovered(X,2,Z) :- ring_deduced(X,2,Z),!ring_known(X,2,Z).
+ring_discovered(X,3,Z) :- ring_deduced(X,3,Z),!ring_known(X,3,Z).

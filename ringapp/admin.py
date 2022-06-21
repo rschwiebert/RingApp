@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
+from ringapp.SuggestionUtils import humanize_souffle
 from ringapp.models import *
 import django.db.models as dj_models
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -75,10 +76,12 @@ class LogicAdmin(admin.ModelAdmin):
     }
 
     def hypotheses(self, obj):
-        return ', '.join([str(x) for x in obj.hyps.all()])
+        hyps = list(map(humanize_souffle, obj.hyps.split(' AND ')))
+        return ' AND '.join(hyps)
 
     def conclusions(self, obj):
-        return ', '.join([str(x) for x in obj.concs.all()])
+        concs = list(map(humanize_souffle, obj.concs.split(' AND ')))
+        return ' AND '.join(concs)
 
 
 class TheoremAdmin(admin.ModelAdmin):
