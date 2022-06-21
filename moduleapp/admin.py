@@ -10,6 +10,7 @@ from moduleapp.models import (
     PropertyMetaproperty,
     Citation
 )
+from ringapp.SuggestionUtils import humanize_souffle
 
 
 class PropertyMetapropertyInline(admin.TabularInline):
@@ -29,7 +30,7 @@ class PropertyAdmin(admin.ModelAdmin):
 class ModulePropertyAdmin(admin.ModelAdmin):
     model = ModuleProperty
     fields = [('module', 'property'),
-              ('has', 'reason', 'citation'),]
+              ('has', 'reason', 'citation'), ]
     list_display = ['module', 'property', 'has', ]
     list_filter = ['module', 'property']
     formfield_overrides = {
@@ -47,22 +48,20 @@ class ModuleAdmin(admin.ModelAdmin):
 
 class LogicAdmin(admin.ModelAdmin):
     fields = ['hyps',
-              'ring_hyps',
               'concs',
               'variety', 'citation', 'active']
-    list_display = ['hypotheses', 'ringhypotheses', 'conclusions', 'variety', 'active']
+    list_display = ['hypotheses', 'conclusions', 'variety', 'active']
     formfield_overrides = {
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
     }
 
-    def hypotheses(self, obj):
-        return ', '.join([str(x) for x in obj.hyps.all()])
+    @staticmethod
+    def hypotheses(obj):
+        return ' AND '.join(list(map(humanize_souffle, obj.hyps.split(' AND '))))
 
-    def conclusions(self, obj):
-        return ', '.join([str(x) for x in obj.concs.all()])
-
-    def ringhypotheses(self, obj):
-        return ', '.join([str(x) for x in obj.ring_hyps.all()])
+    @staticmethod
+    def conclusions(obj):
+        return ' AND '.join(list(map(humanize_souffle, obj.concs.split(' AND '))))
 
 #
 # class PropertyMetapropertyAdmin(admin.ModelAdmin):
@@ -85,6 +84,7 @@ class CitationAdmin(admin.ModelAdmin):
     list_display = ['publication', 'location']
     list_filter = ['publication', ]
     ordering = ('publication__authors',)
+
 
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(Property, PropertyAdmin)

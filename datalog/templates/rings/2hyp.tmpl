@@ -1,0 +1,3 @@
+ring_deduced("has",$concside,$conc) :- ring_deduced("has",$hyp1side,$hyp1),ring_deduced("has",$hyp2side,$hyp2).
+ring_deduced("lacks",$hyp1side,$hyp1) :- ring_deduced("lacks",$concside,$conc),ring_deduced("has",$hyp2side,$hyp2).
+ring_deduced("lacks",$hyp2side,$hyp2) :- ring_deduced("lacks",$concside,$conc),ring_deduced("has",$hyp1side,$hyp1).

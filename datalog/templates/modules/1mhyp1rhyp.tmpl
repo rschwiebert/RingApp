@@ -1,0 +1,3 @@
+module_deduced("has",$conc) :- module_deduced("has",$hyp1),ring_deduced("has",$rhyp1side,$rhyp1).
+module_deduced("lacks",$hyp1) :- module_deduced("lacks",$conc),ring_deduced("has",$rhyp1side,$rhyp1).
+ring_deduced("lacks",$rhyp1side,$rhyp1) :- module_deduced("lacks",$conc),module_deduced("has",$hyp1).

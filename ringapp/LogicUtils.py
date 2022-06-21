@@ -1,12 +1,16 @@
-import os
+import re
 from copy import deepcopy
+from typing import List, Dict
+
+from sympy.core import symbol
 from time import time
 import logging
 from django.core.cache import cache
 from django.db import transaction
 from sympy import symbols, And, Or, Implies, Equivalent
-from sympy.logic.boolalg import BooleanTrue
+from sympy.logic.boolalg import BooleanTrue, BooleanFunction
 from sympy.logic.inference import satisfiable
+
 from ringapp import models
 import os
 
@@ -40,7 +44,7 @@ class LogicEngine(object):
             log.info('Bootstrapping LogicEngine for the first time')
             t0 = time()
             LogicEngine.__instance = object.__new__(cls)
-            LogicEngine.__instance.term_to_symbol = {}
+            LogicEngine.__instance.term_to_symbol: Dict[str, symbol] = {}
             LogicEngine.__instance.symbol_to_prop = {}
             LogicEngine.__instance.logic_to_expr = {}
 
@@ -145,6 +149,21 @@ class LogicEngine(object):
         for k, v in local_cache.items():
             cache.set('ring_props:{}'.format(k.id), v)
 
+    def swap_side(self, phrase: str) -> str:
+        """Swap the side indicated in the souffle phrase"""
+        side_swap = {
+            0: 0,
+            1: 1,
+            2: 3,
+            3: 2,
+            4: 4
+        }
+        pat = re.compile('ring_deduced\\("([a-z]+)",([0-4])')
+
+        def g(match):
+            return f'ring_deduced("{match.group(1)}",{side_swap[int(match.group(2))]}'
+        return re.sub(pat, g, phrase)
+
     def parse_logic(self, logic, switch_sides=False, convert_to_converse=False):
         """
         Read the logic model and formulate the symbolic expression
@@ -163,24 +182,30 @@ class LogicEngine(object):
             3: 2,
             4: 4
         }
-        hyps = logic.hyps.all()
-        concs = logic.concs.all()
+        hyps: List[str] = logic.hyps.split(' AND ')
+        concs: List[str] = logic.concs.split(' AND ')
         if convert_to_converse:
             hyps, concs = concs, hyps
 
         hyp_expr = []
         conc_expr = []
         # form expression for hypothesis
-        for pside in hyps:
+        for phrase in hyps:
             if switch_sides is True:
-                pside.side = side_swap[pside.side]
-            hyp_expr.append(self.parse_pside(pside))
+                if ",2," in phrase:
+                    phrase = re.sub(",2,", ",3,", phrase)
+                elif ",3," in phrase:
+                    phrase = re.sub(",3,", ",2,", phrase)
+            hyp_expr.append(self.parse_phrase(phrase))
 
         # form expression for conclusion
-        for pside in concs:
+        for phrase in concs:
             if switch_sides is True:
-                pside.side = side_swap[pside.side]
-            conc_expr.append(self.parse_pside(pside))
+                if ",2," in phrase:
+                    phrase = re.sub(",2,", ",3,", phrase)
+                elif ",3," in phrase:
+                    phrase = re.sub(",3,", ",2,", phrase)
+            conc_expr.append(self.parse_phrase(phrase))
 
         hyp_expr = And(*hyp_expr)
         conc_expr = And(*conc_expr)
@@ -192,26 +217,47 @@ class LogicEngine(object):
         elif logic.variety == 1:
             return Equivalent(hyp_expr, conc_expr)
 
-    def parse_pside(self, pside):
+    def parse_phrase(self, phrase: str) -> BooleanFunction:
         """
         Translate property-side combinations into a logical expression
-        :param pside: a PropertySide object
-        :return: A logical expression of the PropertySide object
+        :param phrase: a string like ring_deduced("has",1,2)
+        :return: A logical expression of the "has",1,2 part
         """
-        base_key = str(pside.property.id)
-        if pside.property.symmetric:
-            return self.term_to_symbol[base_key]
-        else:
-            if pside.side == 1:
-                return And(self.term_to_symbol[base_key+'l'], self.term_to_symbol[base_key+'r'])
-            elif pside.side == 2:
-                return self.term_to_symbol[base_key + 'l']
-            elif pside.side == 3:
-                return self.term_to_symbol[base_key + 'r']
-            elif pside.side == 4:
-                return Or(self.term_to_symbol[base_key+'l'], self.term_to_symbol[base_key+'r'])
+        pat = re.compile('ring_deduced\("(has|lacks)",([0-9]+),([0-9]+)\)')
+        mat = pat.match(phrase)
+        if mat is None:
+            raise Exception(f"Unable to parse logic: {phrase}")
+
+        mode, side, base_key = mat.groups()
+
+        if side == '0':
+            if mode == "has":
+                return self.term_to_symbol[base_key]
             else:
-                raise NotImplementedError
+                return ~self.term_to_symbol[base_key]
+        elif side == '1':
+            if mode == "has":
+                return And(self.term_to_symbol[base_key + 'l'], self.term_to_symbol[base_key + 'r'])
+            else:
+                return And(~self.term_to_symbol[base_key + 'l'], ~self.term_to_symbol[base_key + 'r'])
+        elif side == '2':
+            if mode == "has":
+                return self.term_to_symbol[base_key + 'l']
+            else:
+                return ~self.term_to_symbol[base_key + 'l']
+        elif side == '3':
+            if mode == "has":
+                return self.term_to_symbol[base_key + 'r']
+            else:
+                return ~self.term_to_symbol[base_key + 'r']
+        elif side == '4':
+            if mode == "has":
+                return Or(self.term_to_symbol[base_key + 'l'], self.term_to_symbol[base_key + 'r'])
+            else:
+                return Or(~self.term_to_symbol[base_key + 'l'], ~self.term_to_symbol[base_key + 'r'])
+        else:
+            raise NotImplementedError()
+
 
     def load_logic(self):
         """

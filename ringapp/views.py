@@ -29,9 +29,11 @@ from ringapp.management.commands.db_to_data import tag
 
 from ringapp.SearchUtils import (mirror_search_terms,
                                  detect_asymmetric_search,
-                                 ring_search, LogicEngine,
+                                 ring_search,
                                  completeness_scores)
 from ringapp.SuggestionUtils import simple_irreversible_logics, suggest_asymm_examples
+
+from ringapp.LogicUtils import LogicEngine
 
 vlogger = logging.getLogger(__name__)
 log_eng = LogicEngine()
@@ -259,7 +261,7 @@ class CommPropertyRedirect(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         # map old commproperty id to the new ids
-        kwargs['pk'] = PROPSV1COMM_TO_TERMSV2[kwargs['pk']].strip('lr')
+        kwargs['pk'] = PROPSV1COMM_TO_TERMSV2[str(kwargs['pk'])].strip('lr')
         return reverse('property-detail', kwargs=kwargs)
 
 

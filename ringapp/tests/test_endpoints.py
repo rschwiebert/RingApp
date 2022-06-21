@@ -9,7 +9,8 @@ from django.contrib.auth.models import User
 
 class EndpointTestCase(TestCase):
     databases = {'default', 'ringapp_data',}
-    # fixtures = 'properties.json'
+    # fixtures = ['properties.json']
+
     def test_gets(self):
         rp = mommy.make(models.RingProperty)
         p = models.Property.objects.get(name='commutative')
