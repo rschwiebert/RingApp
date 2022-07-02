@@ -1,0 +1,10 @@
+export DATABASE_URL=postgres://ringapp:ringapp@localhost:5432/ringapp
+export SECRET_KEY='Your own supersecret key'
+export EMAIL_HOST='an smtp server'
+export EMAIL_PORT=587
+export EMAIL_HOST_USER='email username'
+export REGISTRATION_DEFAULT_FROM_EMAIL=$EMAIL_HOST_USER
+export EMAIL_HOST_PASSWORD='email password'
+export EMAIL_USE_TLS=true
+export RECAPTCHA_PUBLIC_KEY=''
+export RECAPTCHA_PRIVATE_KEY=''

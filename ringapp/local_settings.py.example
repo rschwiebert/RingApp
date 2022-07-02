@@ -1,0 +1,9 @@
+from ringapp.settings import *
+
+print('*************************')
+print('Importing local settings!')
+print('*************************')
+
+DEBUG = True
+DATABASES['default']['OPTIONS']['sslmode'] = 'disable'
+SECURE_SSL_REDIRECT = False
