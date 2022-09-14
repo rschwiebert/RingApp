@@ -10,7 +10,7 @@ from web.models import Suggestion
 
 class SuggestionView(RatelimitMixin, SuccessMessageMixin, CreateView):
     model = Suggestion
-    template_name = 'ringapp/contribute.html'
+    template_name = 'dart_data/contribute.html'
     success_url = '/contribute/'
     fields = ['object_type', 'name', 'description']
     success_message = "Thanks... we'll look into that %(object_display)s suggestion!"
