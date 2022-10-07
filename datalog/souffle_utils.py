@@ -91,9 +91,10 @@ def write_ring_properties(ring, complete=True):
                     f.write(f'lacks\t3\t{rp.property.id}\n')
 
 
-def write_module_properties(module):
-    known = module.moduleproperty_set \
-        .exclude(reason__startswith='Logic')
+def write_module_properties(module, complete=True):
+    known = module.moduleproperty_set.all()
+    if complete is False:
+        known = known.exclude(reason__startswith='Logic')
     with open(DL_DIR/'inputs'/'module_known.facts', 'w') as f:
         for mp in known:
             if mp.has is True:

@@ -31,7 +31,7 @@ from ringapp.SearchUtils import (mirror_search_terms,
                                  detect_asymmetric_search,
                                  ring_search,
                                  completeness_scores)
-from ringapp.SuggestionUtils import simple_irreversible_logics, suggest_asymm_examples
+from ringapp.SuggestionUtils import simple_irreversible_ring_logics, suggest_asymm_examples
 
 from ringapp.LogicUtils import LogicEngine
 
@@ -588,7 +588,7 @@ def inspiration_view(request):
 
     simple_irreversible = cache.get('simple_irreversible')
     if simple_irreversible is None:
-        simple_irreversible = simple_irreversible_logics()
+        simple_irreversible = simple_irreversible_ring_logics()
         cache.set('simple_irreversible', simple_irreversible)
 
     context = {'asymm_sugg': asymm_suggestions,

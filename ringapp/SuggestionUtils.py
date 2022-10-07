@@ -9,7 +9,7 @@ import moduleapp
 from ringapp.forms import term_to_readable
 from ringapp.models import Property, Logic
 from ringapp.LogicUtils import LogicEngine
-from ringapp.SearchUtils import ring_search, mirror_search_terms
+from ringapp.SearchUtils import ring_search, mirror_search_terms, module_search
 
 from ringapp.constants import sidetype_choices
 
@@ -96,29 +96,46 @@ class ParseError(Exception):
     pass
 
 
-def souffle_to_terms(phrase):
-    pat = re.compile('ring_deduced\("([a-z]+)",([0-4]),([0-9]+)')
-    mat = pat.search(phrase)
-    if not mat:
-        raise ParseError("Had trouble converting souffle to terms")
+def souffle_to_ring_terms(mat):
     mode, side, pk = mat.group(1), int(mat.group(2)), mat.group(3)
     mode = 'H' if mode == "has" else 'L'
     if side == 0:
-        return [mode+pk, ]
+        return [mode + pk, ]
     elif side == 1:
         if mode == 'H':
-            return [mode+pk+'l', mode+pk+'r']
+            return [mode + pk + 'l', mode + pk + 'r']
         else:
             raise ParseError(f"Negation would entail a disjunction in search: not supported.")
     elif side == 2:
-        return [mode+pk+'l']
+        return [mode + pk + 'l']
     elif side == 3:
-        return [mode+pk+'r']
+        return [mode + pk + 'r']
     elif side == 4:
         if mode == 'L':
-            return [mode+pk+'l', mode+pk+'r']
+            return [mode + pk + 'l', mode + pk + 'r']
         else:
             raise ParseError(f"Negation would entail a disjunction in search: not supported.")
+
+
+def souffle_to_module_terms(mat):
+    mode, pk = mat.group(1), mat.group(2)
+    mode = 'H' if mode == "has" else 'L'
+    return [mode + pk, ]
+
+
+def souffle_to_terms(phrase):
+    pat = re.compile('ring_deduced\("([a-z]+)",([0-4]),([0-9]+)')
+    mat = pat.search(phrase)
+    if mat:
+        return souffle_to_ring_terms(mat)
+    mod_pat = re.compile('module_deduced\("([a-z]+)",([0-9]+)')
+    mat = mod_pat.search(phrase)
+    if mat:
+        return souffle_to_module_terms(mat)
+
+    if not mat:
+        raise ParseError("Had trouble converting souffle to terms")
+
 
 
 def humanize_souffle_list(phraseliststr: str) -> str:
@@ -164,7 +181,7 @@ def humanize_module_souffle(mode, pk):
     return f'module {mode} {prop.name}'
 
 
-def simple_irreversible_logics():
+def simple_irreversible_ring_logics():
     logics = Logic.objects.filter(variety=0)\
         .exclude(hyps__contains=' AND ')\
         .exclude(concs__contains=' AND ')
@@ -193,3 +210,36 @@ def simple_irreversible_logics():
         except ParseError as exc:
             print(f"{logic} did not parse: {exc!r}")
     return results
+
+
+def simple_irreversible_module_logics():
+    logics = moduleapp.models.Logic.objects.filter(variety=0)\
+        .exclude(hyps__contains=' AND ')\
+        .exclude(concs__contains=' AND ')\
+        .exclude(hyps__contains='ring_deduced')
+    results = []
+    for logic in logics:
+        try:
+            conc, hyp = logic.hyps, logic.concs  # forming the inverse
+            try:
+                conc = negate_souffle(conc)  # needed to find a counterexample
+            except NegationError:
+                continue
+
+            searchterms = souffle_to_terms(hyp)
+            searchterms.extend(souffle_to_terms(conc))
+            search_result, _ = module_search(searchterms)
+
+            if len(search_result) > 0:
+                continue
+
+            qd = QueryDict(mutable=True)
+            qd.setlist('H', [t[1:] for t in searchterms if t.startswith('H')])
+            qd.setlist('L', [t[1:] for t in searchterms if t.startswith('L')])
+            suggestion = f"{humanize_souffle(hyp)} and {humanize_souffle(conc)}"
+            url = '{}?{}'.format(reverse('module-results'), qd.urlencode())
+            results.append((suggestion, url))
+        except ParseError as exc:
+            print(f"{logic} did not parse: {exc!r}")
+    return results
+
