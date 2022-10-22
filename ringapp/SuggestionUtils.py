@@ -145,7 +145,7 @@ def humanize_souffle_list(phraseliststr: str) -> str:
 
 
 def humanize_souffle(phrase: str) -> Optional[str]:
-    pat = re.compile('ring_deduced\("([a-z]+)",([0-4]),([0-9]+)')
+    pat = re.compile('ring_deduced\(("has"|"lacks"|X),([0-4]),([0-9]+)')
     mat = pat.search(phrase)
 
     if mat:
@@ -153,7 +153,7 @@ def humanize_souffle(phrase: str) -> Optional[str]:
         side = int(side)
         return humanize_ring_souffle(mode, side, pk)
 
-    pat = re.compile('module_deduced\("([a-z]+)",([0-9]+)')
+    pat = re.compile('module_deduced\(("has"|"lacks"|X),([0-9]+)')
     mat = pat.search(phrase)
     if mat:
         mode, pk = mat.groups()
@@ -167,18 +167,29 @@ def humanize_souffle(phrase: str) -> Optional[str]:
 
 def humanize_ring_souffle(mode, side, pk):
     prop: Property = Property.objects.get(pk=pk)
-    mode = 'is' if mode == "has" else 'is not'
+    if mode.strip('"') == "has":
+        modestr = 'is'
+    elif mode.strip('"') == "lacks":
+        modestr = 'is not'
+    else:
+        modestr = mode
+
     side = sidetype_dict[side]
     if side == '':
-        return f'ring {mode} {prop.name}'
+        return f'ring {modestr} {prop.name}'
     else:
-        return f'ring {mode} {prop.name} on the {side}'
+        return f'ring {modestr} {prop.name} on the {side}'
 
 
 def humanize_module_souffle(mode, pk):
     prop = moduleapp.models.Property.objects.get(pk=pk)
-    mode = 'is' if mode == "has" else 'is not'
-    return f'module {mode} {prop.name}'
+    if mode.strip('"') == "has":
+        modestr = 'is'
+    elif mode.strip('"') == "lacks":
+        modestr = 'is not'
+    else:
+        modestr = mode
+    return f'module {modestr} {prop.name}'
 
 
 def simple_irreversible_ring_logics():

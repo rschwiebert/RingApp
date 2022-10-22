@@ -103,3 +103,68 @@ class SimpleTest(TestCase):
         self.MP6.save()
         self.assertRaises(
             CommandError, call_command, 'process_module', self.module.id, record=True)
+
+
+class TransferTest(TestCase):
+    databases = ['default', 'ringapp_data']
+
+    def setUp(self) -> None:
+        self.ring = ringmodels.Ring.objects.create()
+        self.module = modmodels.Module.objects.create(ring=self.ring)
+        self.ring_P1 = ringmodels.Property.objects.create(symmetric=False)
+        self.ring_P2 = ringmodels.Property.objects.create(symmetric=True)
+        self.P1 = modmodels.Property.objects.create()
+        self.P2 = modmodels.Property.objects.create()
+        self.RP1 = ringmodels.RingProperty.objects.create(ring=self.ring, property=self.ring_P1)
+        self.RP2 = ringmodels.RingProperty.objects.create(ring=self.ring, property=self.ring_P2)
+
+        self.MP1 = modmodels.ModuleProperty.objects.create(module=self.module, property=self.P1)
+        self.MP2 = modmodels.ModuleProperty.objects.create(module=self.module, property=self.P2)
+
+        self.L1 = modmodels.Logic.objects.create(
+            hyps=f'module_deduced("has",{self.P1.id}) AND ring_deduced(X,3,{self.ring_P1.id})',
+            concs=f'module_deduced(X,{self.P2.id})',
+            variety=0,
+            active=True)
+
+        self.L2 = modmodels.Logic.objects.create(
+            hyps=f'module_deduced("has",{self.P1.id}) AND ring_deduced(X,0,{self.ring_P2.id})',
+            concs=f'module_deduced(X,{self.P2.id})',
+            variety=0,
+            active=True)
+
+    def test_pos_transfer(self):
+        self.RP1.has_on_right = True
+        self.RP1.save()
+        self.MP1.has = True
+        self.MP1.save()
+        call_command('process_module', self.module.id, record=True)
+        self.MP2.refresh_from_db()
+        self.assertEqual(self.MP2.has, True)
+
+    def test_neg_transfer(self):
+        self.RP1.has_on_right = False
+        self.RP1.save()
+        self.MP1.has = True
+        self.MP1.save()
+        call_command('process_module', self.module.id, record=True)
+        self.MP2.refresh_from_db()
+        self.assertEqual(self.MP2.has, False)
+
+    def test_symm_pos_transfer(self):
+        self.RP2.has_on_right = True
+        self.RP2.save()
+        self.MP1.has = True
+        self.MP1.save()
+        call_command('process_module', self.module.id, record=True)
+        self.MP2.refresh_from_db()
+        self.assertEqual(self.MP2.has, True)
+
+    def test_symm_neg_transfer(self):
+        self.RP2.has_on_right = False
+        self.RP2.save()
+        self.MP1.has = True
+        self.MP1.save()
+        call_command('process_module', self.module.id, record=True)
+        self.MP2.refresh_from_db()
+        self.assertEqual(self.MP2.has, False)

@@ -131,18 +131,18 @@ class Command(BaseCommand):
         for pair in content_modules:
             number = reasons[f'module_deduced("{pair[0]}", {pair[1]})']
             rule = rule_lookup['module_deduced'][number]
-            logic_id = logic_enumeration[rule.replace(' ', '')]
-            for mode, _id in re.findall(re.compile('module_deduced\("(has|lacks)",([0-9]+)\)'), rule):
+            logic_id = logic_enumeration.get(rule.replace(' ', ''), '(failed to recover exact reason)')
+            for mode, _id in re.findall(re.compile('module_deduced\(("has"|"lacks"|X),([0-9]+)\)'), rule):
                 property = moduleapp.models.Property.objects.get(pk=int(_id)).name
-                rule = re.sub(re.compile(f'module_deduced\("{mode}",{_id}\)'), f'module({mode} \'{property}\')', rule)
+                rule = re.sub(re.compile(f'module_deduced\({mode},{_id}\)'), f'module({mode} \'{property}\')', rule)
 
-            for mode, side, _id in re.findall(re.compile('ring_deduced\("(has|lacks)",([0-9]+),([0-9]+)\)'), rule):
+            for mode, side, _id in re.findall(re.compile('ring_deduced\(("has"|"lacks"|X),([0-9]+),([0-9]+)\)'), rule):
                 property = ringapp.models.Property.objects.get(pk=int(_id)).name
                 if side == '0':
                     sidestr = ''
                 else:
                     sidestr = 'on the ' + dict(sidetype_choices)[int(side)]
-                rule = re.sub(re.compile(f'ring_deduced\("{mode}",{side},{_id}\)'),
+                rule = re.sub(re.compile(f'ring_deduced\({mode},{side},{_id}\)'),
                               f'ring({mode} \'{property}\' {sidestr})', rule)
 
             rule = re.sub(re.compile('\),'), ') AND ', rule)

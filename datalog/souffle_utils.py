@@ -21,6 +21,8 @@ def negate(relation: str) -> str:
     """
     pat = re.compile('(ring_deduced|module_deduced)\("(has|lacks)"')
     mat = pat.search(relation)
+    if mat is None:
+        raise NegationException()
     if mat.group(2) == 'has':
         return re.sub(f'{mat.group(1)}\("has"', f'{mat.group(1)}("lacks"', relation)
 
