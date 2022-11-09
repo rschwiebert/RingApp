@@ -1,7 +1,7 @@
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 
-from ringapp.models import Logic, Property, RingProperty, Ring
-from django.core.management import call_command
+from ringapp.models import Logic, Property, RingProperty, Ring, RingDimension, Dimension
+from django.core.management import call_command, CommandError
 
 
 class SimpleTest(TestCase):
@@ -44,7 +44,7 @@ class SimpleTest(TestCase):
         self.RP1.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP2.refresh_from_db()
-        self.assertTrue(self.RP2.has_on_left)
+        self.assertEqual(self.RP2.has_on_left, True)
         self.assertIsNone(self.RP2.has_on_right)
 
     def test_L1_backward(self):
@@ -52,7 +52,7 @@ class SimpleTest(TestCase):
         self.RP2.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP1.refresh_from_db()
-        self.assertFalse(self.RP2.has_on_left)
+        self.assertEqual(self.RP2.has_on_left, False)
         self.assertIsNone(self.RP2.has_on_right)
 
     def test_L1_bothsides(self):
@@ -61,8 +61,8 @@ class SimpleTest(TestCase):
         self.RP1.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP2.refresh_from_db()
-        self.assertTrue(self.RP2.has_on_left)
-        self.assertTrue(self.RP2.has_on_right)
+        self.assertEqual(self.RP2.has_on_left, True)
+        self.assertEqual(self.RP2.has_on_right, True)
 
     def test_L2(self):
         self.RP3.has_on_left = True
@@ -71,7 +71,7 @@ class SimpleTest(TestCase):
         self.RP4.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP5.refresh_from_db()
-        self.assertTrue(self.RP5.has_on_left)
+        self.assertEqual(self.RP5.has_on_left, True)
 
     def test_L2_negative(self):
         self.RP3.has_on_left = True
@@ -80,32 +80,71 @@ class SimpleTest(TestCase):
         self.RP5.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP4.refresh_from_db()
-        self.assertFalse(self.RP4.has_on_left)
+        self.assertEqual(self.RP4.has_on_left, False)
 
     def test_l3_1(self):
         self.RP6.has_on_left = True
         self.RP6.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP7.refresh_from_db()
-        self.assertTrue(self.RP7.has_on_left)
+        self.assertEqual(self.RP7.has_on_left, True)
 
     def test_l3_2(self):
         self.RP6.has_on_left = False
         self.RP6.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP7.refresh_from_db()
-        self.assertFalse(self.RP7.has_on_left)
+        self.assertEqual(self.RP7.has_on_left, False)
 
     def test_l3_3(self):
         self.RP7.has_on_left = True
         self.RP7.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP6.refresh_from_db()
-        self.assertTrue(self.RP6.has_on_left)
+        self.assertEqual(self.RP6.has_on_left, True)
 
     def test_l3_4(self):
         self.RP7.has_on_left = False
         self.RP7.save()
         call_command('process_ring', self.ring.id, record=True)
         self.RP6.refresh_from_db()
-        self.assertFalse(self.RP6.has_on_left)
+        self.assertEqual(self.RP6.has_on_left, False)
+
+
+
+class RingDimTest(TestCase):
+    databases = ['default', 'ringapp_data']
+
+    def setUp(self) -> None:
+        self.ring = Ring.objects.create()
+        self.P1 = Property.objects.create(symmetric=False)
+        self.RP1 = RingProperty.objects.create(ring=self.ring, property=self.P1)
+        self.D1 = Dimension.objects.create()
+        self.RD1 = RingDimension.objects.create(ring=self.ring, dimension_type=self.D1)
+        self.L1 = Logic.objects.create(hyps=f'ring_deduced("has",2,{self.P1.id})',
+                                       concs=f'ring_dim_deduced("1",2,{self.D1.id})',
+                                       variety=0,
+                                       symmetric=False,
+                                       active=True)
+
+    def test_L1_dim(self):
+        self.RP1.has_on_left = True
+        self.RP1.save()
+        call_command('process_ring', self.ring.id, record=True)
+        self.RD1.refresh_from_db()
+        self.assertEqual(self.RD1.left_dimension, '1')
+
+    def test_L1_dim_conflict(self):
+        self.RP1.has_on_left = True
+        self.RP1.save()
+        self.RD1.left_dimension = '2'
+        self.RD1.save()
+        with self.assertRaises(CommandError):
+            call_command('process_ring', self.ring.id, record=True)
+
+    # def test_L1_dim_neg(self):
+    #     self.RD1.left_dimension = '2'
+    #     self.RD1.save()
+    #     call_command('process_ring', self.ring.id, record=True)
+    #     self.RP1.refresh_from_db()
+    #     self.assertEqual(self.RP1.has_on_left, False)

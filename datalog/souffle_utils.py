@@ -103,3 +103,19 @@ def write_module_properties(module, complete=True):
                 f.write(f'has\t{mp.property.id}\n')
             if mp.has is False:
                 f.write(f'lacks\t{mp.property.id}\n')
+
+
+def write_ring_dims(ring, complete=True):
+    known = ring.ringdimension_set.all()
+    if complete is False:
+        known = known \
+            .exclude(reason_left__startswith='Logic') \
+            .exclude(reason_right__startswith='Logic')
+
+    with open(DL_DIR/'inputs'/'ring_dim_known.facts', 'w') as f:
+        for rd in known:
+            if rd.left_dimension != '':
+                f.write(f'{rd.left_dimension}\t2\t{rd.dimension_type.id}\n')
+
+            if rd.right_dimension != '':
+                f.write(f'{rd.right_dimension}\t3\t{rd.dimension_type.id}\n')

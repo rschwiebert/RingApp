@@ -7,7 +7,7 @@ from sympy.logic.inference import satisfiable
 
 import moduleapp
 from ringapp.forms import term_to_readable
-from ringapp.models import Property, Logic
+from ringapp.models import Property, Logic, Dimension
 from ringapp.LogicUtils import LogicEngine
 from ringapp.SearchUtils import ring_search, mirror_search_terms, module_search
 
@@ -159,6 +159,12 @@ def humanize_souffle(phrase: str) -> Optional[str]:
         mode, pk = mat.groups()
         return humanize_module_souffle(mode, pk)
 
+    pat = re.compile('ring_dim_deduced\("([_\\\{\}a-zA-Z0-9\$]+)",([0-9]),([0-9]+)')
+    mat = pat.search(phrase)
+    if mat:
+        value, side, pk = mat.groups()
+        return humanize_ring_dim_souffle(value, side, pk)
+
     if phrase == '':
         return None
 
@@ -179,6 +185,18 @@ def humanize_ring_souffle(mode, side, pk):
         return f'ring {modestr} {prop.name}'
     else:
         return f'ring {modestr} {prop.name} on the {side}'
+
+
+def humanize_ring_dim_souffle(value, side, pk):
+    dim = Dimension.objects.get(pk=pk)
+    if side == '2':
+        return f'has {dim.name} {value} on the left'
+    elif side == '3':
+        return f'has {dim.name} {value} on the right'
+    elif side == '0':
+        return f'has {dim.name} {value}'
+    else:
+        raise ValueError()
 
 
 def humanize_module_souffle(mode, pk):

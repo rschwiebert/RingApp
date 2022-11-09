@@ -7,8 +7,16 @@
 .output ring_contradictions
 .decl ring_discovered(mode: symbol,side: number,property:number)
 .output ring_discovered
+.decl ring_dim_known(value: symbol,side: number,dimension:number)
+.input ring_dim_known
+.decl ring_dim_deduced(value: symbol,side: number,dimension:number)
+.decl ring_dim_discovered(value: symbol,side: number,dimension:number)
+.output ring_dim_discovered
+.decl ring_dim_contradictions(side: number,dimension:number)
+.output ring_dim_contradictions
 /* BEGIN RULES */
 ring_deduced(W,X,Y) :- ring_known(W,X,Y).  // inclusion rule
+ring_dim_deduced(W,X,Y) :- ring_dim_known(W,X,Y).  // inclusion rule
 ring_deduced("has",2,Y) :- ring_deduced("has",1,Y).  // logical AND
 ring_deduced("lacks",1,Y) :- ring_deduced("lacks",2,Y).  // logical AND
 ring_deduced("has",3,Y) :- ring_deduced("has",1,Y).  // logical AND
@@ -34,6 +42,8 @@ ring_deduced("has",3,Y) :- ring_deduced("has",0,1),ring_deduced("has",2,Y).  // 
 ring_deduced("lacks",0,1) :- ring_deduced("lacks",3,Y),ring_deduced("has",2,Y).  // asymmetry of a two-sided condition
 ring_deduced("lacks",2,Y) :- ring_deduced("has",0,1),ring_deduced("lacks",3,Y).  // commutativity
 ring_contradictions(Y) :- ring_deduced("has",X,Y),ring_deduced("lacks",X,Y).
+ring_dim_contradictions(Y,Z) :- ring_dim_deduced(A,Y,Z),ring_dim_deduced(B,Y,Z),A!=B.
 ring_discovered(X,0,Z) :- ring_deduced(X,0,Z),!ring_known(X,0,Z).
 ring_discovered(X,2,Z) :- ring_deduced(X,2,Z),!ring_known(X,2,Z).
 ring_discovered(X,3,Z) :- ring_deduced(X,3,Z),!ring_known(X,3,Z).
+ring_dim_discovered(X,Y,Z) :- ring_dim_deduced(X,Y,Z),!ring_dim_known(X,Y,Z).

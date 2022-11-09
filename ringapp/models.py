@@ -259,6 +259,8 @@ class RingDimension(models.Model):
     left_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
     right_dimension = models.CharField(max_length=16, help_text='Indicates magnitude of dimension.', blank=True)
     citation = models.ManyToManyField('Citation', blank=True)
+    reason_left = models.CharField(max_length=200, blank=True, null=True)
+    reason_right = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         unique_together = (('ring', 'dimension_type'),)
@@ -278,6 +280,7 @@ class RingSubset(models.Model):
     subset_type = models.ForeignKey(Subset, on_delete=models.CASCADE)
     subset = models.CharField(max_length=512, help_text='Describes the elements in the indicated subset.')
     citation = models.ManyToManyField('Citation', blank=True)
+    reason = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         unique_together = (('ring', 'subset_type'),)
