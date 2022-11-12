@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ringapp.models import Logic, Property, RingProperty, Ring, RingDimension, Dimension
+from ringapp.models import Logic, Property, RingProperty, Ring, RingDimension, Dimension, Subset, RingSubset
 from django.core.management import call_command, CommandError
 
 
@@ -142,9 +142,34 @@ class RingDimTest(TestCase):
         with self.assertRaises(CommandError):
             call_command('process_ring', self.ring.id, record=True)
 
-    # def test_L1_dim_neg(self):
-    #     self.RD1.left_dimension = '2'
-    #     self.RD1.save()
-    #     call_command('process_ring', self.ring.id, record=True)
-    #     self.RP1.refresh_from_db()
-    #     self.assertEqual(self.RP1.has_on_left, False)
+
+class RingSubsetTest(TestCase):
+    databases = ['default', 'ringapp_data']
+
+    def setUp(self) -> None:
+        self.ring = Ring.objects.create()
+        self.P1 = Property.objects.create(symmetric=False)
+        self.RP1 = RingProperty.objects.create(ring=self.ring, property=self.P1)
+        self.S1 = Subset.objects.create()
+        # self.RS1 = RingSubset.objects.create(ring=self.ring, subset_type=self.S1, subset='1')
+        self.L1 = Logic.objects.create(hyps=f'ring_deduced("has",2,{self.P1.id})',
+                                       concs=f'ring_subset_deduced("1",{self.S1.id})',
+                                       variety=0,
+                                       symmetric=True,
+                                       active=True)
+
+    def test_L1_subset(self):
+        self.RP1.has_on_left = True
+        self.RP1.save()
+        call_command('process_ring', self.ring.id, record=True)
+        rs1 = RingSubset.objects.get(ring=self.ring, subset_type=self.S1)
+        self.assertEqual(rs1.subset, '1')
+
+    def test_L1_subset_conflict(self):
+        self.RP1.has_on_left = True
+        self.RP1.save()
+        RingSubset.objects.create(ring=self.ring, subset_type=self.S1, subset='2')
+
+        with self.assertRaises(CommandError):
+            call_command('process_ring', self.ring.id, record=True)
+

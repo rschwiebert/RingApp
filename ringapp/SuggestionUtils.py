@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Optional
 
@@ -7,12 +8,13 @@ from sympy.logic.inference import satisfiable
 
 import moduleapp
 from ringapp.forms import term_to_readable
-from ringapp.models import Property, Logic, Dimension
+from ringapp.models import Property, Logic, Dimension, Subset
 from ringapp.LogicUtils import LogicEngine
 from ringapp.SearchUtils import ring_search, mirror_search_terms, module_search
 
 from ringapp.constants import sidetype_choices
 
+log = logging.getLogger(__name__)
 sidetype_dict = dict(sidetype_choices)
 
 
@@ -137,8 +139,22 @@ def souffle_to_terms(phrase):
         raise ParseError("Had trouble converting souffle to terms")
 
 
+def humanize_souffle_rule(rule: str) -> str:
+    concs, hyps = rule.split(':-')
+    concs = re.sub('\),', ') AND ', concs.strip())
+    hyps = re.sub('\),', ') AND ', hyps.strip())
+    try:
+        concs = humanize_conjunction(concs)
+    except ParseError:
+        log.warning(f"Did not completely parse {concs}")
+    try:
+        hyps = humanize_conjunction(hyps)
+    except ParseError:
+        log.warning(f"Did not completely parse {hyps}")
+    return f"{concs} <=== {hyps}"
 
-def humanize_souffle_list(phraseliststr: str) -> str:
+
+def humanize_conjunction(phraseliststr: str) -> str:
     phraselist = phraseliststr.split(' AND ')
     humanized = filter(None, map(humanize_souffle, phraselist))
     return ' AND '.join(humanized)
@@ -164,6 +180,12 @@ def humanize_souffle(phrase: str) -> Optional[str]:
     if mat:
         value, side, pk = mat.groups()
         return humanize_ring_dim_souffle(value, side, pk)
+
+    pat = re.compile('ring_subset_deduced\("([_,\\\{\}a-zA-Z0-9\$]+)",([0-9]+)')
+    mat = pat.search(phrase)
+    if mat:
+        value, pk = mat.groups()
+        return humanize_ring_subset_souffle(value, pk)
 
     if phrase == '':
         return None
@@ -197,6 +219,11 @@ def humanize_ring_dim_souffle(value, side, pk):
         return f'has {dim.name} {value}'
     else:
         raise ValueError()
+
+
+def humanize_ring_subset_souffle(value, pk):
+    sub = Subset.objects.get(pk=pk)
+    return f"has {sub.name} {value}"
 
 
 def humanize_module_souffle(mode, pk):

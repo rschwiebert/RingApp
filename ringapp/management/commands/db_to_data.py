@@ -20,7 +20,7 @@ from typing import List, Sequence, Any, Dict
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from ringapp.SuggestionUtils import humanize_souffle, humanize_souffle_list
+from ringapp.SuggestionUtils import humanize_souffle, humanize_conjunction
 from ringapp.constants import sidetype_choices
 from ringapp.settings import EXPORT_ROOT_DIR
 
@@ -364,8 +364,8 @@ class LogicSerializer(Serializer):
 
     def to_storage(self, fields):
         fields['citation'] = ids_to_tags(CitationSerializer.prefix, fields['citation'])
-        hyps = humanize_souffle_list(fields['hyps'])
-        concs = humanize_souffle_list(fields['concs'])
+        hyps = humanize_conjunction(fields['hyps'])
+        concs = humanize_conjunction(fields['concs'])
         variety_display = " ===> " if fields['variety'] == 0 else " <==> "
         fields['readable'] = hyps + variety_display + concs
         return fields
@@ -508,8 +508,8 @@ class ModLogicSerializer(Serializer):
 
     def to_storage(self, fields):
         fields['citation'] = ids_to_tags(CitationSerializer.prefix, fields['citation'])
-        hyps = humanize_souffle_list(fields['hyps'])
-        concs = humanize_souffle_list(fields['concs'])
+        hyps = humanize_conjunction(fields['hyps'])
+        concs = humanize_conjunction(fields['concs'])
         variety_display = " ===> " if fields['variety'] == 0 else " <==> "
         fields['readable'] = f"{hyps} {variety_display} {concs}"
         return fields

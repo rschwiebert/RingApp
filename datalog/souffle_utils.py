@@ -119,3 +119,15 @@ def write_ring_dims(ring, complete=True):
 
             if rd.right_dimension != '':
                 f.write(f'{rd.right_dimension}\t3\t{rd.dimension_type.id}\n')
+
+
+def write_ring_subsets(ring, complete=True):
+    known = ring.ringsubset_set.all()
+    if complete is False:
+        known = known \
+            .exclude(reason_left__startswith='Logic') \
+            .exclude(reason_right__startswith='Logic')
+
+    with open(DL_DIR/'inputs'/'ring_subset_known.facts', 'w') as f:
+        for rs in known:
+            f.write(f'{rs.subset}\t{rs.subset_type.id}\n')
