@@ -14,7 +14,6 @@ from sympy.logic.inference import satisfiable
 from ringapp import models
 import os
 
-
 log = logging.getLogger(__name__)
 
 
@@ -31,6 +30,13 @@ class InvalidSymbolError(Exception):
     """
     pass
 
+
+class NegationError(Exception):
+    pass
+
+
+class ParseError(Exception):
+    pass
 
 class LogicEngine(object):
     __instance = None
@@ -223,6 +229,9 @@ class LogicEngine(object):
         :param phrase: a string like ring_deduced("has",1,2)
         :return: A logical expression of the "has",1,2 part
         """
+        if phrase.startswith('ring_dim_deduced') or phrase.startswith('ring_subset_deduced'):
+            raise ParseError(f'Will not attempt to parse {phrase} into sympy booleans')
+
         pat = re.compile('ring_deduced\("(has|lacks)",([0-9]+),([0-9]+)\)')
         mat = pat.match(phrase)
         if mat is None:
@@ -266,7 +275,10 @@ class LogicEngine(object):
         original creation of the singleton.
         """
         for logic in models.Logic.objects.all():
-            expression = self.parse_logic(logic)
+            try:
+                expression = self.parse_logic(logic)
+            except ParseError:
+                continue
             if logic.symmetric:
                 self.logic_to_expr[logic] = (expression, )
             else:

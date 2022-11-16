@@ -1,3 +1,4 @@
+import logging
 import re
 from pathlib import Path
 from typing import List, Set
@@ -6,6 +7,8 @@ import datalog
 
 DL_DIR = Path(datalog.__path__[0])
 TEMPLATES = DL_DIR/'templates'
+
+log = logging.getLogger(__name__)
 
 
 class NegationException(Exception):
@@ -51,22 +54,28 @@ def logic_to_rulelist(hyps: List[str], concs: List[str]) -> Set[str]:
             else:
                 rulelist.append(f"{negate(hyp)}:-{negate(conc)}.")
         except NegationException:
-            print(f"One of {hyp} or {conc} failed to negate. Either we need to add code or it is not possible.")
+            log.debug(f"One of {hyp} or {conc} failed to negate. Either we need to add code or it is not possible.")
             continue
 
     return set(rulelist)
 
 
 def ring_mirror(inputset: Set[str]) -> Set[str]:
+    side_map = {
+            '0': '0',
+            '1': '1',
+            '2': '3',
+            '3': '2',
+            '4': '4',
+        }
+    def swap(mat):
+        side = side_map[mat.group(2)]
+        return f'{mat.group(1)},{side},'
+
     inputstring = '\n'.join(inputset)
-    return set((inputstring
-                .replace('"has",2', '"has",#')
-                .replace('"has",3', '"has",2')
-                .replace('"has",#', '"has",3')
-                .replace('"lacks",2', '"lacks",#')
-                .replace('"lacks",3', '"lacks",2')
-                .replace('"lacks",#', '"lacks",3')
-                ).split('\n'))
+    inputstring = re.sub('((?:ring_deduced|module_deduced|ring_dim_deduced)\("[^"]+"),([0-9]),', swap, inputstring)
+
+    return set(inputstring.split('\n'))
 
 
 def write_ring_properties(ring, complete=True):

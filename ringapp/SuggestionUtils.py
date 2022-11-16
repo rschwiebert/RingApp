@@ -9,7 +9,7 @@ from sympy.logic.inference import satisfiable
 import moduleapp
 from ringapp.forms import term_to_readable
 from ringapp.models import Property, Logic, Dimension, Subset
-from ringapp.LogicUtils import LogicEngine
+from ringapp.LogicUtils import LogicEngine, ParseError, NegationError
 from ringapp.SearchUtils import ring_search, mirror_search_terms, module_search
 
 from ringapp.constants import sidetype_choices
@@ -88,14 +88,6 @@ def negate_souffle(phrase):
     if match:
         return re.sub(pat, lambda x: f'{x.group(1)}("{swap[x.group(2)]}"', phrase)
     return
-
-
-class NegationError(Exception):
-    pass
-
-
-class ParseError(Exception):
-    pass
 
 
 def souffle_to_ring_terms(mat):
