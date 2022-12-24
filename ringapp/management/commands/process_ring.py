@@ -4,6 +4,9 @@ import logging
 import os
 import re
 import subprocess
+import time
+
+import sys
 from collections import defaultdict
 from pathlib import Path
 import shlex
@@ -28,12 +31,15 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('ring_id', type=int)
         parser.add_argument('--record', action='store_true')
+        parser.add_argument('--reload-logic', action='store_true')
 
     def handle(self, *args, **options):
-        try:
-            os.remove(DL_DIR / 'ringlogic.dl')
-        except FileNotFoundError:
-            pass
+        t0 = time.time()
+        if options['reload_logic']:
+            try:
+                os.remove(DL_DIR / 'ringlogic.dl')
+            except FileNotFoundError:
+                pass
 
         os.makedirs(Path(DL_DIR / 'inputs'), exist_ok=True)
         for fn in os.scandir(Path(DL_DIR / 'inputs')):
@@ -44,15 +50,15 @@ class Command(BaseCommand):
             os.remove(fn.path)
 
         standardfacts = (TEMPLATES / 'rings' / 'standardfacts.tmpl').read_text()
-
-        logger.debug('building ringlogic.dl')
-        with open(DL_DIR / 'ringlogic.dl', 'w') as f:
-            f.write(standardfacts)
-            logics_to_write = ringapp.models.Logic.objects.filter(active=True)
-            for logic in logics_to_write:
-                lines = map(lambda x: x + '\n', logic.to_souffle())
-                f.writelines(lines)
-            f.write(f'/* Wrote {logics_to_write.count()} active logic entries */')
+        if options['reload_logic']:
+            logger.debug('building ringlogic.dl')
+            with open(DL_DIR / 'ringlogic.dl', 'w') as f:
+                f.write(standardfacts)
+                logics_to_write = ringapp.models.Logic.objects.filter(active=True)
+                for logic in logics_to_write:
+                    lines = map(lambda x: x + '\n', logic.to_souffle())
+                    f.writelines(lines)
+                f.write(f'/* Wrote {logics_to_write.count()} active logic entries */')
 
         ring = ringapp.models.Ring.objects.get(pk=options['ring_id'])
         logger.debug('building ring_known.facts')
@@ -61,7 +67,10 @@ class Command(BaseCommand):
         write_ring_subsets(ring, complete=True)
         logger.info('running ringlogic.dl')
         os.chdir(datalog.__path__[0])
+        t1=time.time()
         subprocess.check_call(shlex.split('souffle -D./outputs -F./inputs ringlogic.dl'))
+        t2=time.time()
+        logger.info(f'datalog execution: {t2 - t1}')
         for pth in Path(DL_DIR / 'outputs').iterdir():
             if pth.name.endswith('contradictions.csv'):
                 try:
@@ -93,8 +102,11 @@ class Command(BaseCommand):
             content_ring_subs = list(reader)
 
         if options['record'] is True:
-
+            if not (content_rings or content_ring_dims or content_ring_subs):
+                logger.info(f"Nothing new discovered for ring {options['ring_id']}...")
+                sys.exit(0)
             logger.info('starting explain session')
+            t3 = time.time()
             proc = pexpect.spawn('souffle -D./outputs -F./inputs ringlogic.dl -t explain -j4', encoding='utf8', timeout=360)
 
             proc.expect('Enter command.+')
@@ -136,6 +148,7 @@ class Command(BaseCommand):
                 reasons[data['proof']['premises']] = data['proof']['rule-number']
 
             proc.terminate()
+            t4=time.time()
             logger.info('creating rule lookup')
             rule_lookup = defaultdict(dict)
             for rule in rules:
@@ -203,6 +216,8 @@ class Command(BaseCommand):
                 rule = humanize_souffle_rule(rule)
 
                 pair.append(f'Logic (rings) {logic_id}: ' + rule)
+            logger.info(f'explain execution: {t4 - t3}')
+        t5=time.time()
 
         if options['record'] is True:
             logger.info('Recording discoveries')

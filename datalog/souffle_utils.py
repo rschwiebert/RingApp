@@ -123,6 +123,10 @@ def write_ring_dims(ring, complete=True):
 
     with open(DL_DIR/'inputs'/'ring_dim_known.facts', 'w') as f:
         for rd in known:
+            if rd.dimension_type.symmetric is True and rd.left_dimension or rd.right_dimension:
+                f.write(f'{rd.left_dimension or rd.right_dimension}\t0\t{rd.dimension_type.id}\n')
+                continue
+
             if rd.left_dimension != '':
                 f.write(f'{rd.left_dimension}\t2\t{rd.dimension_type.id}\n')
 

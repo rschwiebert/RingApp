@@ -167,10 +167,11 @@ def humanize_souffle(phrase: str) -> Optional[str]:
         mode, pk = mat.groups()
         return humanize_module_souffle(mode, pk)
 
-    pat = re.compile('ring_dim_deduced\("([_\\\{\}a-zA-Z0-9\$]+)",([0-9]),([0-9]+)')
+    pat = re.compile('ring_dim_deduced\(("[_\\\{\}a-zA-Z0-9\$]+"|[A-Z]),([0-9]),([0-9]+)')
     mat = pat.search(phrase)
     if mat:
         value, side, pk = mat.groups()
+        value = value.strip('"')
         return humanize_ring_dim_souffle(value, side, pk)
 
     pat = re.compile('ring_subset_deduced\("([_,\\\{\}a-zA-Z0-9\$]+)",([0-9]+)')
@@ -178,6 +179,9 @@ def humanize_souffle(phrase: str) -> Optional[str]:
     if mat:
         value, pk = mat.groups()
         return humanize_ring_subset_souffle(value, pk)
+
+    if '=' in phrase:
+        return phrase
 
     if phrase == '':
         return None
