@@ -1,0 +1,20 @@
+/* Establish models,inputs and outputs */
+.decl ring_metaprop_known(mode: symbol,metaprop: number,property: number)
+.input ring_metaprop_known
+.decl ring_metaprop_deduced(mode: symbol,metaprop: number,property: number)
+.decl ring_metaprop_discovered(mode: symbol,metaprop: number,property: number)
+.output ring_metaprop_discovered
+.decl ring_metaprop_contradictions(metaprop:number,property:number)
+.output ring_metaprop_contradictions
+
+ring_metaprop_deduced(X,Y,Z):-ring_metaprop_known(X,Y,Z).
+ring_metaprop_discovered(X,Y,Z):-ring_metaprop_deduced(X,Y,Z),!ring_metaprop_known(X,Y,Z).
+ring_metaprop_contradictions(Y,Z):-ring_metaprop_deduced("has",Y,Z),ring_metaprop_deduced("lacks",Y,Z).
+
+ring_metaprop_deduced("has",1,Z):-ring_metaprop_deduced("has",2,Z),ring_metaprop_deduced("has",8,Z). // Morita theory
+ring_metaprop_deduced("has",8,Z):-ring_metaprop_deduced("has",1,Z). // Morita theory
+ring_metaprop_deduced("has",2,Z):-ring_metaprop_deduced("has",1,Z). // Morita theory
+ring_metaprop_deduced("has",5,Z):-ring_metaprop_deduced("has",6,Z). // Stable under products -> stable under finite products
+ring_metaprop_deduced("has",10,Z):-ring_metaprop_deduced("has",3,Z). // Passes to subrings -> passes to center
+ring_metaprop_deduced("has",8,Z):-ring_metaprop_deduced("has",7,Z). // Passes to corner rings -> passes to full idempotent corner rings
+
