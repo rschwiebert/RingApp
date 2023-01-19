@@ -119,7 +119,10 @@ def souffle_to_module_terms(mat):
 
 def souffle_to_terms(phrase):
     pat = re.compile('ring_deduced\("([a-z]+)",([0-4]),([0-9]+)')
-    mat = pat.search(phrase)
+    try:
+        mat = pat.search(phrase)
+    except TypeError:
+        raise ParseError('null input to souffle_to_terms')
     if mat:
         return souffle_to_ring_terms(mat)
     mod_pat = re.compile('module_deduced\("([a-z]+)",([0-9]+)')
