@@ -135,7 +135,7 @@ class SubsetAdmin(admin.ModelAdmin):
 
 
 class RingDimensionAdmin(admin.ModelAdmin):
-    fields = ['ring', 'dimension_type', 'left_dimension', 'right_dimension', 'citation']
+    fields = ['ring', 'dimension_type', 'left_dimension', 'reason_left', 'right_dimension', 'reason_right', 'citation']
     list_display = ['ring', 'dimension_type', 'left_dimension', 'right_dimension']
     list_filter = ['ring', 'dimension_type']
     formfield_overrides = {
