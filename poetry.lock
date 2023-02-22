@@ -68,7 +68,7 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/rschwiebert/dart_data.git"
-reference = "HEAD"
+reference = "master"
 resolved_reference = "70d914ec66324fb0b72c9cad6a0d86e36561afa7"
 
 [[package]]
@@ -535,4 +535,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "6b7e899095b5d4e040b219539606405d7f7ed65442c8a9afdb76c70bfd3be4d4"
+content-hash = "75b105baa1910349e985d5b2c39763ee090e71945a6a90c456dd62979657eee2"
