@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Contribute{% endblock %}
+
+{% block content %}
+{% if messages %}
+
+<ul class="messages">
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 content">
+            <h1>How to contribute</h1>
+            <p>You will either need to register here on this site, or else have a GitHub account.</p>
+
+            <p>For bug reports, feature requests, or problems with <b>the website itself</b>, use the
+                <a href="https://github.com/rschwiebert/RingApp/issues">RingApp GitHub issue tracker</a>.</p>
+            <p>For suggestions or corrections to <b>the database content</b>, use the
+                <a href="https://github.com/rschwiebert/dart_data/issues">dart_data GitHub issue tracker</a>.</p>
+            <p>If you are knowledgable enough and would like to formulate your own pull request with changes,
+                <a href="https://gist.github.com/MarcDiethelm/7303312">here is a brief guide for how to do
+                    that for a GitHub project.</a></p>
+            <p>If you don't want to use GitHub, you can always use the form below to make any suggestion.</p>
+
+            <h2>Make a quick suggestion</h2>
+
+            {% if user.is_authenticated %}
+            <form action="" method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Submit suggestion"/>
+            </form>
+            {% else %}
+            <p>(When you <a href="{% url 'auth_login' %}?next=/contribute/">log in</a> the submission form appears
+                here.)
+            </p>
+            {% endif %}
+
+        </div>
+        <div class="col-md-6 content">
+            <h2>Need inspiration?</h2>
+
+            <p><a href="{% url 'inspiration' %}">Here is a list outlining several gaps
+                that remain to be filled.</a></p>
+            <h2>Relevant open questions</h2>
+            {% include 'dart_data/unknown_list.html' %}
+
+            <h2>Tips</h2>
+            <p>To help maintain the quality of content and integrity of the database, please keep these points in
+                mind:</p>
+            <ul>
+                <li> We might not accept every suggestion.</li>
+                <li> Did you check the database to see if your ring example or property is already there? (Accidents
+                    will
+                    happen and we can deal with it, but it's best to avoid that altogether.)
+                </li>
+                <li> It is really important to have good citations! (Incorrect proofs and claims exist,
+                    unfortunately.)
+                </li>
+                <li> Multiple high-quality citations are helpful. (Readers will have more places to look.)</li>
+            </ul>
+        </div>
+
+    </div>
+    <div class="row">
+        {% include 'dart_data/contribution_list.html' %}
+    </div>
+    {% endblock %}

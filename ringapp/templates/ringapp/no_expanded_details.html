@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Oops!{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="col-md-12 content">
+    <h2>No expanded details for this ring available.</h2>
+    <p>You can request the creation of a page for this ring using the
+    <a href="{% url 'contribute' %}">suggestion form</a>.</p>
+    <p><a href="{% url 'ring-detail' ring.id %}">Back to the ring property page.</a></p>
+  </div>
+</div>
+
+{% endblock %}

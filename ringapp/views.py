@@ -385,10 +385,11 @@ class DetailTemplateView(TemplateView):
         ring = Ring.objects.get(id=kwargs['pk'])
         try:
             tname = f'dart_data/{tag("RING", ring.id)}_details.html'
+            print(tname)
             render(self.request, tname)
             self.template_name = tname
         except TemplateDoesNotExist:
-            self.template_name = 'dart_data/no_expanded_details.html'
+            self.template_name = 'ringapp/no_expanded_details.html'
 
         context['ring'] = ring
 

@@ -42,7 +42,7 @@ class SimpleTest(TestCase):
     def test_L1(self):
         self.RP1.has_on_left = True
         self.RP1.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP2.refresh_from_db()
         self.assertEqual(self.RP2.has_on_left, True)
         self.assertIsNone(self.RP2.has_on_right)
@@ -50,7 +50,7 @@ class SimpleTest(TestCase):
     def test_L1_backward(self):
         self.RP2.has_on_left = False
         self.RP2.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP1.refresh_from_db()
         self.assertEqual(self.RP2.has_on_left, False)
         self.assertIsNone(self.RP2.has_on_right)
@@ -59,7 +59,7 @@ class SimpleTest(TestCase):
         self.RP1.has_on_left = True
         self.RP1.has_on_right = True
         self.RP1.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP2.refresh_from_db()
         self.assertEqual(self.RP2.has_on_left, True)
         self.assertEqual(self.RP2.has_on_right, True)
@@ -69,7 +69,7 @@ class SimpleTest(TestCase):
         self.RP4.has_on_left = True
         self.RP3.save()
         self.RP4.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP5.refresh_from_db()
         self.assertEqual(self.RP5.has_on_left, True)
 
@@ -78,35 +78,35 @@ class SimpleTest(TestCase):
         self.RP5.has_on_left = False
         self.RP3.save()
         self.RP5.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP4.refresh_from_db()
         self.assertEqual(self.RP4.has_on_left, False)
 
     def test_l3_1(self):
         self.RP6.has_on_left = True
         self.RP6.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP7.refresh_from_db()
         self.assertEqual(self.RP7.has_on_left, True)
 
     def test_l3_2(self):
         self.RP6.has_on_left = False
         self.RP6.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP7.refresh_from_db()
         self.assertEqual(self.RP7.has_on_left, False)
 
     def test_l3_3(self):
         self.RP7.has_on_left = True
         self.RP7.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP6.refresh_from_db()
         self.assertEqual(self.RP6.has_on_left, True)
 
     def test_l3_4(self):
         self.RP7.has_on_left = False
         self.RP7.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RP6.refresh_from_db()
         self.assertEqual(self.RP6.has_on_left, False)
 
@@ -130,7 +130,7 @@ class RingDimTest(TestCase):
     def test_L1_dim(self):
         self.RP1.has_on_left = True
         self.RP1.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         self.RD1.refresh_from_db()
         self.assertEqual(self.RD1.left_dimension, '1')
 
@@ -140,7 +140,7 @@ class RingDimTest(TestCase):
         self.RD1.left_dimension = '2'
         self.RD1.save()
         with self.assertRaises(CommandError):
-            call_command('process_ring', self.ring.id, record=True)
+            call_command('process_ring', self.ring.id, record=True, reload_logic=True)
 
 
 class RingSubsetTest(TestCase):
@@ -161,7 +161,7 @@ class RingSubsetTest(TestCase):
     def test_L1_subset(self):
         self.RP1.has_on_left = True
         self.RP1.save()
-        call_command('process_ring', self.ring.id, record=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
         rs1 = RingSubset.objects.get(ring=self.ring, subset_type=self.S1)
         self.assertEqual(rs1.subset, '1')
 
@@ -171,5 +171,5 @@ class RingSubsetTest(TestCase):
         RingSubset.objects.create(ring=self.ring, subset_type=self.S1, subset='2')
 
         with self.assertRaises(CommandError):
-            call_command('process_ring', self.ring.id, record=True)
+            call_command('process_ring', self.ring.id, record=True, reload_logic=True)
 

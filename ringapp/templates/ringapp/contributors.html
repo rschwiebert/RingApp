@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Contributors{% endblock %}
+
+{% block content %}
+{% if messages %}
+
+<ul class="messages">
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<div class="container">
+    {% include 'dart_data/contribution_list.html' %}
+</div>
+
+{% endblock %}

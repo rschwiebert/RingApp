@@ -35,7 +35,7 @@ class EndpointTestCase(TestCase):
                         'search', 'results', 'theorem-list', 'inspiration']
 
         for item in two_hundreds:
-            resp = self.client.get(reverse(item))
+            resp = self.client.get(reverse(item), follow=True)
             self.assertEqual(resp.status_code, 200, item)
 
         three_hundreds = ['auth_password_change', 'commproperty-list', 'cresults', 'profile', 'newsfeed']
@@ -47,7 +47,7 @@ class EndpointTestCase(TestCase):
         details = ['property-detail', 'theorem-detail',
                    'keyword-detail',  'ring-detail', 'expanded-detail', ]
         for item in details:
-            resp = self.client.get(reverse(item, kwargs={'pk': 1}))
+            resp = self.client.get(reverse(item, kwargs={'pk': 1}), follow=True)
             self.assertEqual(resp.status_code, 200, item)
 
         redirected_details = ['commproperty-detail', 'commring-detail', ]

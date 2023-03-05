@@ -44,6 +44,7 @@ urlpatterns = [
     path('people/', TemplateView.as_view(template_name='ringapp/people.html'), name='people'),
     path('resources/', TemplateView.as_view(template_name='ringapp/resources.html'), name='resources'),
     path('contribute/', web.views.SuggestionView.as_view(), name='contribute'),
+    path('contributors/', TemplateView.as_view(template_name='ringapp/contributors.html'), name='contributors'),
     path('inspiration/', views.inspiration_view, name='inspiration'),
     path('bibliography/', views.CitationList.as_view(), name='bibliography'),
     path('cite/', views.citeview, name='cite'),
