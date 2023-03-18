@@ -1,0 +1,46 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: RingApp
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Ryan
+    family-names: Schwiebert
+    email: databaseofringtheory@gmail.com
+    orcid: 'https://orcid.org/0000-0001-9230-3938'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7745150
+    description: >-
+      https://github.com/rschwiebert/RingApp/releases/tag/v1.1.0
+repository-code: 'https://github.com/rschwiebert/RingApp'
+abstract: >
+  The goal of the project is to function as a convenient
+  example/counter-example reference for researchers and
+  students of ring theory. 
+
+
+  Users can browse the examples of rings and the
+  ring-theoretic properties that have been compiled. The
+  examples are associated with the properties they do (and
+  do not) have. The major feature is the ability to search
+  the database for rings satisfying given ring-theoretic
+  criteria.
+
+
+  The database leverages the software Souffle for performing
+  logical inferences.
+keywords:
+  - mathematics
+  - ring theory
+  - expert system
+  - logic programming
+  - abstract algebra
+license: MIT
+commit: 'Tag: v1.1.0'
+version: v1.1.0
+date-released: '2023-03-17'
