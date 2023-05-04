@@ -144,3 +144,36 @@ def write_ring_subsets(ring, complete=True):
     with open(DL_DIR/'inputs'/'ring_subset_known.facts', 'w') as f:
         for rs in known:
             f.write(f'{rs.subset}\t{rs.subset_type.id}\n')
+
+
+def term_to_fact(searchterm: str):
+    """
+    Given a search term of the format [HL][0-9]+[rl], formulate the
+    corresponding row of a fact file
+    H1r -> has\t3\t1
+    L2 -> lacks\t0\t2
+    :param searchterm: string of form [HL][0-9]+[rl]? that comes from the query params
+    :return:
+    """
+    pat0 = re.compile('^([HL])([0-9]+)$')
+    pat1 = re.compile('^([HL])([0-9]+)([rl])$')
+    if mat := pat0.match(searchterm):
+        if mat.group(1) == 'H':
+            return f'has\t0\t{mat.group(2)}\n'
+        else:
+            return f'lacks\t0\t{mat.group(2)}\n'
+
+    elif mat := pat1.match(searchterm):
+        if mat.group(1) == 'H':
+            mode = 'has'
+        else:
+            mode = 'lacks'
+
+        if mat.group(3) == 'l':
+            side = 2
+        else:
+            side = 3
+
+        return f'{mode}\t{side}\t{mat.group(2)}\n'
+    else:
+        raise ValueError(f"{searchterm=} cannot be converted to souffle.")

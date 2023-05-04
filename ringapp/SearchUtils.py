@@ -60,16 +60,19 @@ def ring_search(terms: List[str]) -> Tuple[QuerySet, QuerySet]:
                                  Q(property_id=term[1:], has_on_right=True))
         elif term[0] == 'L':
             if term[-1] == 'l':
-                qsw = qsw.filter(property_id=term[1:-1], has_on_left=True)
-                qsn = qsn.filter(property_id=term[1:-1], has_on_left=False)
+                prop_id = term[1:-1]
+                qsw = qsw.filter(property_id=prop_id, has_on_left=True)
+                qsn = qsn.filter(property_id=prop_id, has_on_left=False)
             elif term[-1] == 'r':
-                qsw = qsw.filter(property_id=term[1:-1], has_on_right=True)
-                qsn = qsn.filter(property_id=term[1:-1], has_on_right=False)
+                prop_id = term[1:-1]
+                qsw = qsw.filter(property_id=prop_id, has_on_right=True)
+                qsn = qsn.filter(property_id=prop_id, has_on_right=False)
             else:
-                qsw = qsw.filter(Q(property_id=term[1:], has_on_left=True) |
-                                 Q(property_id=term[1:], has_on_right=True))
-                qsn = qsn.filter(Q(property_id=term[1:], has_on_left=False) |
-                                 Q(property_id=term[1:], has_on_right=False))
+                prop_id = term[1:]
+                qsw = qsw.filter(Q(property_id=prop_id, has_on_left=True) |
+                                 Q(property_id=prop_id, has_on_right=True))
+                qsn = qsn.filter(Q(property_id=prop_id, has_on_left=False) |
+                                 Q(property_id=prop_id, has_on_right=False))
         else:
             raise Exception('Invalid search term encountered.')
 

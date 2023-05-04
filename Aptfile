@@ -1,0 +1,11 @@
+libsqlite3-dev
+libffi7
+libffi-dev
+g++
+python3
+libncurses5-dev
+mcpp
+zlib1g-dev
+libgomp1
+libsqlite3-0
+https://github.com/souffle-lang/ppa/raw/main/ubuntu/pool/stable/x86_64-ubuntu-2004-souffle-2.4-Linux.deb
