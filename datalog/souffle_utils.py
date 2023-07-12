@@ -73,7 +73,7 @@ def ring_mirror(inputset: Set[str]) -> Set[str]:
         return f'{mat.group(1)},{side},'
 
     inputstring = '\n'.join(inputset)
-    inputstring = re.sub('((?:ring_deduced|module_deduced|ring_dim_deduced)\("[^"]+"),([0-9]),', swap, inputstring)
+    inputstring = re.sub('((?:ring_deduced|module_deduced|ring_dim_deduced)\("[^"]+"|[A-Z]),([0-9]),', swap, inputstring)
 
     return set(inputstring.split('\n'))
 

@@ -164,11 +164,16 @@ class LogicEngine(object):
             3: 2,
             4: 4
         }
-        pat = re.compile('ring_deduced\\("([a-z]+)",([0-4])')
+        pat = re.compile('ring_deduced\\(("[a-z]+"|[A-Z]),([0-4])')
+        pat2 = re.compile('ring_dim_deduced\\(("[a-z]+"|[A-Z]),([0-4])')
 
         def g(match):
-            return f'ring_deduced("{match.group(1)}",{side_swap[int(match.group(2))]}'
-        return re.sub(pat, g, phrase)
+            return f'ring_deduced({match.group(1)},{side_swap[int(match.group(2))]}'
+        def g2(match):
+            return f'ring_dim_deduced({match.group(1)},{side_swap[int(match.group(2))]}'
+        newphrase = re.sub(pat, g, phrase)
+        newphrase = re.sub(pat2, g2, newphrase)
+        return newphrase
 
     def parse_logic(self, logic, switch_sides=False, convert_to_converse=False):
         """
