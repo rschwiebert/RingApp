@@ -210,7 +210,9 @@ def humanize_ring_souffle(mode, side, pk):
 
 def humanize_ring_dim_souffle(value, side, pk):
     dim = Dimension.objects.get(pk=pk)
-    if side == '2':
+    if side == '1':
+        return f'has {dim.name} {value} on the right and left'
+    elif side == '2':
         return f'has {dim.name} {value} on the left'
     elif side == '3':
         return f'has {dim.name} {value} on the right'
