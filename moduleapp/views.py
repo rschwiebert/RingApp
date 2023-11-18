@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods, require_GET
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from ratelimit.decorators import ratelimit
 
-from moduleapp.models import Property, Module, ModuleProperty
+from moduleapp.models import Property, Module, ModuleProperty, PropertyMetaproperty
 from django.shortcuts import render, redirect
 from moduleapp import forms
 
@@ -64,6 +64,10 @@ class PropertyView(DetailView):
         lacks_count = ModuleProperty.objects.filter(property=context['object'], has=False).count()
         context['has_count'] = has_count
         context['lacks_count'] = lacks_count
+        metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
+        context['metaproperties'] = metaproperties
+        context['has_mp'] = metaproperties.filter(has_metaproperty=True)
+        context['lacks_mp'] = metaproperties.filter(has_metaproperty=False)
         return context
 
 
