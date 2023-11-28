@@ -483,35 +483,6 @@ def svgview(request, filename):
         raise Http404
 
 
-def citeview(request):
-    today = date.today()
-    styles = OrderedDict({
-        'Bibtex': '''@misc{schwiebert_2014,
-    title={DaRT - Home}, 
-    url={https://ringtheory.herokuapp.com/}, 
-    journal={Database of Ring Theory}, 
-    author={Schwiebert, Ryan C.}, 
-    year={2014}, 
-    month={Dec}, 
-    note={Accessed ''' + today.strftime('%B %d, %Y') + '}}',
-
-        'IEEE': 'R. C. Schwiebert, "DaRT - Home", Database of Ring Theory, 2014. [Online]. '
-                'Available: https://ringtheory.herokuapp.com. [Accessed: {}].'.format(today.strftime('%d- %b- %Y')),
-
-        'MLA': 'Schwiebert, Ryan C. "DaRT - Home". Database Of Ring Theory, 2014, https://ringtheory.herokuapp.com. '
-               'Accessed 28 June 2018.'.format(today.strftime('%d %B %Y')),
-        'AMA': 'Schwiebert R. C. DaRT - Home. Database of Ring Theory. 2014. '
-               'Available at: https://ringtheory.herokuapp.com. Accessed {}.'.format(today.strftime('%B %d, %Y')),
-        'APA': 'Schwiebert, R. C. (2014). DaRT - Home. Retrieved from https://ringtheory.herokuapp.com',
-        'Chicago': 'Schwiebert, Ryan C. 2014. "DaRT - Home". Database Of Ring Theory. https://ringtheory.herokuapp.com.',
-
-        'Harvard': 'Schwiebert, R. C. (2014). DaRT - Home. [online] Database of Ring Theory. '
-                   'Available at: https://ringtheory.herokuapp.com [Accessed {}].'.format(today.strftime('%d %b. %Y')),
-    })
-    context = {'styles': styles}
-    return render(request, 'ringapp/cite.html', context)
-
-
 @staff_member_required
 def processor(request):
     if request.method == 'POST':  # If the form has been submitted...

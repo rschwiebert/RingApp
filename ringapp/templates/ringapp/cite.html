@@ -8,14 +8,16 @@
     <div class="col-md-12 content">
         <h1>How to cite this site</h1>
         <p>Was the Database of Ring Theory useful to you?
-            Please consider acknowledging the resource so that others can find it as well.</p>
+            Please consider acknowledging the resource so that others can find it as well!</p>
+        <p>To cite the <b>data set</b>, You can easily obtain an APA citation or BibTeX citation by visiting
+           <a href="https://github.com/rschwiebert/dart_data">the data set GitHub repository</a> and using the "Cite this repository"
+           item visible in the "About" information.  This is probably what you want if you are using information
+            you found from the database.</p>
+        <p>There is a corresponding button for the website code itself in
+            <a href="https://github.com/rschwiebert/RingApp">the website GitHub repository</a> if you need that instead.</p>
         <p>If you have a success story about how the site helped you in a publication or otherwise,
             we would also be appreciative of a notice via the <a href="{% url 'contribute' %}">suggestion form</a>!</p>
 
-        {% for name, format in styles.items %}
-        <h3>{{ name }}</h3>
-        <pre>{{ format|safe }}</pre>
-        {% endfor %}
     </div>
 </div>
 

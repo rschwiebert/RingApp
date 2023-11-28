@@ -47,7 +47,7 @@ urlpatterns = [
     path('contributors/', TemplateView.as_view(template_name='ringapp/contributors.html'), name='contributors'),
     path('inspiration/', views.inspiration_view, name='inspiration'),
     path('bibliography/', views.CitationList.as_view(), name='bibliography'),
-    path('cite/', views.citeview, name='cite'),
+    path('cite/', TemplateView.as_view(template_name='ringapp/cite.html'), name='cite'),
     path('errata/', views.ErrataList.as_view(), name='errata-list'),
     path('faq/', TemplateView.as_view(template_name='ringapp/faq.html'), name='faq'),
     path('maps/', views.ringmaplist, name='ring-maps'),

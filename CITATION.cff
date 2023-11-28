@@ -8,10 +8,8 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Ryan
-    family-names: Schwiebert
+  - given-names: Database of Ring Theory Community
     email: databaseofringtheory@gmail.com
-    orcid: 'https://orcid.org/0000-0001-9230-3938'
 identifiers:
   - type: doi
     value: 10.5281/zenodo.7745150
