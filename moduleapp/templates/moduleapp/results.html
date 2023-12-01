@@ -4,21 +4,21 @@
 
 {% block content %}
 <div class="container">
-  <div class="col-md-12 content">
+  <div class="col-md-6 content">
     <h1>You searched for modules</h1>
     {% if has_readable %}
     <h4>which are</h4>
-    <ul>
-      {% for item in has_readable %}
-      <li>{{ item }}
+    <ul class="list-group">
+      {% for id, item in has_readable %}
+      <li class="list-group-item"><a href="{% url 'module-property-detail' id %}">{{ item }}</a>
       {% endfor %}
     {% endif %}
     </ul>
     {% if lacks_readable %}
     <h4>which are not</h4>
-    <ul>
-      {% for item in lacks_readable %}
-      <li>{{ item }}
+    <ul class="list-group">
+      {% for id, item in lacks_readable %}
+      <li class="list-group-item"><a href="{% url 'module-property-detail' id %}">{{ item }}</a>
       {% endfor %}
     {% endif %}
     </ul>

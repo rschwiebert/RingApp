@@ -105,6 +105,9 @@ def resultspage(request):
         has_readable = [forms.term_to_readable(x) for x in has]
         lacks_readable = [forms.term_to_readable(x) for x in lacks]
 
+        has_readable = zip(has, has_readable)
+        lacks_readable = zip(lacks, lacks_readable)
+
         terms = ['H' + item for item in has]
         terms.extend(['L' + item for item in lacks])
         results, weak_results = module_search(terms)
