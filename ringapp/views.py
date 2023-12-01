@@ -132,6 +132,9 @@ def resultspage(request):
             lacks_readable = [pair[0] for pair in lacks_readable]
             mirror_results, mirror_weak_results = None, None
 
+        has_readable = zip([x.strip('lr') for x in has], has_readable)
+        lacks_readable = zip([x.strip('lr') for x in lacks], lacks_readable)
+
         context = {
             'is_asymm_search': is_asymmetric_search,
             'results': results,
