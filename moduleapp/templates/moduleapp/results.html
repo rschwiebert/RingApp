@@ -4,24 +4,28 @@
 
 {% block content %}
 <div class="container">
-  <div class="col-md-6 content">
+  <div class="row content">
     <h1>You searched for modules</h1>
     {% if has_readable %}
-    <h4>which are</h4>
-    <ul class="list-group">
-      {% for id, item in has_readable %}
-      <li class="list-group-item"><a href="{% url 'module-property-detail' id %}">{{ item }}</a>
-      {% endfor %}
-    {% endif %}
-    </ul>
+    <div class="col-md-3 content">
+        <h4>which are</h4>
+        <ul class="list-group">
+          {% for id, item in has_readable %}
+          <li class="list-group-item"><a href="{% url 'module-property-detail' id %}">{{ item }}</a>
+          {% endfor %}
+        {% endif %}
+        </ul>
+    </div>
     {% if lacks_readable %}
-    <h4>which are not</h4>
-    <ul class="list-group">
-      {% for id, item in lacks_readable %}
-      <li class="list-group-item"><a href="{% url 'module-property-detail' id %}">{{ item }}</a>
-      {% endfor %}
+    <div class="col-md-3 content">
+        <h4>which are not</h4>
+        <ul class="list-group">
+          {% for id, item in lacks_readable %}
+          <li class="list-group-item"><a href="{% url 'module-property-detail' id %}">{{ item }}</a>
+          {% endfor %}
+        </ul>
+    </div>
     {% endif %}
-    </ul>
   </div>
   <div class="panel panel-default col-md-6 content">
 	<div class="panel-heading"><h2>Results</h2></div>

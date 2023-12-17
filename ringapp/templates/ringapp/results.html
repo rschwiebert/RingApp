@@ -4,24 +4,28 @@
 
 {% block content %}
 <div class="container">
-  <div class="col-md-6 content">
+  <div class="row">
     <h1>You searched for rings</h1>
     {% if has_readable %}
-    <h4>which are</h4>
-    <ul class="list-group">
-      {% for key, item in has_readable %}
-      <li class="list-group-item"><a href="{% url 'property-detail' key %}">{{ item }}</a>
-      {% endfor %}
+      <div class="col-md-3 content">
+        <h4>which are</h4>
+        <ul class="list-group">
+          {% for key, item in has_readable %}
+          <li class="list-group-item"><a href="{% url 'property-detail' key %}">{{ item }}</a>
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
-    </ul>
     {% if lacks_readable %}
-    <h4>which are not</h4>
-    <ul class="list-group">
-      {% for key, item in lacks_readable %}
-      <li class="list-group-item"><a href="{% url 'property-detail' key %}">{{ item }}</a>
-      {% endfor %}
+      <div class="col-md-3 content">
+        <h4>which are not</h4>
+        <ul class="list-group">
+          {% for key, item in lacks_readable %}
+          <li class="list-group-item"><a href="{% url 'property-detail' key %}">{{ item }}</a>
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
-    </ul>
   </div>
   <div class="panel panel-default col-md-6 content">
 	<div class="panel-heading"><h2>Results</h2></div>
