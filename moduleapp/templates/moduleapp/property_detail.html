@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Property detail - {{ object.name }}{% endblock %}
+{% block title %}Module Property {{ object.id }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -22,9 +22,10 @@
               </div>
             </div>
         </div>
-        {% if object.citation.all %}
         <div class="col-md-6 content">
-            <h2>Resources for learning about this property:</h2>
+            <h3>Reference(s):</h3>
+        {% if object.citation.all %}
+
             <ul>
                 {% for citation in object.citation.all %}
                 <li>{{ citation }}</li>
@@ -33,8 +34,9 @@
         {% else %}
                 <p>(No citations retrieved.)</p>
         {% endif %}
+            <h3>Metaproperties:</h3>
         {% if metaproperties %}
-            <h2>Metaproperties:</h2>
+
             {% if has_mp %}
             This property has the following metaproperties
             <ul>

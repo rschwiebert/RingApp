@@ -1,34 +1,38 @@
 {% extends 'base.html' %}
 
-{% block title %}Ring detail{% endblock %}
+{% block title %}Ring {{ object.id }}{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Ring detail</h1>
-    <hr/ >
     <div class="row">
         <div class="col-md-6 content">
             {% if object %}
-            <h2>Name: {{ object.name }}</h2>
-            {% if object.user %}<p><i>This ring suggested by: {{ object.user }}</i></p> {% endif %}
-            <p>Description: {{ object.description|safe }}</p>
-            {% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
-            {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details
-            page.</a></p>{% endif %}
-            {% if krull_disp %}<p>Krull dimension: {{ krull_disp }}</p>{% endif %}
-            {% if object.keywords.exists %}
-            <p>Keywords
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h1>Ring $R_{ {{ object.id }} }$</h1><h2>{{ object.name }}</h2>
+                </div>
+                <div class="panel-body">
+                {% if object.user %}<p><i>This ring suggested by: {{ object.user }}</i></p> {% endif %}
+                <h3>Description:</h3> <p>{{ object.description|safe }}</p>
+                {% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
+                {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details
+                page.</a></p>{% endif %}
+                {% if object.keywords.exists %}
+                <p>Keywords
                 {% for tag in object.keywords.all %}
                 <a href="{% url 'keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
                 {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
                                   data-content="Keyword labels are links to more information!"
-                                  data-original-title="Info"
-                ></span></p>
+                                  data-original-title="Info"></span>
+                </p>
+                </div>
+            </div>
 
             {% endif %}
+
         </div>
         <div class="col-md-6 content">
-            <p>Reference(s):
+            <h3>Reference(s):</h3>
                 {% if object.citation.exists %}
             <ul>
                 {% for ref in object.citation.all %}
@@ -39,7 +43,6 @@
                 <li>(Citation needed)</li>
                 {% endif %}
             </ul>
-            </p>
 
         </div>
 

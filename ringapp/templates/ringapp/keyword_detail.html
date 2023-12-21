@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Property detail{% endblock %}
+{% block title %}Keyword {{ object.id }}{% endblock %}
 
 {% block content %}
 <div class="container">
   <div class="panel panel-default">
 	<div class="panel-heading"><h1>Keyword: {{ object.name }}</h1></div>
 	<div class="panel-body">
-			<p>Description: {{ object.description }}</p>
+		<h2>Description: </h2>
+			<p>{{ object.description }}</p>
 			<a class="btn btn-default" role="button" href="{% url 'kresults' %}?kwd={{ object.id }}">
 				   <span class="glyphicon glyphicon-search"></span>  Rings with this keyword</a>
 

@@ -1,34 +1,40 @@
 {% extends 'base.html' %}
 
-{% block title %}Theorem detail{% endblock %}
+{% block title %}Theorem {{ object.id }}{% endblock %}
 
 {% block content %}
 <div class="container">
-	<h1>Theorem detail</h1>
 	{% if object %}
-	    <h2>Alias: {{ object.alias }}</h2>
-            <div class="row">
-               <div class="col-md-8 content">
-		<p>Statement: {{ object.statement }}</p>
-		<p>Link: <a href="{{ object.link }}">{{ object.link }}</a></p>
-               </div>
-               <div class="col-md-4 content">
-                <h3>Reference(s)</h3>
-		    {% if object.citation.exists %}
-		    <ul>
-			    {% for ref in object.citation.all %}
-			    <li>{{ ref }}</li>
-			    {% endfor %}
+	<div class="row">
+	   <div class="col-md-8 content">
+		   <div class="panel panel-default">
+			   <div class="panel-heading">
+				   <h1>Theorem</h1>
+				   <h2>{{ object.alias }}</h2>
+			   </div>
+			   <div class="panel-body">
+				   <p>{{ object.statement }}</p>
+				   {% if object.link %}
+				   <p>Link: <a href="{{ object.link }}">{{ object.link }}</a></p>
+				   {% endif %}
+			   </div>
+		   </div>
+	   </div>
+	   <div class="col-md-4 content">
+		<h3>Reference(s)</h3>
+		{% if object.citation.exists %}
+		<ul>
+			{% for ref in object.citation.all %}
+			<li>{{ ref }}</li>
+			{% endfor %}
 
-			    {% else %}
-			    <li>(Citation needed)</li>
-			    {% endif %}
-		    </ul>
-		
-               </div>
-	    </div>
+			{% else %}
+			<li>(Citation needed)</li>
+			{% endif %}
+		</ul>
 
-	    
+	   </div>
+	</div>
 	{% else %}
 	    <p>Nothing was retrieved.</p>
 	{% endif %}
