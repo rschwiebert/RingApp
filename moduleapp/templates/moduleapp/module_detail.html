@@ -1,34 +1,38 @@
 {% extends 'base.html' %}
 
-{% block title %}Module detail{% endblock %}
+{% block title %}Module {{object.id}}{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Module detail</h1>
-    <hr/ >
     <div class="row">
         <div class="col-md-6 content">
-        {% if object %}
-            <h2>Name: {{ object.name }}</h2>
-            <p>Description: {{ object.description|safe }}</p>
-            <p>Ring:{% if object.opposite_ring %} opposite ring of{% endif %} <a href="{% url 'ring-detail' object.ring.id %}">{{ object.ring.name }}</a> </p>
-            {% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
-<!--            {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details page.</a></p>{% endif %}-->
+            {% if object %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                <h1>Module $M_{ {{object.id}} }$</h1>
+                <h2>{{ object.name }} over {% if object.opposite_ring %} the opposite ring of{% endif %} <a href="{% url 'ring-detail' object.ring.id %}">{{ object.ring.name }}</a></h2>
+                </div>
+                {% endif %}
+                <div class="panel-body">
+                    <h3>Description: </h3>
+                    <p>{{ object.description|safe }}</p>
+                    {% if object.notes %}<p>Notes: {{ object.notes }}</p>{% endif %}
+                    <!--            {% if object.optional_template %}<p><a href="{% url 'expanded-detail' object.id %}">Expanded details page.</a></p>{% endif %}-->
 
-            {% if object.keywords.exists %}
-            <p>Keywords
-                {% for tag in object.keywords.all %}
-                <a href="{% url 'module-keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
-                {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
-                                  data-content="Keyword labels are links to more information!"
-                                  data-original-title="Info"
-                ></span></p>
-
-            {% endif %}
-        {% endif %}
+                    {% if object.keywords.exists %}
+                    <p>Keywords
+                        {% for tag in object.keywords.all %}
+                        <a href="{% url 'module-keyword-detail' tag.id %}"><span class="label label-default">{{ tag.name }}</span></a>
+                        {% endfor %}<span class="glyphicon glyphicon-info-sign showPopover" style="cursor:pointer;"
+                                          data-content="Keyword labels are links to more information!"
+                                          data-original-title="Info"
+                        ></span></p>
+                {% endif %}
+                </div>
+            </div>
         </div>
         <div class="col-md-6 content">
-            <p>Reference(s):
+            <h3>Reference(s):</h3>
                 {% if object.citation.exists %}
             <ul>
                 {% for ref in object.citation.all %}
@@ -39,7 +43,6 @@
                 <li>(Citation needed)</li>
                 {% endif %}
             </ul>
-            </p>
 
         </div>
 
@@ -47,7 +50,6 @@
 
     </div>
     <hr/>
-
     <div class="row">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#properties" style="font-size:large">Properties</a></li>

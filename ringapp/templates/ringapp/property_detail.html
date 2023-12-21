@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Property detail - {{ object.name }}{% endblock %}
+{% block title %}Ring Property {{ object.id }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -9,8 +9,6 @@
             <div class="panel panel-default">
               <div class="panel-heading"><h1>Property: {% if not object.symmetric %}(right/left){% endif %} {{ object.name }}</h1></div>
               <div class="panel-body">
-
-
                 {% if object %}
                     {% if not object.symmetric %}
                         <p>Definition: (right {{ object.name }}) {{ object.definition }}</p>
@@ -27,14 +25,13 @@
                             <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?L={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Rings not having property: {{ lacks_count }}</a></li>
                         </ul>
                     {% endif %}
-
-
               </div>
             </div>
         </div>
-        {% if object.citation.all %}
         <div class="col-md-6 content">
-            <h2>Resources for learning about this property:</h2>
+            <h3>Reference(s):</h3>
+        {% if object.citation.all %}
+
             <ul>
                 {% for citation in object.citation.all %}
                 <li>{{ citation }}</li>
@@ -43,8 +40,9 @@
         {% else %}
                 <p>(No citations retrieved.)</p>
         {% endif %}
+            <h3>Metaproperties:</h3>
+
         {% if metaproperties %}
-            <h2>Metaproperties:</h2>
             {% if has_mp %}
             This property has the following metaproperties
             <ul>
@@ -70,8 +68,6 @@
         {% else %}
             <p>(No metaproperty information retrieved.)</p>
         {% endif %}
-
-
         </div>
     </div>
     {% endif %}
