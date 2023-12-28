@@ -7,12 +7,12 @@
 <div class="container">
   <div class="panel panel-default">
     <div class="panel-heading"><h1>Ring properties</h1>
-      <p>This is the comprehensive list of ring types used at present.</p>
+      <p>This is the comprehensive list of ring properties in the database.</p>
     </div>
     <div class="list-group">
 	{% if object_list %}
 	    {% for item in object_list %}
-		<a class="list-group-item" href="{% url 'property-detail' item.id %}">{{ item.name }}</a>
+        <a class="list-group-item" href="{% url 'property-detail' item.id %}"><div class="row"><div class="col-md-3"><h4>{{ item.name }}</h4></div><div class="col-md-6">{{ item.definition }}</div></div></a>
 	    {% endfor %}
 	{% else %}
 	    <p class="list-group-item">(No properties were retrieved.)</p>
