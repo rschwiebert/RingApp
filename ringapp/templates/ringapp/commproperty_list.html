@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Commutative ring properties{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading"><h1>Commutative ring properties</h1>
+      <p>This is the list of ring properties defined only for commutative rings.</p>
+    </div>
+    <div class="list-group">
+	{% if object_list %}
+	    {% for item in object_list %}
+        <a class="list-group-item" href="{% url 'property-detail' item.id %}"><div class="row"><div class="col-md-3"><h4>{{ item.name }}</h4></div><div class="col-md-6">{{ item.definition }}</div></div></a>
+	    {% endfor %}
+	{% else %}
+	    <p class="list-group-item">(No properties were retrieved.)</p>
+	{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

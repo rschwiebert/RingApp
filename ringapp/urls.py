@@ -34,6 +34,7 @@ urlpatterns = [
     path('rings/ring/<int:pk>/expanded-details/', views.DetailTemplateView.as_view(), name='expanded-detail'),
 
     path('properties/', views.PropertyList.as_view(), name='property-list'),
+    path('commproperties/', views.CommPropertyList.as_view(), name='commproperty-list'),
     path('properties/property/<int:pk>/', views.PropertyView.as_view(), name='property-detail'),
 
     path('dimensions/', views.DimensionView.as_view(), name='dimension-list'),
@@ -83,9 +84,6 @@ urlpatterns = [
         RedirectView.as_view(url='https://databaseofringtheory.wordpress.com/feed/', permanent=True),
         name='newsfeed'),
 
-    path('commproperties/',
-        RedirectView.as_view(pattern_name='property-list', permanent=True),
-        name='commproperty-list'),
     path('commproperties/property/<int:pk>/',
         views.CommPropertyRedirect.as_view(),
         name='commproperty-detail'),
