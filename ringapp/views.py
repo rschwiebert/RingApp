@@ -262,8 +262,10 @@ class PropertyList(ListView):
 class CommPropertyList(ListView):
     model = Property
     template_name = 'ringapp/commproperty_list.html'
+
     def get_queryset(self):
         return Property.objects.filter(commutative_only=True).order_by('name')
+
 
 class CommPropertyRedirect(RedirectView):
     permanent = True
