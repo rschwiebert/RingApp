@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load queryargs %}
 
 {% block title %}Ring {{ object.id }}{% endblock %}
 
@@ -66,20 +67,26 @@
                         <div class="panel-heading">Known Properties</div>
                         <table class="table table-bordered">
                             <tr>
+                                {% if symmsort == 's' %}
+                                <th></th>
+                                <th>Name <a href="{% url 'ring-detail' object.id %}?{{ request|update_symmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+
+                                {% else %}
+                                <th><a href="{% url 'ring-detail' object.id %}?{{ request|update_symmfilter:'s' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
                                 <th>Name</th>
+                                {% endif %}
                             </tr>
                             {% for item in prop_join %}
                             <tr>
                                 <td>
-                                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
-                                        {% if item.1 == True %}
-                                        <i class="glyphicon glyphicon-ok"></i>
-                                        {% elif item.1 == False %}
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                        {% elif item.1 == None %}
-                                        <i class="glyphicon glyphicon-question-sign"></i>
-                                        {% endif %}
-                                        {{ item.0.name }}</a></td>
+                                    {% if item.1 == True %}
+                                    <i class="glyphicon glyphicon-ok"></i>
+                                    {% elif item.1 == False %}
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                    {% elif item.1 == None %}
+                                    <i class="glyphicon glyphicon-question-sign"></i>
+                                    {% endif %}</td>
+                                <td><a class="list-group-item" href="{% url 'property-detail' item.0.id %}">{{ item.0.name }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -91,20 +98,27 @@
                         <div class="panel-heading">Symmetric properties</div>
                         <table class="table table-bordered">
                             <tr>
+                                {% if symmsort == 's' %}
+                                <th></th>
+                                <th>Name <a href="{% url 'ring-detail' object.id %}?{{ request|update_symmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+
+                                {% else %}
+                                <th><a href="{% url 'ring-detail' object.id %}?{{ request|update_symmfilter:'s' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
                                 <th>Name</th>
+                                {% endif %}
                             </tr>
                             {% for item in symmetric_props %}
                             <tr>
                                 <td>
-                                    <a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
-                                        {% if item.1 == True %}
-                                        <i class="glyphicon glyphicon-ok"></i>
-                                        {% elif item.1 == False %}
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                        {% elif item.1 == None %}
-                                        <i class="glyphicon glyphicon-question-sign"></i>
-                                        {% endif %}
-                                        {{ item.0.name }}</a></td>
+                                    {% if item.1 == True %}
+                                    <i class="glyphicon glyphicon-ok"></i>
+                                    {% elif item.1 == False %}
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                    {% elif item.1 == None %}
+                                    <i class="glyphicon glyphicon-question-sign"></i>
+                                    {% endif %}
+                                </td>
+                                <td><a class="list-group-item" href="{% url 'property-detail' item.0.id %}">{{ item.0.name }}</a></td>
                             </tr>
                             {% endfor %}
                         </table>
@@ -115,9 +129,19 @@
                         <div class="panel-heading">Asymmetric properties</div>
                         <table class="table table-bordered">
                             <tr>
+                                {% if asymmsort == 'l' %}
                                 <th>left</th>
-                                <th>Name</th>
+                                <th>Name <a href="{% url 'ring-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                                <th>right <a href="{% url 'ring-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                                {% elif asymmsort == 'r' %}
+                                <th>left <a href="{% url 'ring-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                                <th>Name <a href="{% url 'ring-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
                                 <th>right</th>
+                                {% else %}
+                                <th>left <a href="{% url 'ring-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                                <th>Name</th>
+                                <th>right <a href="{% url 'ring-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                                {% endif %}
                             </tr>
                             {% for item in asymmetric_props %}
                             <tr>

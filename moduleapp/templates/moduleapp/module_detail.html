@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load queryargs %}
 
 {% block title %}Module {{object.id}}{% endblock %}
 
@@ -64,19 +65,27 @@
                         <div class="panel-heading">Known Properties</div>
                         <table class="table table-bordered">
                             <tr>
+                                {% if sorttype == 's' %}
+                                <th></th>
+                                <th>Name <a href="{% url 'module-detail' object.id %}?{{ request|update_symmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+
+                                {% else %}
+                                <th><a href="{% url 'module-detail' object.id %}?{{ request|update_symmfilter:'s' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
                                 <th>Name</th>
+                                {% endif %}
                             </tr>
                             {% for item in prop_join %}
                             <tr>
-                                <td>
-                                    <a class="list-group-item" href="{% url 'module-property-detail' item.0.id %}">
-                                        {% if item.1 == True %}
+                                <td>{% if item.1 == True %}
                                         <i class="glyphicon glyphicon-ok"></i>
                                         {% elif item.1 == False %}
                                         <i class="glyphicon glyphicon-remove"></i>
                                         {% elif item.1 == None %}
                                         <i class="glyphicon glyphicon-question-sign"></i>
-                                        {% endif %}
+                                        {% endif %}</td>
+                                <td>
+                                    <a class="list-group-item" href="{% url 'module-property-detail' item.0.id %}">
+
                                         {{ item.0.name }}</a></td>
                             </tr>
                             {% endfor %}
