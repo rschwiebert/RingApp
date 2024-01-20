@@ -26,11 +26,21 @@ class ModuleDetail(DetailView):
     model = Module
     template_name = 'moduleapp/module_detail.html'
 
+    def get(self, request, **kwargs):
+        sorttype = request.GET.get('symmsort', 'n')  # n/s:  name/status
+        self.object = self.get_object()
+        context = self.get_context_data(
+            object=self.object,
+            request=request,
+            sorttype=sorttype
+        )
+        return self.render_to_response(context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = context['object']
+        sorttype = kwargs['sorttype']  # n/s:  name/status
         obj_props = obj.moduleproperty_set.order_by('property__name')
-
 
         props = Property.objects.all()
 
@@ -40,8 +50,20 @@ class ModuleDetail(DetailView):
             prop_join[obj_rp.property] = (obj_rp.has,)
 
         prop_join = [(prop,) + values for prop, values in prop_join.items()]
-        context['prop_join'] = prop_join
 
+        def nullboolsort(x):
+            if isinstance(x, bool):
+                return x
+            else:
+                return -1
+
+        if sorttype == 's':
+            prop_join.sort(key=lambda x: nullboolsort(x[1]))
+        else:
+            prop_join.sort(key=lambda x: x[0].name.lower())
+
+        context['prop_join'] = prop_join
+        context['sorttype'] = sorttype
 
         # context['dimensions'] = obj.moduledimension_set.all().order_by('dimension_type__name')
         # context['subsets'] = obj.modulesubset_set.all().order_by('subset_type__name')

@@ -289,10 +289,23 @@ class RingDetail(DetailView):
     model = Ring
     template_name = 'ringapp/ring_detail.html'
 
+    def get(self, request, **kwargs):
+        sorts = dict()
+        sorts['symmsort'] = request.GET.get('symmsort', 'n')  # n/s:  name/status
+        sorts['asymmsort'] = request.GET.get('asymmsort', 'n')  # n/l/r: name/leftstatus/rightstatus
+        self.object = self.get_object()
+        context = self.get_context_data(
+            object=self.object,
+            request=request,
+            **sorts
+        )
+        return self.render_to_response(context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = context['object']
-        obj_props = obj.ringproperty_set.order_by('property__name')
+        obj_props = obj.ringproperty_set.all()
+
         if not obj.is_commutative:
             obj_props = obj_props.filter(property__commutative_only=False)
 
@@ -306,9 +319,29 @@ class RingDetail(DetailView):
             prop_join[obj_rp.property] = (obj_rp.has_on_left, obj_rp.has_on_right, obj_rp.property.symmetric)
 
         prop_join = [(prop,) + values for prop, values in prop_join.items()]
-        prop_join.sort(key=lambda x: x[0].name)
         symmetric_props = [item for item in prop_join if item[-1] is True]
+
+        def nullboolsort(x):
+            if isinstance(x, bool):
+                return x
+            else:
+                return -1
+
+        if kwargs['symmsort'] == 's':
+            symmetric_props.sort(key=lambda x: nullboolsort(x[1]))
+            prop_join.sort(key=lambda x: nullboolsort(x[1]))
+
+        else:
+            symmetric_props.sort(key=lambda x: x[0].name.lower())
+            prop_join.sort(key=lambda x: x[0].name.lower())
+
         asymmetric_props = [item for item in prop_join if item[-1] is False]
+        if kwargs['asymmsort'] == 'l':
+            asymmetric_props.sort(key=lambda x: nullboolsort(x[1]))
+        elif kwargs['asymmsort'] == 'r':
+            asymmetric_props.sort(key=lambda x: nullboolsort(x[2]))
+        else:
+            asymmetric_props.sort(key=lambda x: x[0].name.lower())
 
         context['prop_join'] = prop_join
         context['symmetric_props'] = symmetric_props

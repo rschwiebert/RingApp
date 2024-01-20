@@ -30,7 +30,7 @@ class EndpointTestCase(TestCase):
                         'auth_password_reset', 'registration_register', 'bibliography',
                         'commring-list', 'csearch', 'contribute',
                         'ksearch', 'kresults',
-                        'people', 'property-list',
+                        'people', 'property-list', 'commproperty-list',
                         'register', 'resources', 'ring-list',
                         'search', 'results', 'theorem-list', 'inspiration']
 
@@ -38,7 +38,7 @@ class EndpointTestCase(TestCase):
             resp = self.client.get(reverse(item), follow=True)
             self.assertEqual(resp.status_code, 200, item)
 
-        three_hundreds = ['auth_password_change', 'commproperty-list', 'cresults', 'profile', 'newsfeed']
+        three_hundreds = ['auth_password_change', 'cresults', 'profile', 'newsfeed']
         for item in three_hundreds:
             resp = self.client.get(reverse(item))
             self.assertLessEqual(resp.status_code, 302, item)
