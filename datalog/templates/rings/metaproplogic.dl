@@ -14,7 +14,16 @@ ring_metaprop_contradictions(Y,Z):-ring_metaprop_deduced("has",Y,Z),ring_metapro
 ring_metaprop_deduced("has",1,Z):-ring_metaprop_deduced("has",2,Z),ring_metaprop_deduced("has",8,Z). // Morita theory
 ring_metaprop_deduced("has",8,Z):-ring_metaprop_deduced("has",1,Z). // Morita theory
 ring_metaprop_deduced("has",2,Z):-ring_metaprop_deduced("has",1,Z). // Morita theory
+
 ring_metaprop_deduced("has",5,Z):-ring_metaprop_deduced("has",6,Z). // Stable under products -> stable under finite products
+ring_metaprop_deduced("lacks",6,Z):-ring_metaprop_deduced("lacks",5,Z). // Stable under products -> stable under finite products
+
 ring_metaprop_deduced("has",10,Z):-ring_metaprop_deduced("has",3,Z). // Passes to subrings -> passes to center
+ring_metaprop_deduced("lacks",3,Z):-ring_metaprop_deduced("lacks",10,Z). // Passes to subrings -> passes to center
+
 ring_metaprop_deduced("has",8,Z):-ring_metaprop_deduced("has",7,Z). // Passes to corner rings -> passes to full idempotent corner rings
+ring_metaprop_deduced("lacks",7,Z):-ring_metaprop_deduced("lacks",8,Z). // Passes to corner rings -> passes to full idempotent corner rings
+
+ring_metaprop_deduced("has",6,Z):-ring_metaprop_deduced("has",16,Z). // equational class -> stable under products
+ring_metaprop_deduced("lacks",16,Z):-ring_metaprop_deduced("lacks",6,Z). // equational class -> stable under products
 
