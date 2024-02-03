@@ -306,6 +306,7 @@ class PropertyMetaproperty(models.Model):
     metaproperty = models.ForeignKey('Metaproperty', on_delete=models.CASCADE)
     has_metaproperty = models.BooleanField(null=True)
     example = models.ForeignKey('Ring', blank=True, null=True, on_delete=models.CASCADE)
+    relation = models.ForeignKey('Relation', blank=True, null=True, on_delete=models.CASCADE)
     citation = models.ManyToManyField('Citation', blank=True)
 
     commutative_only = models.BooleanField(default=False)
@@ -356,6 +357,28 @@ class Erratum(models.Model):
 
     def __str__(self):
         return '<{} - {}>'.format(self.error_location, self.description[:100])
+
+
+class Relation(models.Model):
+    class Meta:
+        unique_together = (('first', 'second', 'relation_type'),)
+    RELATION_TYPE_CHOICES = [
+            ('SUBRING_OF', 'is a subring of'),
+            ('IMAGE_OF', 'is a homomorphic image of'),
+            ('LOCALIZATION_OF', 'is a localization of'),
+            ('CORNER_OF', 'is a corner ring of'),
+            ('COMPLETION_OF', 'is the completion of'),
+            ('INTEGRAL_CLOSURE_OF', 'is the integral closure of'),
+            ('RING_OF_QUOTIENTS_OF', 'is the full ring of quotients of'),
+    ]
+
+    first = models.ForeignKey(Ring, related_name='first_ring', on_delete=models.CASCADE)
+    relation_type = models.CharField(max_length=32, choices=RELATION_TYPE_CHOICES)
+    second = models.ForeignKey(Ring, related_name='second_ring', on_delete=models.CASCADE)
+    note = models.TextField(max_length=400, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.first.id} {self.get_relation_type_display()} {self.second.id}"
 
 
 def format_pub(pub):

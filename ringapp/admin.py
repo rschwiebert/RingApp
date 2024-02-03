@@ -114,7 +114,7 @@ class ErrataAdmin(admin.ModelAdmin):
 
 
 class PropertyMetapropertyAdmin(admin.ModelAdmin):
-    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'citation']
+    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'relation', 'citation']
     list_display = ['property', 'metaproperty', 'has_metaproperty']
     list_filter = ['property', 'metaproperty']
     formfield_overrides = {
@@ -151,6 +151,11 @@ class RingSubsetAdmin(admin.ModelAdmin):
         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
     }
 
+
+class RelationAdmin(admin.ModelAdmin):
+    fields = ['first', 'relation_type', 'second', 'note']
+    list_display = ['first', 'relation_type', 'second']
+
 #
 # class FAQAdmin(admin.ModelAdmin):
 #     fields = ['question', 'answer']
@@ -176,5 +181,6 @@ admin.site.register(Dimension, DimensionAdmin)
 admin.site.register(Subset, SubsetAdmin)
 admin.site.register(RingDimension, RingDimensionAdmin)
 admin.site.register(RingSubset, RingSubsetAdmin)
+admin.site.register(Relation, RelationAdmin)
 # admin.site.register(FAQ, FAQAdmin)
 # admin.site.register(Glossary, GlossaryAdmin)
