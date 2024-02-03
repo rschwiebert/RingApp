@@ -86,6 +86,7 @@ class PropertyMetaproperty(models.Model):
     metaproperty = models.ForeignKey('moduleapp.Metaproperty', on_delete=models.CASCADE)
     has_metaproperty = models.BooleanField(null=True)
     example = models.ForeignKey('Module', blank=True, null=True, on_delete=models.CASCADE)
+    relation = models.ForeignKey('Relation', blank=True, null=True, on_delete=models.CASCADE)
     citation = models.ManyToManyField('moduleapp.Citation', blank=True)
 
     class Meta:
@@ -120,3 +121,20 @@ class Metaproperty(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Relation(models.Model):
+    class Meta:
+        unique_together = (('first', 'second', 'relation_type'),)
+    RELATION_TYPE_CHOICES = [
+            ('SUBMOD_OF', 'is a submodule of'),
+            ('IMAGE_OF', 'is a homomorphic image of'),
+    ]
+
+    first = models.ForeignKey(Module, related_name='first_module', on_delete=models.CASCADE)
+    relation_type = models.CharField(max_length=32, choices=RELATION_TYPE_CHOICES)
+    second = models.ForeignKey(Module, related_name='second_module', on_delete=models.CASCADE)
+    note = models.TextField(max_length=400, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.first.id} {self.get_relation_type_display()} {self.second.id}"

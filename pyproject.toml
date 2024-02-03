@@ -26,7 +26,7 @@ six = "1.11.0"
 sqlparse = "0.4.4"
 sympy = "1.12"
 whitenoise = "5.0.1"
-dart-data = {git = "https://github.com/rschwiebert/dart_data.git", rev = "e89780ac156a7dcd8ffc70a59d3452d5b5fd6de9"}
+dart-data = {git = "https://github.com/rschwiebert/dart_data.git", rev = "49953d3885693dc6d8fdf8df0be561b0532d39bb"}
 psycopg2 = "2.9.3"
 django-heroku = "0.3.1"
 requests = "2.31.0"

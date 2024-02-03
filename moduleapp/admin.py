@@ -8,7 +8,8 @@ from moduleapp.models import (
     ModuleProperty,
     Property,
     PropertyMetaproperty,
-    Citation
+    Citation,
+    Relation
 )
 from ringapp.SuggestionUtils import humanize_souffle
 
@@ -63,16 +64,14 @@ class LogicAdmin(admin.ModelAdmin):
     def conclusions(obj):
         return ' AND '.join(list(map(humanize_souffle, obj.concs.split(' AND '))))
 
-#
-# class PropertyMetapropertyAdmin(admin.ModelAdmin):
-#     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'citation']
-#     list_display = ['property', 'metaproperty', 'has_metaproperty']
-#     list_filter = ['property', 'metaproperty']
-#     formfield_overrides = {
-#         dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
-#     }
-#
-#
+
+class PropertyMetapropertyAdmin(admin.ModelAdmin):
+    fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'relation', 'citation']
+    list_display = ['property', 'metaproperty', 'has_metaproperty']
+    list_filter = ['property', 'metaproperty']
+    formfield_overrides = {
+        dj_models.ManyToManyField: {'widget': FilteredSelectMultiple('citations', False)}
+    }
 
 
 class MetapropertyAdmin(admin.ModelAdmin):
@@ -86,9 +85,16 @@ class CitationAdmin(admin.ModelAdmin):
     ordering = ('publication__authors',)
 
 
+class RelationAdmin(admin.ModelAdmin):
+    fields = ['first', 'relation_type', 'second', 'note']
+    list_display = ['first', 'relation_type', 'second']
+
+
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(Property, PropertyAdmin)
 admin.site.register(Logic, LogicAdmin)
 admin.site.register(Metaproperty, MetapropertyAdmin)
 admin.site.register(ModuleProperty, ModulePropertyAdmin)
 admin.site.register(Citation, CitationAdmin)
+admin.site.register(PropertyMetaproperty, PropertyMetapropertyAdmin)
+admin.site.register(Relation, RelationAdmin)

@@ -57,14 +57,14 @@ crt = ["awscrt (==0.14.0)"]
 
 [[package]]
 name = "certifi"
-version = "2023.11.17"
+version = "2024.2.2"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2023.11.17-py3-none-any.whl", hash = "sha256:e036ab49d5b79556f99cfc2d9320b34cfbe5be05c5871b51de9329f0603b0474"},
-    {file = "certifi-2023.11.17.tar.gz", hash = "sha256:9b469f3a900bf28dc19b8cfbf8019bf47f7fdd1a65a1d4ffb98fc14166beb4d1"},
+    {file = "certifi-2024.2.2-py3-none-any.whl", hash = "sha256:dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1"},
+    {file = "certifi-2024.2.2.tar.gz", hash = "sha256:0569859f95fc761b18b45ef421b1290a0f65f147e92a1e5eb3e635f9a5e4e66f"},
 ]
 
 [[package]]
@@ -291,8 +291,8 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/rschwiebert/dart_data.git"
-reference = "e89780ac156a7dcd8ffc70a59d3452d5b5fd6de9"
-resolved_reference = "e89780ac156a7dcd8ffc70a59d3452d5b5fd6de9"
+reference = "49953d3885693dc6d8fdf8df0be561b0532d39bb"
+resolved_reference = "49953d3885693dc6d8fdf8df0be561b0532d39bb"
 
 [[package]]
 name = "dj-database-url"
@@ -819,4 +819,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "8196f3bf53aebb84854f57aa7f37414e2e940b9d014235bf97f8a07ffa3ae2d2"
+content-hash = "23e71ecc1f6cd9deeb9de1a0d1aa9701fd8d085c4fab003e346ff759b2f13771"

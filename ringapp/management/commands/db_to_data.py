@@ -20,7 +20,7 @@ from typing import List, Sequence, Any, Dict
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from ringapp.SuggestionUtils import humanize_souffle, humanize_conjunction
+from ringapp.SuggestionUtils import humanize_conjunction
 from ringapp.constants import sidetype_choices
 from ringapp.settings import EXPORT_ROOT_DIR
 
@@ -586,6 +586,56 @@ class ModCitationSerializer(Serializer):
         return data
 
 
+class RingRelationSerializer(Serializer):
+    prefix = 'RINGRELATION'
+    modelkey = 'ringapp.relation'
+
+    def to_storage(self, fields):
+        fields['first'] = tag(prefix=RingSerializer.prefix, pk=fields['first'])
+        fields['second'] = tag(prefix=RingSerializer.prefix, pk=fields['second'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['first'] = tag_to_id(data['first'])
+        data['second'] = tag_to_id(data['second'])
+        return data
+
+    def filename(self, pk):
+        directory = os.path.join(EXPORT_ROOT_DIR, *self.modelkey.split('.'))
+        return os.path.join(directory, f'data.yaml')
+
+    def process_from_storage(self, path) -> List[Dict]:
+        with open(self.filename(None)) as f:
+            stored = yaml.load(f, yaml.Loader)  # yaml dict keyed by ids
+        return [dict(model=self.modelkey, pk=tag_to_id(k), fields=self.to_dbjson(v))
+                for k, v in stored.items()]
+
+
+class ModuleRelationSerializer(Serializer):
+    prefix = 'MODRELATION'
+    modelkey = 'moduleapp.relation'
+
+    def to_storage(self, fields):
+        fields['first'] = tag(prefix=ModuleSerializer.prefix, pk=fields['first'])
+        fields['second'] = tag(prefix=ModuleSerializer.prefix, pk=fields['second'])
+        return fields
+
+    def to_dbjson(self, data):
+        data['first'] = tag_to_id(data['first'])
+        data['second'] = tag_to_id(data['second'])
+        return data
+
+    def filename(self, pk):
+        directory = os.path.join(EXPORT_ROOT_DIR, *self.modelkey.split('.'))
+        return os.path.join(directory, f'data.yaml')
+
+    def process_from_storage(self, path) -> List[Dict]:
+        with open(self.filename(None)) as f:
+            stored = yaml.load(f, yaml.Loader)  # yaml dict keyed by ids
+        return [dict(model=self.modelkey, pk=tag_to_id(k), fields=self.to_dbjson(v))
+                for k, v in stored.items()]
+
+
 serializers = [
     PublicationListSerializer,
     PublicationTypeSerializer,
@@ -613,7 +663,9 @@ serializers = [
     ModMetaPropertySerializer,
     ModPropMetapropSubSerializer,
     ModulePropertySerializer,
-    ModCitationSerializer
+    ModCitationSerializer,
+    RingRelationSerializer,
+    ModuleRelationSerializer
 ]
 serializer_order = [cls.modelkey for cls in serializers]
 serializers = {cls.modelkey: cls() for cls in serializers}
@@ -635,8 +687,11 @@ class Command(BaseCommand):
 
         if options.get('command') == 'export':
             output = io.StringIO()
-            log.info('Getting all data except ring properties')
-            call_command('dumpdata', database='ringapp_data', format='jsonl', exclude=['ringapp.ringproperty'],
+            log.info('Getting all data except ring properties and relations')
+            call_command('dumpdata', database='ringapp_data', format='jsonl',
+                         exclude=['ringapp.ringproperty',
+                                  'ringapp.relation',
+                                  'moduleapp.relation'],
                          stdout=output, settings=options.get('settings'))
             end = output.tell()
             output.seek(0)
@@ -669,6 +724,42 @@ class Command(BaseCommand):
                 with open(serializer.filepath({'parent_pk': ring_pk}), 'w') as f:
                     f.write(yaml.dump(datadict))
 
+            output = io.StringIO()
+            log.info('Getting ring relations separately')
+            call_command('dumpdata', 'ringapp.Relation', database='ringapp_data', format='jsonl',
+                         stdout=output, settings=options.get('settings'))
+            end = output.tell()
+
+            output.seek(0)
+            data = dict()
+            log.info("Starting to process ring relations...")
+            relation_serializer = RingRelationSerializer()
+            while output.tell() < end:
+                obj = json.loads(output.readline().strip())
+                keys = relation_serializer.get_keys(obj)
+                data[tag(RingRelationSerializer.prefix, keys['pk'])] = relation_serializer.to_storage(obj['fields'])
+
+            with open(relation_serializer.filename(None), 'w') as f:
+                f.write(yaml.dump(data))
+
+            output = io.StringIO()
+            log.info('Getting module relations separately')
+            call_command('dumpdata', 'moduleapp.Relation', database='ringapp_data', format='jsonl',
+                         stdout=output, settings=options.get('settings'))
+            end = output.tell()
+
+            output.seek(0)
+            data = dict()
+            log.info("Starting to process module relations...")
+            relation_serializer = ModuleRelationSerializer()
+            while output.tell() < end:
+                obj = json.loads(output.readline().strip())
+                keys = relation_serializer.get_keys(obj)
+                data[tag(ModuleRelationSerializer.prefix, keys['pk'])] = relation_serializer.to_storage(obj['fields'])
+
+            with open(relation_serializer.filename(None), 'w') as f:
+                f.write(yaml.dump(data))
+
         elif options.get('command') == 'import':
             entries = []
             for path in Path(os.environ['EXPORT_ROOT_DIR']).rglob('*.yaml'):
@@ -692,7 +783,7 @@ class Command(BaseCommand):
 
         elif options.get('command') == 'test':
             for mname in serializers.keys():
-                if mname == 'ringapp.ringproperty':
+                if mname in ('ringapp.ringproperty', 'ringapp.relation'):
                     log.info(f'Skipping {mname}')
                     continue
                 log.info(f'checking {mname}')
