@@ -1,6 +1,9 @@
 from typing import List
 
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 from datalog.souffle_utils import logic_to_rulelist
 
@@ -111,9 +114,29 @@ class Citation(models.Model):
         return '{} @ {}'.format(self.publication, self.location)
 
 
+class Relation(models.Model):
+    class Meta:
+        unique_together = (('first', 'second', 'relation_type'),)
+
+    class RelationType(models.TextChoices):
+        NONE = 'NONE', _('(error)')
+        SUB_OF = 'SUBMOD_OF', _('is a submodule of'),
+        IM_OF = 'IMAGE_OF', _('is a homomorphic image of'),
+        SUMMAND_OF = 'SUMMAND_OF', _('is a direct summand of'),
+
+    first = models.ForeignKey(Module, related_name='first_module', on_delete=models.CASCADE)
+    relation_type = models.CharField(max_length=32, choices=RelationType.choices)
+    second = models.ForeignKey(Module, related_name='second_module', on_delete=models.CASCADE)
+    note = models.TextField(max_length=400, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.first.id} {self.get_relation_type_display()} {self.second.id}"
+
+
 class Metaproperty(models.Model):
     name = models.CharField(max_length=128)
     definition = models.TextField(max_length=1024)
+    relation_type = models.CharField(max_length=32, choices=Relation.RelationType.choices, default=Relation.RelationType.NONE)
 
     class Meta:
         verbose_name_plural = 'Metaproperties'
@@ -123,18 +146,33 @@ class Metaproperty(models.Model):
         return self.name
 
 
-class Relation(models.Model):
-    class Meta:
-        unique_together = (('first', 'second', 'relation_type'),)
-    RELATION_TYPE_CHOICES = [
-            ('SUBMOD_OF', 'is a submodule of'),
-            ('IMAGE_OF', 'is a homomorphic image of'),
-    ]
+@receiver(post_save, sender=Relation)
+def propagate_relation(sender, instance, *args, **kwargs):
+    if instance.relation_type == Relation.RelationType.NONE:
+        return
+    mp = Metaproperty.objects.filter(relation_type=instance.relation_type).first()
+    if mp is None:
+        return
 
-    first = models.ForeignKey(Module, related_name='first_module', on_delete=models.CASCADE)
-    relation_type = models.CharField(max_length=32, choices=RELATION_TYPE_CHOICES)
-    second = models.ForeignKey(Module, related_name='second_module', on_delete=models.CASCADE)
-    note = models.TextField(max_length=400, null=True, blank=True)
+    props = {x.property for x in instance.first.moduleproperty_set.filter(has=False)} & {
+        x.property for x in instance.second.moduleproperty_set.filter(has=True)}
 
-    def __str__(self):
-        return f"{self.first.id} {self.get_relation_type_display()} {self.second.id}"
+    with transaction.atomic():
+        count = 0
+        for prop in props:
+            pmp, _ = PropertyMetaproperty.objects.get_or_create(property=prop, metaproperty=mp)
+
+            if pmp.has_metaproperty is True:
+                raise Exception(f"Contradiction of PropertyMetaproperty data {pmp} with relation {instance}")
+            pmp.has_metaproperty = False
+            changed = False
+            if not pmp.relation:
+                pmp.relation = instance
+                changed = True
+            if pmp.has_metaproperty is not False:
+                pmp.has_metaproperty = False
+                changed = True
+            if changed is True:
+                pmp.save()
+                count += 1
+    print(f"Relation post-save for {instance=} updated {count=}")

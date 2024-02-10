@@ -1,6 +1,6 @@
-from django.db import models
+from django.db import models, transaction
 from django.core.exceptions import ValidationError
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from publications import models as pmodels
@@ -289,9 +289,40 @@ class RingSubset(models.Model):
         return '{}: {}'.format(self.ring, self.subset_type.name)
 
 
+class Relation(models.Model):
+    class Meta:
+        unique_together = (('first', 'second', 'relation_type'),)
+
+    class RelationType(models.TextChoices):
+        NONE = 'NONE', _('(error)')
+        SUB_OF = 'SUBRING_OF', _('is a subring of')
+        IM_OF = 'IMAGE_OF', _('is a homomorphic image of')
+        LOC_OF = 'LOCALIZATION_OF', _('is a localization of')
+        CORNER_OF = 'CORNER_OF', _('is a corner ring of')
+        FULL_CORNER_OF = 'FULL_CORNER_OF', _('is a full corner ring of')
+        COMP_OF = 'COMPLETION_OF', _('is the completion of')
+        INT_CLOS_OF = 'INTEGRAL_CLOSURE_OF', _('is the integral closure of')
+        QUOTIENTS_OF = 'RING_OF_QUOTIENTS_OF', _('is the full ring of quotients of')
+        CENTER_OF = 'CENTER_OF', _('is the center of')
+        POLY_RING_OF = 'POLYNOMIAL_RING_OF', _('is the polynomial ring of')
+        MAT_RING_OF = 'MATRIX_RING_OF', _('is a matrix ring of')
+        FIN_GEN_OVER = 'FG_ALGEBRA_OVER', _('is a finitely generated algebra over')
+        MORITA_EQ_TO = 'MORITA_EQ_TO', _('is Morita equivalent to')
+        POW_SER_OF = 'POWER_SERIES_OF', _('is the power series ring of')
+
+    first = models.ForeignKey(Ring, related_name='first_ring', on_delete=models.CASCADE)
+    relation_type = models.CharField(max_length=32, choices=RelationType.choices, default=RelationType.NONE)
+    second = models.ForeignKey(Ring, related_name='second_ring', on_delete=models.CASCADE)
+    note = models.TextField(max_length=400, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.first.id} {self.get_relation_type_display()} {self.second.id}"
+
+
 class Metaproperty(models.Model):
     name = models.CharField(max_length=128)
     definition = models.TextField(max_length=1024)
+    relation_type = models.CharField(max_length=32, choices=Relation.RelationType.choices, default=Relation.RelationType.NONE)
 
     class Meta:
         verbose_name_plural = 'Metaproperties'
@@ -359,28 +390,6 @@ class Erratum(models.Model):
         return '<{} - {}>'.format(self.error_location, self.description[:100])
 
 
-class Relation(models.Model):
-    class Meta:
-        unique_together = (('first', 'second', 'relation_type'),)
-    RELATION_TYPE_CHOICES = [
-            ('SUBRING_OF', 'is a subring of'),
-            ('IMAGE_OF', 'is a homomorphic image of'),
-            ('LOCALIZATION_OF', 'is a localization of'),
-            ('CORNER_OF', 'is a corner ring of'),
-            ('COMPLETION_OF', 'is the completion of'),
-            ('INTEGRAL_CLOSURE_OF', 'is the integral closure of'),
-            ('RING_OF_QUOTIENTS_OF', 'is the full ring of quotients of'),
-    ]
-
-    first = models.ForeignKey(Ring, related_name='first_ring', on_delete=models.CASCADE)
-    relation_type = models.CharField(max_length=32, choices=RELATION_TYPE_CHOICES)
-    second = models.ForeignKey(Ring, related_name='second_ring', on_delete=models.CASCADE)
-    note = models.TextField(max_length=400, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.first.id} {self.get_relation_type_display()} {self.second.id}"
-
-
 def format_pub(pub):
     s = '{}'.format(pub.authors)
     s += '. {}.'.format(pub.title)
@@ -419,3 +428,39 @@ def symmetrize_dimension(sender, instance, *args, **kwargs):
               instance.right_dimension != instance.left_dimension):
             raise ValidationError('The {} measurements for {} ought to match.'.format(instance.dimension_type.name,
                                                                                       instance.ring))
+
+
+@receiver(post_save, sender=Relation)
+def propagate_relation(sender, instance, *args, **kwargs):
+    if instance.relation_type == Relation.RelationType.NONE:
+        return
+    mp = Metaproperty.objects.filter(relation_type=instance.relation_type).first()
+    if mp is None:
+        return
+
+    lps = {x.property for x in instance.first.ringproperty_set.filter(has_on_left=False)} & {
+        x.property for x in instance.second.ringproperty_set.filter(has_on_left=True)}
+    rps = {x.property for x in instance.first.ringproperty_set.filter(has_on_right=False)} & {
+        x.property for x in instance.second.ringproperty_set.filter(has_on_right=True)}
+
+    props = lps | rps
+
+    with transaction.atomic():
+        count = 0
+        for prop in props:
+            pmp, _ = PropertyMetaproperty.objects.get_or_create(property=prop, metaproperty=mp)
+
+            if pmp.has_metaproperty is True:
+                raise Exception(f"Contradiction of PropertyMetaproperty data {pmp} with relation {instance}")
+            pmp.has_metaproperty = False
+            changed = False
+            if not pmp.relation:
+                pmp.relation = instance
+                changed = True
+            if pmp.has_metaproperty is not False:
+                pmp.has_metaproperty = False
+                changed = True
+            if changed is True:
+                pmp.save()
+                count += 1
+    print(f"Relation post-save for {instance=} updated {count=}")

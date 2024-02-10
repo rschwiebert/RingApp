@@ -5,5 +5,15 @@ print('Importing local settings!')
 print('*************************')
 
 DEBUG = True
-DATABASES['default']['OPTIONS']['sslmode'] = 'disable'
 SECURE_SSL_REDIRECT = False
+
+WEB_SQLITE_PATH = os.path.join(BASE_DIR, 'db', 'web.db')
+
+DATABASES['default'] = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': WEB_SQLITE_PATH
+}
+DATABASES['test'] = DATABASES['default'].copy()
+DATABASES['test']['NAME'] = 'test_ringapp'
+
+#INSTALLED_APPS.append('django_extensions')

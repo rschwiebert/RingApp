@@ -123,7 +123,7 @@ class PropertyMetapropertyAdmin(admin.ModelAdmin):
 
 
 class MetapropertyAdmin(admin.ModelAdmin):
-    fields = ['name', 'definition']
+    fields = ['name', 'definition', 'relation_type']
 
 
 class DimensionAdmin(admin.ModelAdmin):
