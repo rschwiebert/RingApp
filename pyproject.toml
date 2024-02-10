@@ -30,7 +30,7 @@ dart-data = {git = "https://github.com/rschwiebert/dart_data.git", rev = "49953d
 psycopg2 = "2.9.3"
 django-heroku = "0.3.1"
 requests = "2.31.0"
-cryptography = "41.0.6"
+cryptography = "42.0.0"
 wheel = "0.38.1"
 
 [tool.poetry.dev-dependencies]
