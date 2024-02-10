@@ -49,4 +49,7 @@ RUN wget https://souffle-lang.github.io/ppa/souffle-key.public -O /usr/share/key
     apt update && \
     apt install -y souffle
 
-ENTRYPOINT . /venv/bin/activate && python manage.py runserver --settings=ringapp.local_settings 0:8000
+ENTRYPOINT . /venv/bin/activate && \
+python manage.py migrate --settings=ringapp.local_settings && \
+python manage.py migrate --settings=ringapp.local_settings --database ringapp_data && \
+python manage.py runserver --settings=ringapp.local_settings 0:8000
