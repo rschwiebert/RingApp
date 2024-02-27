@@ -24,7 +24,7 @@ ENV EMAIL_USE_TLS=true
 ENV RECAPTCHA_PUBLIC_KEY=
 ENV RECAPTCHA_PRIVATE_KEY=
 ENV S3_BUCKET_NAME=
-ENV EXPORT_ROOT_DIR=/checkout/dart-data/db/
+ENV EXPORT_ROOT_DIR=/data
 ENV SQLITE_DB_DIR=/checkout/db
 
 ADD requirements.txt requirements.txt
