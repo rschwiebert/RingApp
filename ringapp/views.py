@@ -30,7 +30,8 @@ from ringapp.management.commands.db_to_data import tag
 from ringapp.SearchUtils import (mirror_search_terms,
                                  detect_asymmetric_search,
                                  ring_search,
-                                 completeness_scores)
+                                 completeness_scores,
+                                 completeness_scores_ring)
 from ringapp.SuggestionUtils import simple_irreversible_ring_logics, suggest_asymm_examples
 
 from ringapp.LogicUtils import LogicEngine
@@ -256,7 +257,24 @@ class PropertyList(ListView):
     model = Property
     
     def get_queryset(self):
-        return Property.objects.order_by('name')
+        props = Property.objects.order_by('name')
+        total = 2*float(Ring.objects.count())
+        total += Ring.objects.count()
+        
+        total_comm = 2*float(Ring.objects.filter(is_commutative=True).count())
+        total_comm += Ring.objects.filter(is_commutative=True).count()
+        
+        scores = completeness_scores_ring(include_commutative=True)
+        for obj in props:
+            if obj.id in scores:
+                if obj.symmetric:
+                    obj.num_known = round(scores[obj.id]/total_comm, 2)
+                else:
+                    obj.num_known = round(scores[obj.id]/total, 2)
+            else:
+                obj.num_known = 0.0
+        
+        return props
 
 
 class CommPropertyList(ListView):
@@ -367,26 +385,43 @@ class PropertyView(DetailView):
     model = Property
     template_name = 'ringapp/property_detail.html'
 
+    def get(self, request, **kwargs):
+        sorts = dict()
+        sorts['symmsort'] = request.GET.get('symmsort', 'n')  # n/s:  name/status
+        sorts['asymmsort'] = request.GET.get('asymmsort', 'n')  # n/l/r: name/leftstatus/rightstatus
+        self.object = self.get_object()
+        context = self.get_context_data(
+            object=self.object,
+            request=request,
+            **sorts
+        )
+        return self.render_to_response(context)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rps = list(self.object.ringproperty_set.all())
-        if not self.object.symmetric:
-            onleft = [rp.has_on_left for rp in rps]
-            has_left_count = onleft.count(True)
-            lacks_left_count = onleft.count(False)
-            onright = [rp.has_on_right for rp in rps]
-            has_right_count = onright.count(True)
-            lacks_right_count = onright.count(False)
-            context['has_left_count'] = has_left_count
-            context['lacks_left_count'] = lacks_left_count
-            context['has_right_count'] = has_right_count
-            context['lacks_right_count'] = lacks_right_count
+        
+        rings = Ring.objects.all()
+        ring_join = {rg: (None, None) for rg in rings}
+        for rp in rps:
+            ring_join[rp.ring] = (rp.has_on_left, rp.has_on_right) # + anti-automorphic rings?
+        
+        ring_join = [(rg,) + values for rg, values in ring_join.items()]
+        
+        def nullboolsort(x):
+            if isinstance(x, bool):
+                return x
+            else:
+                return -1
+        
+        if kwargs['asymmsort'] == 'l':
+            ring_join.sort(key=lambda x: nullboolsort(x[1]))
+        elif kwargs['asymmsort'] == 'r':
+            ring_join.sort(key=lambda x: nullboolsort(x[2]))
         else:
-            onleft = [rp.has_on_left for rp in rps]
-            has_count = onleft.count(True)
-            lacks_count = onleft.count(False)
-            context['has_count'] = has_count
-            context['lacks_count'] = lacks_count
+            ring_join.sort(key=lambda x: x[0].name.lower())
+        
+        context['ring_join'] = ring_join
 
         metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
         has_mp = metaproperties.filter(has_metaproperty=True)
@@ -396,6 +431,7 @@ class PropertyView(DetailView):
             'metaproperties': metaproperties,
             'has_mp': has_mp,
             'lacks_mp': lacks_mp,
+            'ring_join': ring_join,
         })
 
         return context

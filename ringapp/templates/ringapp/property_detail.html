@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load queryargs %}
 
 {% block title %}Ring Property {{ object.id }}{% endblock %}
 
@@ -12,18 +13,8 @@
                 {% if object %}
                     {% if not object.symmetric %}
                         <p>Definition: (right {{ object.name }}) {{ object.definition }}</p>
-                        <ul class="list-group">
-                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?H={{ object.pk }}l"><span class="glyphicon glyphicon-search"></span>  Rings having property on left: {{ has_left_count }}</a></li>
-                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?L={{ object.pk }}l"><span class="glyphicon glyphicon-search"></span>  Rings not having property on left: {{ lacks_left_count }}</a></li>
-                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?H={{ object.pk }}r"><span class="glyphicon glyphicon-search"></span>  Rings having property on right: {{ has_right_count }}</a></li>
-                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?L={{ object.pk }}r"><span class="glyphicon glyphicon-search"></span>  Rings not having property on right: {{ lacks_right_count }}</a></li>
-                        </ul>
                     {% else %}
                         <p>Definition: {{ object.definition }}</p>
-                        <ul class="list-group">
-                            <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?H={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Rings having property: {{ has_count }}</a></li>
-                            <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'results' %}?L={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Rings not having property: {{ lacks_count }}</a></li>
-                        </ul>
                     {% endif %}
               </div>
             </div>
@@ -73,6 +64,75 @@
         </div>
     </div>
     {% endif %}
+    
+    <!--ring list -->
+    <div class="row">
+        {% if ring_join %}
+        <div class="col-md-6 content">
+            <div class="panel panel-default">
+                <div class="panel-heading">Rings</div>
+                <table class="table table-bordered">
+                    <tr>
+                    {% if asymmsort == 'l' %}
+                    <th>left</th>
+                    <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    <th>right <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    {% elif asymmsort == 'r' %}
+                    <th>left <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    <th>right</th>
+                    {% else %}
+                    <th>left <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    <th>Name</th>
+                    <th>right <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    {% endif %}
+                    </tr>
+                    {% for item in ring_join %}
+                    <tr>
+                    {% if item.1 == True %}
+                    <td><i class="glyphicon glyphicon-ok"></i></td>
+                    {% elif item.1 == False %}
+                    <td><i class="glyphicon glyphicon-remove"></i></td>
+                    {% elif item.1 == None %}
+                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td><a class="list-group-item" href="{% url 'property-detail' item.0.id %}">
+                        {{ item.0.name }}</a></td>
+                    {% if item.2 == True %}
+                    <td><i class="glyphicon glyphicon-ok"></i></td>
+                    {% elif item.2 == False %}
+                    <td><i class="glyphicon glyphicon-remove"></i></td>
+                    {% elif item.2 == None %}
+                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <p>Nothing was retrieved.</p>
+        {% endif %}
+
+        <div class="col-md-4 content">
+            <div class="panel panel-default">
+                <div class="panel-heading">Legend</div>
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="glyphicon glyphicon-ok"></i> = has the property</li>
+                    <li class="list-group-item"><i class="glyphicon glyphicon-remove"></i> = does not have the
+                    property
+                    </li>
+                    <li class="list-group-item"><i class="glyphicon glyphicon-question-sign"></i> = information
+                    not in database
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

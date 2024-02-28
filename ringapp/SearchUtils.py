@@ -157,3 +157,39 @@ def completeness_scores(include_commutative=False):
         if datum is None:
             data[key] = 0
     return data
+
+def completeness_scores_ring(include_commutative=False):
+    """
+    Provide a dict with the completeness scores of properties in database
+    :param include_commutative: if False, it will filter out the specialized
+                        commutative Rings. If True, it will include
+                        all Rings.
+    :return: A dict keyed by Property ids providing scores for each Property
+    """
+    query = """
+        SELECT id,
+               sum(score) as sum
+        FROM
+          (SELECT "ringapp_ringproperty"."property_id" AS id,
+                  CASE
+                      WHEN "ringapp_ring"."is_commutative" IS TRUE
+                           AND "ringapp_ringproperty"."has_on_left" IS NOT NULL THEN 1
+                      WHEN "ringapp_ring"."is_commutative" IS TRUE
+                           AND "ringapp_ringproperty"."has_on_left" IS NULL THEN 0
+                      WHEN "ringapp_ring"."is_commutative" IS FALSE THEN CAST("ringapp_ringproperty"."has_on_left" IS NOT NULL AS INT) + CAST("ringapp_ringproperty"."has_on_right" IS NOT NULL AS INT)
+                  END AS score
+           FROM "ringapp_ringproperty"
+           INNER JOIN "ringapp_ring" ON ("ringapp_ringproperty"."ring_id" = "ringapp_ring"."id")
+           {}) AS t1
+        GROUP BY id
+        """
+    if include_commutative is False:
+        query = query.format('WHERE "ringapp_ring"."is_commutative" = FALSE')
+    else:
+        query = query.format('')
+    query = Property.objects.raw(query)
+    data = {property.id: property.sum for property in query}
+    for key, datum in data.items():
+        if datum is None:
+            data[key] = 0
+    return data
