@@ -258,19 +258,12 @@ class PropertyList(ListView):
     
     def get_queryset(self):
         props = Property.objects.order_by('name')
-        total = 2*float(Ring.objects.count())
-        total += Ring.objects.count()
-        
-        total_comm = 2*float(Ring.objects.filter(is_commutative=True).count())
-        total_comm += Ring.objects.filter(is_commutative=True).count()
-        
+        total = 2*float(Ring.objects.filter(is_commutative=False).count())
+        total += Ring.objects.filter(is_commutative=True).count()
         scores = completeness_scores_ring(include_commutative=True)
         for obj in props:
             if obj.id in scores:
-                if obj.symmetric:
-                    obj.num_known = round(scores[obj.id]/total_comm, 2)
-                else:
-                    obj.num_known = round(scores[obj.id]/total, 2)
+                obj.num_known = round(scores[obj.id]/total, 2)
             else:
                 obj.num_known = 0.0
         
