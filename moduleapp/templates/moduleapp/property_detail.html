@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load queryargs %}
 
 {% block title %}Module Property {{ object.id }}{% endblock %}
 
@@ -10,15 +11,8 @@
               <div class="panel-heading"><h1>Property: {{ object.name }}</h1></div>
               <div class="panel-body">
 
-
                 {% if object %}
                     <p>Definition: {{ object.definition }}</p>
-                    <ul class="list-group">
-                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'module-results' %}?H={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Modules having property: {{ has_count }}</a></li>
-                        <li class="list-group-item"><a class="btn btn-default" role="button" href="{% url 'module-results' %}?L={{ object.pk }}"><span class="glyphicon glyphicon-search"></span>  Modules not having property: {{ lacks_count }}</a></li>
-                    </ul>
-
-
               </div>
             </div>
         </div>
@@ -68,7 +62,41 @@
 
         </div>
     </div>
+    <div class="col-md-4 content">
+        <div class="panel panel-default">
+            <div class="panel-heading">Modules</div>
+            <table class="table table-bordered">
+                <tr>
+                    {% if sorttype == 's' %}
+                    <th></th>
+                    <th>Name <a href="{% url 'module-property-detail' object.id %}?{{ request|update_symmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    {% else %}
+                    <th><a href="{% url 'module-property-detail' object.id %}?{{ request|update_symmfilter:'s' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                    <th>Name</th>
+                    {% endif %}
+                </tr>
+                {% for item in mod_join %}
+                <tr>
+                    <td>
+                        {% if item.1 == True %}
+                        <i class="glyphicon glyphicon-ok"></i>
+                        {% elif item.1 == False %}
+                        <i class="glyphicon glyphicon-remove"></i>
+                        {% elif item.1 == None %}
+                        <i class="glyphicon glyphicon-question-sign"></i>
+                        {% endif %}</td>
+                    <td><a class="list-group-item" href="{% url 'module-detail' item.0.id %}">{{ item.0.name }}</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
     {% endif %}
 </div>
 
 {% endblock %}
+
+
+
+
+

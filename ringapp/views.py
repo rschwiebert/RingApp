@@ -259,11 +259,15 @@ class PropertyList(ListView):
     def get_queryset(self):
         props = Property.objects.order_by('name')
         total = 2*float(Ring.objects.filter(is_commutative=False).count())
-        total += Ring.objects.filter(is_commutative=True).count()
-        scores = completeness_scores_ring(include_commutative=True)
+        comm = Ring.objects.filter(is_commutative=True).count()
+        total += comm
+        scores = completeness_scores_ring(commutative_only=False)
         for obj in props:
             if obj.id in scores:
-                obj.num_known = round(scores[obj.id]/total, 2)
+                if obj.commutative_only:
+                    obj.num_known = round(scores[obj.id]/comm, 2)
+                else:
+                    obj.num_known = round(scores[obj.id]/total, 2)
             else:
                 obj.num_known = 0.0
         
@@ -275,7 +279,16 @@ class CommPropertyList(ListView):
     template_name = 'ringapp/commproperty_list.html'
 
     def get_queryset(self):
-        return Property.objects.filter(commutative_only=True).order_by('name')
+        props = Property.objects.filter(commutative_only=True).order_by('name')
+        total = float(Ring.objects.filter(is_commutative=True).count())
+        scores = completeness_scores_ring(commutative_only=True)
+        for obj in props:
+            if obj.id in scores:
+                obj.num_known = round(scores[obj.id]/total, 2)
+            else:
+                obj.num_known = 0.0
+        
+        return props
 
 
 class CommPropertyRedirect(RedirectView):
@@ -395,17 +408,24 @@ class PropertyView(DetailView):
         rps = list(self.object.ringproperty_set.all())
         
         rings = Ring.objects.all()
-        ring_join = {rg: (None, None) for rg in rings}
+        ring_join = {rg: (None, None, rg.is_commutative) for rg in rings}
         for rp in rps:
-            ring_join[rp.ring] = (rp.has_on_left, rp.has_on_right) # + anti-automorphic rings?
+            ring_join[rp.ring] = (rp.has_on_left, rp.has_on_right, rp.ring.is_commutative) # + anti-automorphic rings?
         
         ring_join = [(rg,) + values for rg, values in ring_join.items()]
+        if self.object.commutative_only:
+            ring_join = [item for item in ring_join if item[-1] is True]
         
         def nullboolsort(x):
             if isinstance(x, bool):
                 return x
             else:
                 return -1
+        
+        if kwargs['symmsort'] == 's':
+            ring_join.sort(key=lambda x: nullboolsort(x[1]))
+        else:
+            ring_join.sort(key=lambda x: x[0].name.lower())
         
         if kwargs['asymmsort'] == 'l':
             ring_join.sort(key=lambda x: nullboolsort(x[1]))

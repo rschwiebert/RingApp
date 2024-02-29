@@ -158,12 +158,12 @@ def completeness_scores(include_commutative=False):
             data[key] = 0
     return data
 
-def completeness_scores_ring(include_commutative=False):
+def completeness_scores_ring(commutative_only=False):
     """
     Provide a dict with the completeness scores of properties in database
-    :param include_commutative: if False, it will filter out the specialized
-                        commutative Rings. If True, it will include
-                        all Rings.
+    :param commutative_only: if False, it will include all Rings. If
+                        True, it will include only the specialized
+                        commutative Rings.
     :return: A dict keyed by Property ids providing scores for each Property
     """
     query = """
@@ -176,15 +176,20 @@ def completeness_scores_ring(include_commutative=False):
                            AND "ringapp_ringproperty"."has_on_left" IS NOT NULL THEN 1
                       WHEN "ringapp_ring"."is_commutative" IS TRUE
                            AND "ringapp_ringproperty"."has_on_left" IS NULL THEN 0
-                      WHEN "ringapp_ring"."is_commutative" IS FALSE THEN CAST("ringapp_ringproperty"."has_on_left" IS NOT NULL AS INT) + CAST("ringapp_ringproperty"."has_on_right" IS NOT NULL AS INT)
+                      WHEN "ringapp_ring"."is_commutative" IS NOT TRUE
+                           AND "ringapp_property"."commutative_only" IS TRUE THEN 0
+                      WHEN "ringapp_ring"."is_commutative" IS NOT TRUE
+                           AND "ringapp_property"."commutative_only" IS NOT TRUE THEN
+                           CAST("ringapp_ringproperty"."has_on_left" IS NOT NULL AS INT) + CAST("ringapp_ringproperty"."has_on_right" IS NOT NULL AS INT)
                   END AS score
            FROM "ringapp_ringproperty"
            INNER JOIN "ringapp_ring" ON ("ringapp_ringproperty"."ring_id" = "ringapp_ring"."id")
+           INNER JOIN "ringapp_property" ON ("ringapp_ringproperty"."property_id" = "ringapp_property"."id")
            {}) AS t1
         GROUP BY id
         """
-    if include_commutative is False:
-        query = query.format('WHERE "ringapp_ring"."is_commutative" = FALSE')
+    if commutative_only is True:
+        query = query.format('WHERE "ringapp_ring"."is_commutative" = TRUE')
     else:
         query = query.format('')
     query = Property.objects.raw(query)

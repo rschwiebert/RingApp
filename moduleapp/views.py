@@ -74,22 +74,59 @@ class ModuleDetail(DetailView):
 class PropertyList(ListView):
     model = Property
     template = 'moduleapp/property_list.html'
+    
+    def get_queryset(self):
+        total = float(Module.objects.filter().count())
+        queryset = super().get_queryset().annotate(percent_known=Count('moduleproperty')/total)
+        return queryset
 
 
 class PropertyView(DetailView):
     model = Property
     template = 'moduleapp/property_detail.html'
+    
+    def get(self, request, **kwargs):
+        sorttype = request.GET.get('symmsort', 'n')  # n/s:  name/status
+        self.object = self.get_object()
+        context = self.get_context_data(
+            object=self.object,
+            request=request,
+            sorttype=sorttype
+        )
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        has_count = ModuleProperty.objects.filter(property=context['object'], has=True).count()
-        lacks_count = ModuleProperty.objects.filter(property=context['object'], has=False).count()
-        context['has_count'] = has_count
-        context['lacks_count'] = lacks_count
+        #has_count = ModuleProperty.objects.filter(property=context['object'], has=True).count()
+        #lacks_count = ModuleProperty.objects.filter(property=context['object'], has=False).count()
         metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
+        sorttype = kwargs['sorttype']
+        
+        obj_props = self.object.moduleproperty_set.all()
+        mods = Module.objects.all()
+        # This effectively outer-joins
+        mod_join = {mod: (None,) for mod in mods}
+        for obj_rp in obj_props:
+            mod_join[obj_rp.module] = (obj_rp.has,)
+        mod_join = [(mod,) + values for mod, values in mod_join.items()]
+
+        def nullboolsort(x):
+            if isinstance(x, bool):
+                return x
+            else:
+                return -1
+
+        if sorttype == 's':
+            mod_join.sort(key=lambda x: nullboolsort(x[1]))
+        else:
+            mod_join.sort(key=lambda x: x[0].name.lower())
+
+        #context['has_count'] = has_count
+        #context['lacks_count'] = lacks_count
         context['metaproperties'] = metaproperties
         context['has_mp'] = metaproperties.filter(has_metaproperty=True)
         context['lacks_mp'] = metaproperties.filter(has_metaproperty=False)
+        context['mod_join'] = mod_join
         return context
 
 
