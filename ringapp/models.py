@@ -452,7 +452,7 @@ def propagate_relation(sender, instance, *args, **kwargs):
 
             if pmp.has_metaproperty is True:
                 raise Exception(f"Contradiction of PropertyMetaproperty data {pmp} with relation {instance}")
-            pmp.has_metaproperty = False
+
             changed = False
             if not pmp.relation:
                 pmp.relation = instance
