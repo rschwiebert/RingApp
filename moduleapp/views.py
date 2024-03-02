@@ -1,6 +1,7 @@
 from django.http import HttpResponseNotAllowed, QueryDict
 from django.urls import reverse
 from django.db.models import Count
+from django.db.models.functions import Lower
 from django.views.decorators.http import require_http_methods, require_GET
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from ratelimit.decorators import ratelimit
@@ -17,9 +18,9 @@ class ModuleList(ListView):
     template_name = 'moduleapp/module_list.html'
 
     def get_queryset(self):
-        total = float(Property.objects.filter().count())
+        total = float(Property.objects.count())
         queryset = super().get_queryset().annotate(percent_known=Count('moduleproperty')/total)
-        return queryset
+        return queryset.order_by(Lower('name'))
 
 
 class ModuleDetail(DetailView):
@@ -42,7 +43,7 @@ class ModuleDetail(DetailView):
         sorttype = kwargs['sorttype']  # n/s:  name/status
         obj_props = obj.moduleproperty_set.order_by('property__name')
 
-        props = Property.objects.all()
+        props = Property.objects.all().order_by(Lower('name'))
 
         # This effectively outer-joins
         prop_join = {prop: (None,) for prop in props}
@@ -78,7 +79,7 @@ class PropertyList(ListView):
     def get_queryset(self):
         total = float(Module.objects.filter().count())
         queryset = super().get_queryset().annotate(percent_known=Count('moduleproperty')/total)
-        return queryset
+        return queryset.order_by(Lower('name'))
 
 
 class PropertyView(DetailView):
@@ -97,13 +98,11 @@ class PropertyView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #has_count = ModuleProperty.objects.filter(property=context['object'], has=True).count()
-        #lacks_count = ModuleProperty.objects.filter(property=context['object'], has=False).count()
         metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
         sorttype = kwargs['sorttype']
         
         obj_props = self.object.moduleproperty_set.all()
-        mods = Module.objects.all()
+        mods = Module.objects.all().order_by(Lower('name'))
         # This effectively outer-joins
         mod_join = {mod: (None,) for mod in mods}
         for obj_rp in obj_props:
@@ -121,8 +120,6 @@ class PropertyView(DetailView):
         else:
             mod_join.sort(key=lambda x: x[0].name.lower())
 
-        #context['has_count'] = has_count
-        #context['lacks_count'] = lacks_count
         context['metaproperties'] = metaproperties
         context['has_mp'] = metaproperties.filter(has_metaproperty=True)
         context['lacks_mp'] = metaproperties.filter(has_metaproperty=False)

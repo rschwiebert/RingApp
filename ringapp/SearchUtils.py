@@ -158,7 +158,7 @@ def completeness_scores(include_commutative=False):
             data[key] = 0
     return data
 
-def completeness_scores_ring(commutative_only=False):
+def property_completeness_scores(commutative_only=False):
     """
     Provide a dict with the completeness scores of properties in database
     :param commutative_only: if False, it will include all Rings. If
