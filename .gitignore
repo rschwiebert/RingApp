@@ -9,3 +9,5 @@ settings.py
 db.sqlite3
 *~
 .idea
+/db
+ringapp/local_settings.py

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load mathfilters %}
 
 {% block title %}Commutative ring properties{% endblock %}
 
@@ -9,15 +10,32 @@
     <div class="panel-heading"><h1>Commutative ring properties</h1>
       <p>This is the list of ring properties defined only for commutative rings.</p>
     </div>
-    <div class="list-group">
-	{% if object_list %}
-	    {% for item in object_list %}
-        <a class="list-group-item" href="{% url 'property-detail' item.id %}"><div class="row"><div class="col-md-3"><h4>{{ item.name }}</h4></div><div class="col-md-6">{{ item.definition }}</div></div></a>
-	    {% endfor %}
-	{% else %}
-	    <p class="list-group-item">(No properties were retrieved.)</p>
-	{% endif %}
-    </div>
+    
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Definition</th>
+          <th>% Complete</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if object_list %}
+        {% for item in object_list %}
+        <tr>
+        <td><a href="{% url 'property-detail' item.id %}" >
+            <div style="height:100%;width:100%">{{ item.name }}</div></a></td>
+        <td><div class="col-md-6">{{ item.definition }}</div></td>
+        <td><div class="progress">
+              <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.num_known | mul:'100' }}%;">{{ item.num_known|mul:'100'|floatformat }}%</div>
+            </div></td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <p class="list-group-item">(No properties were retrieved.)</p>
+      {% endif %}
+      </tbody>
+    </table>
   </div>
 </div>
 {% endblock %}

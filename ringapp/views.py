@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from django.template.exceptions import TemplateDoesNotExist
+from django.db.models.functions import Lower
 
 from ratelimit.decorators import ratelimit
 from ratelimit.exceptions import Ratelimited
@@ -30,7 +31,8 @@ from ringapp.management.commands.db_to_data import tag
 from ringapp.SearchUtils import (mirror_search_terms,
                                  detect_asymmetric_search,
                                  ring_search,
-                                 completeness_scores)
+                                 completeness_scores,
+                                 property_completeness_scores)
 from ringapp.SuggestionUtils import simple_irreversible_ring_logics, suggest_asymm_examples
 
 from ringapp.LogicUtils import LogicEngine
@@ -194,7 +196,7 @@ class KeywordSearchPage(TemplateView):
         else:
             kids = [int(thing) for thing in self.request.GET.getlist('kwd')]
             kwds = [Keyword.objects.get(pk=x) for x in kids]
-            results = Ring.objects.all()
+            results = Ring.objects.all().order_by(Lower('name'))
             for kwd in kwds:
                 results = [ring for ring in results if kwd in ring.keywords.all()]
 
@@ -235,7 +237,7 @@ class CommRingList(ListView):
 
     def get_queryset(self):
         # Just show commutative rings
-        queryset = self.model.objects.filter(is_commutative=True)
+        queryset = self.model.objects.filter(is_commutative=True).order_by(Lower('name'))
 
         # total properties available for all rings (including commutative ones)
         total = 2*float(Property.objects.filter(symmetric=False).count())
@@ -256,7 +258,21 @@ class PropertyList(ListView):
     model = Property
     
     def get_queryset(self):
-        return Property.objects.order_by('name')
+        props = Property.objects.order_by(Lower('name'))
+        total = 2*float(Ring.objects.filter(is_commutative=False).count())
+        comm = Ring.objects.filter(is_commutative=True).count()
+        total += comm
+        scores = property_completeness_scores(commutative_only=False)
+        for obj in props:
+            if obj.id in scores:
+                if obj.commutative_only:
+                    obj.num_known = round(scores[obj.id]/comm, 2)
+                else:
+                    obj.num_known = round(scores[obj.id]/total, 2)
+            else:
+                obj.num_known = 0.0
+        
+        return props
 
 
 class CommPropertyList(ListView):
@@ -264,7 +280,16 @@ class CommPropertyList(ListView):
     template_name = 'ringapp/commproperty_list.html'
 
     def get_queryset(self):
-        return Property.objects.filter(commutative_only=True).order_by('name')
+        props = Property.objects.filter(commutative_only=True).order_by(Lower('name'))
+        total = float(Ring.objects.filter(is_commutative=True).count())
+        scores = property_completeness_scores(commutative_only=True)
+        for obj in props:
+            if obj.id in scores:
+                obj.num_known = round(scores[obj.id]/total, 2)
+            else:
+                obj.num_known = 0.0
+        
+        return props
 
 
 class CommPropertyRedirect(RedirectView):
@@ -309,7 +334,7 @@ class RingDetail(DetailView):
         if not obj.is_commutative:
             obj_props = obj_props.filter(property__commutative_only=False)
 
-        props = Property.objects.all()
+        props = Property.objects.all().order_by(Lower('name'))
         if not obj.is_commutative:
             props = props.filter(commutative_only=False)
 
@@ -346,8 +371,8 @@ class RingDetail(DetailView):
         context['prop_join'] = prop_join
         context['symmetric_props'] = symmetric_props
         context['asymmetric_props'] = asymmetric_props
-        context['dimensions'] = obj.ringdimension_set.all().order_by('dimension_type__name')
-        context['subsets'] = obj.ringsubset_set.all().order_by('subset_type__name')
+        context['dimensions'] = obj.ringdimension_set.all().order_by(Lower('dimension_type__name'))
+        context['subsets'] = obj.ringsubset_set.all().order_by(Lower('subset_type__name'))
 
         return context
 
@@ -367,26 +392,50 @@ class PropertyView(DetailView):
     model = Property
     template_name = 'ringapp/property_detail.html'
 
+    def get(self, request, **kwargs):
+        sorts = dict()
+        sorts['symmsort'] = request.GET.get('symmsort', 'n')  # n/s:  name/status
+        sorts['asymmsort'] = request.GET.get('asymmsort', 'n')  # n/l/r: name/leftstatus/rightstatus
+        self.object = self.get_object()
+        context = self.get_context_data(
+            object=self.object,
+            request=request,
+            **sorts
+        )
+        return self.render_to_response(context)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rps = list(self.object.ringproperty_set.all())
-        if not self.object.symmetric:
-            onleft = [rp.has_on_left for rp in rps]
-            has_left_count = onleft.count(True)
-            lacks_left_count = onleft.count(False)
-            onright = [rp.has_on_right for rp in rps]
-            has_right_count = onright.count(True)
-            lacks_right_count = onright.count(False)
-            context['has_left_count'] = has_left_count
-            context['lacks_left_count'] = lacks_left_count
-            context['has_right_count'] = has_right_count
-            context['lacks_right_count'] = lacks_right_count
+        
+        rings = Ring.objects.all().order_by(Lower('name'))
+        ring_join = {rg: (None, None, rg.is_commutative) for rg in rings}
+        for rp in rps:
+            ring_join[rp.ring] = (rp.has_on_left, rp.has_on_right, rp.ring.is_commutative) # + anti-automorphic rings?
+        
+        ring_join = [(rg,) + values for rg, values in ring_join.items()]
+        if self.object.commutative_only:
+            ring_join = [item for item in ring_join if item[-1] is True]
+        
+        def nullboolsort(x):
+            if isinstance(x, bool):
+                return x
+            else:
+                return -1
+        
+        if kwargs['symmsort'] == 's':
+            ring_join.sort(key=lambda x: nullboolsort(x[1]))
         else:
-            onleft = [rp.has_on_left for rp in rps]
-            has_count = onleft.count(True)
-            lacks_count = onleft.count(False)
-            context['has_count'] = has_count
-            context['lacks_count'] = lacks_count
+            ring_join.sort(key=lambda x: x[0].name.lower())
+        
+        if kwargs['asymmsort'] == 'l':
+            ring_join.sort(key=lambda x: nullboolsort(x[1]))
+        elif kwargs['asymmsort'] == 'r':
+            ring_join.sort(key=lambda x: nullboolsort(x[2]))
+        else:
+            ring_join.sort(key=lambda x: x[0].name.lower())
+        
+        context['ring_join'] = ring_join
 
         metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
         has_mp = metaproperties.filter(has_metaproperty=True)
@@ -396,6 +445,7 @@ class PropertyView(DetailView):
             'metaproperties': metaproperties,
             'has_mp': has_mp,
             'lacks_mp': lacks_mp,
+            'ring_join': ring_join,
         })
 
         return context
@@ -458,21 +508,21 @@ class DimensionView(TemplateView):
         current_dtype = None
         absent_rings = None
         if dtype is not None:
-            objects = RingDimension.objects.filter(dimension_type_id=dtype).order_by('ring__name')
+            objects = RingDimension.objects.filter(dimension_type_id=dtype).order_by(Lower('ring__name'))
             current_dtype = Dimension.objects.get(id=dtype)
             present_rings = {item.ring.id for item in objects}
-            absent_rings = Ring.objects.exclude(id__in=present_rings).order_by('name')
+            absent_rings = Ring.objects.exclude(id__in=present_rings).order_by(Lower('name'))
             if cfilter == 'c':
                 objects = objects.filter(ring__is_commutative=True)
                 absent_rings = absent_rings.filter(is_commutative=True)
 
         if sort == 'l':
-            objects = objects.order_by('left_dimension', 'ring__name')
+            objects = objects.order_by('left_dimension', Lower('ring__name'))
 
         elif sort == 'r':
-            objects = objects.order_by('right_dimension', 'ring__name')
+            objects = objects.order_by('right_dimension', Lower('ring__name'))
 
-        context['dim_types'] = Dimension.objects.all()
+        context['dim_types'] = Dimension.objects.all().order_by(Lower('name'))
         context['objects'] = objects
         context['form'] = forms.DimensionSelector()
         context['dtype'] = current_dtype
@@ -489,16 +539,16 @@ class TheoremListView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        context['category_list'] = TheoremCategory.objects.all()
+        context['category_list'] = TheoremCategory.objects.all().order_by(Lower('name'))
         cat_id = request.GET.get('category')
 
         if cat_id is not None:
             context['selected_cat'] = get_object_or_404(TheoremCategory, pk=cat_id)
-            objects = context['selected_cat'].theorem_set.all()
+            objects = context['selected_cat'].theorem_set.all().order_by(Lower('alias'))
             context['object_list'] = objects
         else:
             context['selected_cat'] = None
-            context['object_list'] = Theorem.objects.all()
+            context['object_list'] = Theorem.objects.all().order_by(Lower('alias'))
 
         return self.render_to_response(context)
 

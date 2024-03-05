@@ -1,6 +1,7 @@
 from django.http import HttpResponseNotAllowed, QueryDict
 from django.urls import reverse
 from django.db.models import Count
+from django.db.models.functions import Lower
 from django.views.decorators.http import require_http_methods, require_GET
 from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from ratelimit.decorators import ratelimit
@@ -17,9 +18,9 @@ class ModuleList(ListView):
     template_name = 'moduleapp/module_list.html'
 
     def get_queryset(self):
-        total = float(Property.objects.filter().count())
+        total = float(Property.objects.count())
         queryset = super().get_queryset().annotate(percent_known=Count('moduleproperty')/total)
-        return queryset
+        return queryset.order_by(Lower('name'))
 
 
 class ModuleDetail(DetailView):
@@ -42,7 +43,7 @@ class ModuleDetail(DetailView):
         sorttype = kwargs['sorttype']  # n/s:  name/status
         obj_props = obj.moduleproperty_set.order_by('property__name')
 
-        props = Property.objects.all()
+        props = Property.objects.all().order_by(Lower('name'))
 
         # This effectively outer-joins
         prop_join = {prop: (None,) for prop in props}
@@ -74,22 +75,55 @@ class ModuleDetail(DetailView):
 class PropertyList(ListView):
     model = Property
     template = 'moduleapp/property_list.html'
+    
+    def get_queryset(self):
+        total = float(Module.objects.filter().count())
+        queryset = super().get_queryset().annotate(percent_known=Count('moduleproperty')/total)
+        return queryset.order_by(Lower('name'))
 
 
 class PropertyView(DetailView):
     model = Property
     template = 'moduleapp/property_detail.html'
+    
+    def get(self, request, **kwargs):
+        sorttype = request.GET.get('symmsort', 'n')  # n/s:  name/status
+        self.object = self.get_object()
+        context = self.get_context_data(
+            object=self.object,
+            request=request,
+            sorttype=sorttype
+        )
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        has_count = ModuleProperty.objects.filter(property=context['object'], has=True).count()
-        lacks_count = ModuleProperty.objects.filter(property=context['object'], has=False).count()
-        context['has_count'] = has_count
-        context['lacks_count'] = lacks_count
         metaproperties = PropertyMetaproperty.objects.filter(property=self.object)
+        sorttype = kwargs['sorttype']
+        
+        obj_props = self.object.moduleproperty_set.all()
+        mods = Module.objects.all().order_by(Lower('name'))
+        # This effectively outer-joins
+        mod_join = {mod: (None,) for mod in mods}
+        for obj_rp in obj_props:
+            mod_join[obj_rp.module] = (obj_rp.has,)
+        mod_join = [(mod,) + values for mod, values in mod_join.items()]
+
+        def nullboolsort(x):
+            if isinstance(x, bool):
+                return x
+            else:
+                return -1
+
+        if sorttype == 's':
+            mod_join.sort(key=lambda x: nullboolsort(x[1]))
+        else:
+            mod_join.sort(key=lambda x: x[0].name.lower())
+
         context['metaproperties'] = metaproperties
         context['has_mp'] = metaproperties.filter(has_metaproperty=True)
         context['lacks_mp'] = metaproperties.filter(has_metaproperty=False)
+        context['mod_join'] = mod_join
         return context
 
 
