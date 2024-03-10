@@ -74,17 +74,32 @@
                 <table class="table table-bordered">
                     <tr>
                     {% if asymmsort == 'l' %}
-                    <th>left</th>
-                    <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
-                    <th>right <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                        {% if object.symmetric %}
+                            <th></th>
+                            <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                        {% else %}
+                            <th>left</th>
+                            <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                            <th>right <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                        {% endif %}
                     {% elif asymmsort == 'r' %}
-                    <th>left <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
-                    <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
-                    <th>right</th>
+                        {% if object.symmetric %}
+                            <th></th>
+                            <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                        {% else %}
+                            <th>left <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                            <th>Name <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'n' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                            <th>right</th>
+                        {% endif %}
                     {% else %}
-                    <th>left <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
-                    <th>Name</th>
-                    <th>right <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                        {% if object.symmetric %}
+                            <th><a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                            <th>Name</th>
+                        {% else %}
+                            <th>left <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'l' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                            <th>Name</th>
+                            <th>right <a href="{% url 'property-detail' object.id %}?{{ request|update_asymmfilter:'r' }}"><i class="glyphicon glyphicon-triangle-bottom"></i></a></th>
+                        {% endif %}
                     {% endif %}
                     </tr>
                     {% for item in ring_join %}
@@ -100,15 +115,18 @@
                     {% endif %}
                     <td><a class="list-group-item" href="{% url 'ring-detail' item.0.id %}">
                         {{ item.0.name }}</a></td>
-                    {% if item.2 == True %}
-                    <td><i class="glyphicon glyphicon-ok"></i></td>
-                    {% elif item.2 == False %}
-                    <td><i class="glyphicon glyphicon-remove"></i></td>
-                    {% elif item.2 == None %}
-                    <td><i class="glyphicon glyphicon-question-sign"></i></td>
-                    {% else %}
-                    <td></td>
+                    {% if not object.symmetric %}
+                        {% if item.2 == True %}
+                        <td><i class="glyphicon glyphicon-ok"></i></td>
+                        {% elif item.2 == False %}
+                        <td><i class="glyphicon glyphicon-remove"></i></td>
+                        {% elif item.2 == None %}
+                        <td><i class="glyphicon glyphicon-question-sign"></i></td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
                     {% endif %}
+
                     </tr>
                     {% endfor %}
                 </table>
