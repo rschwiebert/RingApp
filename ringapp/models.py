@@ -438,6 +438,8 @@ def propagate_relation(sender, instance, *args, **kwargs):
     if mp is None:
         return
 
+    # For drawing negative conclusions about metaproperties
+    # These two lists contain properties the related rings disagree on
     lps = {x.property for x in instance.first.ringproperty_set.filter(has_on_left=False)} & {
         x.property for x in instance.second.ringproperty_set.filter(has_on_left=True)}
     rps = {x.property for x in instance.first.ringproperty_set.filter(has_on_right=False)} & {
