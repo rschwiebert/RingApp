@@ -12,8 +12,12 @@ ring_metaprop_discovered(X,Y,Z):-ring_metaprop_deduced(X,Y,Z),!ring_metaprop_kno
 ring_metaprop_contradictions(Y,Z):-ring_metaprop_deduced("has",Y,Z),ring_metaprop_deduced("lacks",Y,Z).
 
 ring_metaprop_deduced("has",1,Z):-ring_metaprop_deduced("has",2,Z),ring_metaprop_deduced("has",8,Z). // Morita theory
+ring_metaprop_deduced("lacks",8,Z):-ring_metaprop_deduced("has",2,Z),ring_metaprop_deduced("lacks",1,Z). // Morita theory
+ring_metaprop_deduced("lacks",2,Z):-ring_metaprop_deduced("has",8,Z),ring_metaprop_deduced("lacks",1,Z). // Morita theory
 ring_metaprop_deduced("has",8,Z):-ring_metaprop_deduced("has",1,Z). // Morita theory
+ring_metaprop_deduced("lacks",1,Z):-ring_metaprop_deduced("lacks",8,Z). // Morita theory
 ring_metaprop_deduced("has",2,Z):-ring_metaprop_deduced("has",1,Z). // Morita theory
+ring_metaprop_deduced("lacks",1,Z):-ring_metaprop_deduced("lacks",2,Z). // Morita theory
 
 ring_metaprop_deduced("has",5,Z):-ring_metaprop_deduced("has",6,Z). // Stable under products -> stable under finite products
 ring_metaprop_deduced("lacks",6,Z):-ring_metaprop_deduced("lacks",5,Z). // Stable under products -> stable under finite products
