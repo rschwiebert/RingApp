@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from ringapp.models import Logic, Property, RingProperty, Ring, RingDimension, Dimension, Subset, RingSubset
+from ringapp.models import Logic, Property, RingProperty, Ring, RingDimension, Dimension, Subset, RingSubset, Relation, \
+    PropertyMetaproperty, Metaproperty
 from django.core.management import call_command, CommandError
 
 
@@ -173,3 +174,79 @@ class RingSubsetTest(TestCase):
         with self.assertRaises(CommandError):
             call_command('process_ring', self.ring.id, record=True, reload_logic=True)
 
+
+class RelationTest(TestCase):
+    databases = ['default', 'ringapp_data']
+
+    def setUp(self) -> None:
+        self.ring_1 = Ring.objects.create()
+        self.ring_2 = Ring.objects.create()
+        self.ring_3 = Ring.objects.create()
+        self.rel_1 = Relation.objects.create(first=self.ring_1, second=self.ring_2, relation_type=Relation.RelationType.SUB_OF)
+        self.rel_2 = Relation.objects.create(first=self.ring_2, second=self.ring_3, relation_type=Relation.RelationType.IM_OF)
+        self.P1 = Property.objects.create(symmetric=False)
+        self.P2 = Property.objects.create(symmetric=True)
+        self.MP1 = Metaproperty.objects.create(relation_type=Relation.RelationType.SUB_OF)
+        self.MP2 = Metaproperty.objects.create(relation_type=Relation.RelationType.IM_OF)
+        self.PMP1 = PropertyMetaproperty.objects.create(property=self.P1, metaproperty=self.MP1, has_metaproperty=True)
+        self.PMP2 = PropertyMetaproperty.objects.create(property=self.P2, metaproperty=self.MP2, has_metaproperty=True)
+        self.PMP3 = PropertyMetaproperty.objects.create(property=self.P2, metaproperty=self.MP1, has_metaproperty=True)
+        self.PMP4 = PropertyMetaproperty.objects.create(property=self.P1, metaproperty=self.MP2, has_metaproperty=True)
+
+    def test_symmetric_inheritance(self):
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
+        rp = RingProperty.objects.create(ring=self.ring_3, property=self.P2, has_on_left=True)
+        call_command('process_relations', record=True)
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
+        rp.delete()
+
+    def test_asymmetric_inheritance(self):
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_1, property=self.P1, has_on_left=True).exists())
+        rp = RingProperty.objects.create(ring=self.ring_2, property=self.P1, has_on_left=True)
+        call_command('process_relations', record=True)
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_1, property=self.P1, has_on_left=True).exists())
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_1, property=self.P1, has_on_right=True).exists())
+        rp.delete()
+
+    def test_combined_inheritance(self):
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_1, property=self.P2, has_on_left=True).exists())
+        rp = RingProperty.objects.create(ring=self.ring_3, property=self.P2, has_on_left=True)
+        call_command('process_relations', record=True)
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_1, property=self.P2, has_on_left=True).exists())
+        rp.delete()
+
+    def test_symmetric_disinheritance(self):
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_3, property=self.P2, has_on_left=False).exists())
+        rp = RingProperty.objects.create(ring=self.ring_2, property=self.P2, has_on_left=False)
+        call_command('process_relations', record=True)
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_3, property=self.P2, has_on_left=False).exists())
+        rp.delete()
+
+    def test_asymmetric_disinheritance(self):
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P1, has_on_left=False).exists())
+        rp = RingProperty.objects.create(ring=self.ring_1, property=self.P1, has_on_left=False)
+        call_command('process_relations', record=True)
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_2, property=self.P1, has_on_left=False).exists())
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P1, has_on_right=False).exists())
+        rp.delete()
+
+    def test_combined_disinheritance(self):
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P1, has_on_left=False).exists())
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_3, property=self.P1, has_on_left=False).exists())
+        rp = RingProperty.objects.create(ring=self.ring_1, property=self.P1, has_on_left=False)
+        call_command('process_relations', record=True)
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_2, property=self.P1, has_on_left=False).exists())
+        self.assertTrue(RingProperty.objects.filter(ring=self.ring_3, property=self.P1, has_on_left=False).exists())
+        rp.delete()
+
+    def test_contradiction(self):
+        fakerp = RingProperty.objects.create(ring=self.ring_2, property=self.P2, has_on_left=False)
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
+        rp = RingProperty.objects.create(ring=self.ring_3, property=self.P2, has_on_left=True)
+        with self.assertRaises(CommandError):
+            call_command('process_relations', record=True)
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
+        rp.delete()
+        fakerp.delete()

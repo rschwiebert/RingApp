@@ -1,0 +1,27 @@
+.decl ring_relation(first: number,rtype: symbol,second: number)
+.decl property_metaproperty(property: number,mode: symbol,metaproperty: symbol)
+.decl ring_property(ring: number,mode: symbol,property: number,side: number, second_ring: number, metaproperty: symbol)
+.decl output_ring_property(ring: number,mode: symbol,property: number,side: number, second_ring: number, metaproperty: symbol)
+.decl ring_property_contradictions(ring: number,property: number)
+
+.input ring_relation
+.input property_metaproperty
+.input ring_property
+.output output_ring_property
+.output ring_property_contradictions
+
+{% for relation_type, transitive, symmetric in data %}
+{% if transitive %}
+ring_relation(X,"{{ relation_type }}",Z):-ring_relation(X,"{{ relation_type }}",Y), ring_relation(Y,"{{ relation_type }}",Z).
+{% endif %}
+{% if symmetric %}
+ring_relation(Y,"{{ relation_type }}",X):-ring_relation(X,"{{ relation_type }}",Y).
+{% endif %}
+{% endfor %}
+
+ring_property(R,"has",P,N,S,M):-property_metaproperty(P,"has",M),ring_property(S,"has",P,N,A,B),ring_relation(R,M,S).
+ring_property(S,"lacks",P,N,R,M):-property_metaproperty(P,"has",M),ring_property(R,"lacks",P,N,A,B),ring_relation(R,M,S).
+
+
+output_ring_property(R,M,P,N,S,T):-ring_property(R,M,P,N,S,T),!ring_property(R,M,P,N,0,""),R!=S,R!=0.
+ring_property_contradictions(R,P):-ring_property(R,"has",P,N,A,B),ring_property(R,"lacks",P,N,C,D).
