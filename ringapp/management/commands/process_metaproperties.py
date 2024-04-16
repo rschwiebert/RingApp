@@ -1,33 +1,26 @@
 import csv
-import json
 import logging
 import os
-import re
 import shutil
 import subprocess
-import time
 
 import sys
-from collections import defaultdict
 from pathlib import Path
 import shlex
 from pprint import pformat
 
-import pexpect
 from django.core.management.base import BaseCommand, CommandError
 
 import datalog
 import ringapp
-from datalog.souffle_utils import DL_DIR, TEMPLATES, write_ring_properties, write_ring_dims, write_ring_subsets
-from ringapp.SuggestionUtils import humanize_souffle_rule
-from ringapp.constants import sidetype_choices
-from ringapp.models import Ring, RingDimension, Dimension, Subset
+from datalog.souffle_utils import DL_DIR, TEMPLATES
+from ringapp.models import Ring
 
 logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'Session you can use to process rings'
+    help = 'Session you can use to process metaproperty data'
 
     def add_arguments(self, parser):
         parser.add_argument('--record', action='store_true')
