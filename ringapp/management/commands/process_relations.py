@@ -135,14 +135,16 @@ class Command(BaseCommand):
         with open('outputs/output_ring_property.csv') as found:
             discovered = [line.strip() for line in found.readlines()]
 
-        reasons = []
         if options['record'] is True:
+            if not discovered:
+                logger.info("Nothing new discovered")
+                return
             logger.info('Recording discoveries')
             with transaction.atomic():
                 for line in discovered:
                     line = line.split('\t')
                     reason = explain(*line)
-                    reasons.append(reason)
+                    reason = f"relationlogic.dl: {reason}"
                     ring_id, mode, property_id, side, _, _ = line
                     mode = True if mode == "has" else False
                     rp, created = RingProperty.objects.get_or_create(ring_id=ring_id, property_id=property_id)
@@ -164,5 +166,7 @@ class Command(BaseCommand):
                     rp.save()
 
         else:
-            for reason in reasons:
+            for line in discovered:
+                line = line.split('\t')
+                reason = explain(*line)
                 print(reason)

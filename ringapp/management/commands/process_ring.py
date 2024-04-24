@@ -20,7 +20,7 @@ import ringapp
 from datalog.souffle_utils import DL_DIR, TEMPLATES, write_ring_properties, write_ring_dims, write_ring_subsets
 from ringapp.SuggestionUtils import humanize_souffle_rule
 from ringapp.constants import sidetype_choices
-from ringapp.models import Ring, RingDimension, Dimension, Subset
+from ringapp.models import Ring, Dimension, Subset
 
 logger = logging.getLogger(__name__)
 
