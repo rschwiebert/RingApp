@@ -648,6 +648,7 @@ serializers = [
     PropertySerializer,
     RingPropertySerializer,
     MetaPropertySerializer,
+    RingRelationSerializer,
     PropMetapropSubSerializer,
     TheoremCategorySerializer,
     CitationSerializer,
@@ -661,11 +662,10 @@ serializers = [
     ModPropertySerializer,
     ModLogicSerializer,
     ModMetaPropertySerializer,
+    ModuleRelationSerializer,
     ModPropMetapropSubSerializer,
     ModulePropertySerializer,
     ModCitationSerializer,
-    RingRelationSerializer,
-    ModuleRelationSerializer
 ]
 serializer_order = [cls.modelkey for cls in serializers]
 serializers = {cls.modelkey: cls() for cls in serializers}
