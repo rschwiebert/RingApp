@@ -26,6 +26,7 @@
                                   data-content="Keyword labels are links to more information!"
                                   data-original-title="Info"></span>
                 </p>
+                {% endif %}
                 </div>
             </div>
 
@@ -42,8 +43,8 @@
 
                 {% else %}
                 <li>(Citation needed)</li>
-                {% endif %}
             </ul>
+                {% endif %}
 
         </div>
 
@@ -170,9 +171,7 @@
                         </table>
                     </div>
                 </div>
-                {% endif %}
-                {% else %}
-                <p>Nothing was retrieved.</p>
+
                 {% endif %}
                 <div class="col-md-4 content">
                     <div class="panel panel-default">
