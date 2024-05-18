@@ -120,9 +120,9 @@
                                                               href="{% url 'auth_login' %}"><font
                     color="white">Login</font></a>{% else %}<a class="btn btn-primary"
                                                                href="{% url 'auth_logout' %}"><font
-                    color="white">Logout</font></a></li>
+                    color="white">Logout</font></a>{% endif %}</li>
             <li><a class="btn btn-primary" href="{% url 'profile' %}"><font color="white">Profile</font> <span id="notifCount" class="badge badge-danger"></span></a></li>
-            {% endif %}
+
           </ul>
 
 	  <!--<form class="navbar-form navbar-right">

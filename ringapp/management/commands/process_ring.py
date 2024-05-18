@@ -65,7 +65,7 @@ class Command(BaseCommand):
         write_ring_properties(ring, complete=True)
         write_ring_dims(ring, complete=True)
         write_ring_subsets(ring, complete=True)
-        logger.info('running ringlogic.dl')
+        logger.info(f'running ringlogic.dl for ring {options["ring_id"]}')
         os.chdir(datalog.__path__[0])
         t1=time.time()
         subprocess.check_call(shlex.split('souffle -D./outputs -F./inputs ringlogic.dl'))
