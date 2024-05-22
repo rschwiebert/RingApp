@@ -35,7 +35,7 @@ DEBUG = False
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/profile'
-
+DISABLE_ENGINE = False
 # Application definition
 
 INSTALLED_APPS = [

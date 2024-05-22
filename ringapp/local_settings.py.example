@@ -6,6 +6,7 @@ print('*************************')
 
 DEBUG = True
 SECURE_SSL_REDIRECT = False
+DISABLE_ENGINE = False
 
 WEB_SQLITE_PATH = os.path.join(BASE_DIR, 'db', 'web.db')
 

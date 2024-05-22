@@ -5,6 +5,7 @@ from typing import List, Dict
 from sympy.core import symbol
 from time import time
 import logging
+from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
 from sympy import symbols, And, Or, Implies, Equivalent
@@ -15,6 +16,8 @@ from ringapp import models
 import os
 
 log = logging.getLogger(__name__)
+
+DISABLE_ENGINE = settings.DISABLE_ENGINE or os.environ.get('DISABLE_ENGINE', False)
 
 
 class LogicError(Exception):
@@ -38,6 +41,7 @@ class NegationError(Exception):
 class ParseError(Exception):
     pass
 
+
 class LogicEngine(object):
     __instance = None
 
@@ -46,7 +50,7 @@ class LogicEngine(object):
         A big singleton object whose function is to do the deduction process
         on all rings in storage using all logic in storage
         """
-        if LogicEngine.__instance is None and os.environ.get('DISABLE_ENGINE', False) is False:
+        if LogicEngine.__instance is None and DISABLE_ENGINE is False:
             log.info('Bootstrapping LogicEngine for the first time')
             t0 = time()
             LogicEngine.__instance = object.__new__(cls)

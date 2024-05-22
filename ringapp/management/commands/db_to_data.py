@@ -645,10 +645,10 @@ serializers = [
     DimensionSerializer,
     SubsetSerializer,
     RingSerializer,
+    RingRelationSerializer,
     PropertySerializer,
     RingPropertySerializer,
     MetaPropertySerializer,
-    RingRelationSerializer,
     PropMetapropSubSerializer,
     TheoremCategorySerializer,
     CitationSerializer,
@@ -764,6 +764,8 @@ class Command(BaseCommand):
             entries = []
             for path in Path(os.environ['EXPORT_ROOT_DIR']).rglob('*.yaml'):
                 path = str(path)
+                log.info(f'Recovering data from {path}')
+
                 for model, serializer in serializers.items():
                     match = serializer.regex.search(path)
                     if match is not None:
@@ -779,6 +781,7 @@ class Command(BaseCommand):
                 for line in lines:
                     f.write(line)
                 f.flush()
+                log.info('Loading recovered data')
                 call_command('loaddata', f.name, database='ringapp_data', settings=options.get('settings'))
 
         elif options.get('command') == 'test':

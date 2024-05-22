@@ -1,12 +1,20 @@
-# To run the webserver in the container:
-# (If `docker image list` does not have `ringapp` yet) Run `docker build . -t ringapp` in the RingApp directory.
+# To build a local copy of the database:
+# Change your working directory to be the directory containing the RingApp repository
+# Run `docker build . -t ringapp` to build the docker image
+# `touch db/ringapp.db` (or use some equivalent) to create this file
 # Copy RingApp/ringapp/local_settings.py.example to RingApp/ringapp/local_settings.py
-# Run `docker run -d --name ringapp -v <absolute path to RingApp top level>:/checkout -v <absolute path to dart-data/db>:/data -p 8000:8000  ringapp`
-# The server will be available at http://localhost:8000
-# To interactively use the manage.py commands, or to play around with souffle, you can connect to the running container:
-# `docker container list` and copy the hash of the rinagpp container
-# `docker exec -it <image hash> /bin/bash`
-# From there you can execute `python manage.py` commands and also `souffle` commands
+# Change `DISABLE_ENGINE = True` in local_settings
+# Run `docker run -d --name ringapp -v <absolute path to repository directory>:/checkout -v <absolute path to dart-data/db>:/data -p 8000:8000  ringapp`
+# The server should be available at http://localhost:8000
+# Connect to the running container with `docker exec -it ringapp /bin/bash`
+# Sourcing /venv/bin/activate to gain access to management commands
+# Running `python manage.py db_to_data --settings=ringapp.local_settings import` will attempt to build the database up from
+#   the format stored in dart-data.
+
+# All management commands are available to you when connected to the server.  You can also use `souffle`.
+
+# To use the webserver with a built database, you may wish to stop the container and
+#    revert DISABLE_ENGINE to False, before starting the container again.
 
 
 FROM ubuntu:22.04
