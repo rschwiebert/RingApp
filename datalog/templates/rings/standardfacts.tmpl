@@ -32,8 +32,8 @@ ring_deduced("lacks",1,Y) :- ring_deduced("lacks",3,Y).  // logical AND
 ring_deduced("has",1,Y) :- ring_deduced("has",2,Y),ring_deduced("has",3,Y).  // logical AND
 ring_deduced("lacks",2,Y) :- ring_deduced("has",3,Y),ring_deduced("lacks",1,Y).  // logical AND
 ring_deduced("lacks",3,Y) :- ring_deduced("has",2,Y),ring_deduced("lacks",1,Y).  // logical AND
-ring_deduced("lacks",2,Y):-ring_deduced("has",0,1),ring_deduced("lacks",1,Y).  // logical AND
-ring_deduced("lacks",3,Y):-ring_deduced("has",0,1),ring_deduced("lacks",1,Y).  // logical AND
+ring_deduced("lacks",2,Y) :- ring_deduced("has",0,1),ring_deduced("lacks",1,Y).  // logical AND
+ring_deduced("lacks",3,Y) :- ring_deduced("has",0,1),ring_deduced("lacks",1,Y).  // logical AND
 ring_deduced("has",4,Y) :- ring_deduced("has",2,Y).  // logical OR
 ring_deduced("lacks",2,Y) :- ring_deduced("lacks",4,Y).  // logical OR
 ring_deduced("has",4,Y) :- ring_deduced("has",3,Y).  // logical OR
@@ -41,8 +41,8 @@ ring_deduced("lacks",3,Y) :- ring_deduced("lacks",4,Y).  // logical OR
 ring_deduced("lacks",4,Y) :- ring_deduced("lacks",2,Y),ring_deduced("lacks",3,Y).  // logical OR
 ring_deduced("has",2,Y) :- ring_deduced("has",4,Y),ring_deduced("lacks",3,Y).  // logical OR
 ring_deduced("has",3,Y) :- ring_deduced("has",4,Y),ring_deduced("lacks",2,Y).  // logical OR
-ring_deduced("has",2,Y):-ring_deduced("has",0,1),ring_deduced("has",4,Y).  // logical OR
-ring_deduced("has",3,Y):-ring_deduced("has",0,1),ring_deduced("has",4,Y).  // logical OR
+ring_deduced("has",2,Y) :- ring_deduced("has",0,1),ring_deduced("has",4,Y).  // logical OR
+ring_deduced("has",3,Y) :- ring_deduced("has",0,1),ring_deduced("has",4,Y).  // logical OR
 ring_deduced("has",2,Y) :- ring_deduced("has",0,1),ring_deduced("has",3,Y).  // commutativity
 ring_deduced("lacks",0,1) :- ring_deduced("lacks",2,Y),ring_deduced("has",3,Y).  // asymmetry of a two-sided condition
 ring_deduced("lacks",3,Y) :- ring_deduced("has",0,1),ring_deduced("lacks",2,Y).  // commutativity
