@@ -25,6 +25,7 @@ if not os.path.exists(SQLITE_PATH):
     os.makedirs(os.path.dirname(SQLITE_PATH), exist_ok=True)
     s3 = boto3.client('s3')
     with open(SQLITE_PATH, 'wb') as f:
+        print("Downloading database.")
         s3.download_fileobj(os.environ['S3_BUCKET_NAME'], SQLITE_NAME, f)
 
 # Quick-start development settings - unsuitable for production
