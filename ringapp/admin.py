@@ -20,6 +20,7 @@ class PropertyMetapropertyInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', ('symmetric', 'commutative_only', 'citation')]
     inlines = [PropertyMetapropertyInline, ]
@@ -28,10 +29,12 @@ class PropertyAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(Keyword)
 class KeywordAdmin(admin.ModelAdmin):
     fields = ['name', 'description']
 
 
+@admin.register(RingProperty)
 class RingPropertyAdmin(admin.ModelAdmin):
     model = RingProperty
     fields = [('ring', 'property'),
@@ -52,6 +55,7 @@ class RingPropertyInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Ring)
 class RingAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'notes', 'optional_template',
               ('citation', 'keywords'),  ('krull_dim', 'is_commutative')]
@@ -62,10 +66,12 @@ class RingAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(PropertySide)
 class PropertySideAdmin(admin.ModelAdmin):
     fields = ['property', 'side']
 
 
+@admin.register(Logic)
 class LogicAdmin(admin.ModelAdmin):
     fields = ['hyps',
               'concs',
@@ -84,6 +90,7 @@ class LogicAdmin(admin.ModelAdmin):
         return ' AND '.join(concs)
 
 
+@admin.register(Theorem)
 class TheoremAdmin(admin.ModelAdmin):
     fields = ['alias', 'statement', 'categories', 'citation', 'link', 'commutative_only']
     formfield_overrides = {
@@ -91,10 +98,12 @@ class TheoremAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(TheoremCategory)
 class TheoremCategoryAdmin(admin.ModelAdmin):
     fields = ['name', 'description']
 
 
+@admin.register(Citation)
 class CitationAdmin(admin.ModelAdmin):
     fields = ['publication', 'location']
     list_display = ['publication', 'location']
@@ -108,11 +117,13 @@ class CitationInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Erratum)
 class ErrataAdmin(admin.ModelAdmin):
     mode = Erratum
     fields = ['error_location', 'description', 'corrected_location', 'example']
 
 
+@admin.register(PropertyMetaproperty)
 class PropertyMetapropertyAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'relation', 'citation']
     list_display = ['property', 'metaproperty', 'has_metaproperty']
@@ -122,18 +133,22 @@ class PropertyMetapropertyAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(Metaproperty)
 class MetapropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', 'relation_type']
 
 
+@admin.register(Dimension)
 class DimensionAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', 'symmetric']
 
 
+@admin.register(Subset)
 class SubsetAdmin(admin.ModelAdmin):
     fields = ['name', 'definition']
 
 
+@admin.register(RingDimension)
 class RingDimensionAdmin(admin.ModelAdmin):
     fields = ['ring', 'dimension_type', 'left_dimension', 'reason_left', 'right_dimension', 'reason_right', 'citation']
     list_display = ['ring', 'dimension_type', 'left_dimension', 'right_dimension']
@@ -143,6 +158,7 @@ class RingDimensionAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(RingSubset)
 class RingSubsetAdmin(admin.ModelAdmin):
     fields = ['ring', 'subset_type', 'subset', 'citation']
     list_display = ['ring', 'subset_type']
@@ -152,6 +168,7 @@ class RingSubsetAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(Relation)
 class RelationAdmin(admin.ModelAdmin):
     fields = ['first', 'relation_type', 'second', 'note']
     list_display = ['first', 'relation_type', 'second']
@@ -165,22 +182,4 @@ class RelationAdmin(admin.ModelAdmin):
 #     fields = ['term', 'definition', 'reference']
 
 
-admin.site.register(Ring, RingAdmin)
-admin.site.register(Property, PropertyAdmin)
-admin.site.register(PropertySide, PropertySideAdmin)
-admin.site.register(RingProperty, RingPropertyAdmin)
-admin.site.register(Logic, LogicAdmin)
-admin.site.register(Theorem, TheoremAdmin)
-admin.site.register(TheoremCategory, TheoremCategoryAdmin)
-admin.site.register(Citation, CitationAdmin)
-admin.site.register(Erratum, ErrataAdmin)
-admin.site.register(Keyword, KeywordAdmin)
-admin.site.register(PropertyMetaproperty, PropertyMetapropertyAdmin)
-admin.site.register(Metaproperty, MetapropertyAdmin)
-admin.site.register(Dimension, DimensionAdmin)
-admin.site.register(Subset, SubsetAdmin)
-admin.site.register(RingDimension, RingDimensionAdmin)
-admin.site.register(RingSubset, RingSubsetAdmin)
-admin.site.register(Relation, RelationAdmin)
-# admin.site.register(FAQ, FAQAdmin)
-# admin.site.register(Glossary, GlossaryAdmin)
+

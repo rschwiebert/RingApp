@@ -317,20 +317,20 @@ files = [
 
 [[package]]
 name = "django"
-version = "3.2.24"
-description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+version = "4.0"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "Django-3.2.24-py3-none-any.whl", hash = "sha256:5dd5b787c3ba39637610fe700f54bf158e33560ea0dba600c19921e7ff926ec5"},
-    {file = "Django-3.2.24.tar.gz", hash = "sha256:aaee9fb0fb4ebd4311520887ad2e33313d368846607f82a9a0ed461cd4c35b18"},
+    {file = "Django-4.0-py3-none-any.whl", hash = "sha256:59304646ebc6a77b9b6a59adc67d51ecb03c5e3d63ed1f14c909cdfda84e8010"},
+    {file = "Django-4.0.tar.gz", hash = "sha256:d5a8a14da819a8b9237ee4d8c78dfe056ff6e8a7511987be627192225113ee75"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.3.2,<4"
-pytz = "*"
+asgiref = ">=3.4.1,<4"
 sqlparse = ">=0.2.2"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
@@ -368,14 +368,14 @@ files = [
 
 [[package]]
 name = "django-publications"
-version = "1.1.0"
+version = "1.2.0"
 description = "A Django app for managing scientific publications."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-publications-1.1.0.tar.gz", hash = "sha256:2d044cdb41ad32c33c81c579e692103adb843207a35c7d4b6ce1d69c8ba351d4"},
-    {file = "django_publications-1.1.0-py3-none-any.whl", hash = "sha256:356202f7ba4f3132f2701d671f24f7c3784fb2c8817671af97d7cf69e8558372"},
+    {file = "django_publications-1.2.0-py3-none-any.whl", hash = "sha256:506b27387fe6cdbfdc27833aab7a2356f1875a912598a3b4ccb57bdd7b3aa65f"},
+    {file = "django_publications-1.2.0.tar.gz", hash = "sha256:daac4f921d7f9633a75c4833d2b44f014dd5945ed32fd2456d203215c24e9f26"},
 ]
 
 [package.dependencies]
@@ -396,17 +396,18 @@ files = [
 
 [[package]]
 name = "django-recaptcha"
-version = "2.0.6"
+version = "3.0.0"
 description = "Django recaptcha form field/widget app."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django_recaptcha-2.0.6-py2.py3-none-any.whl", hash = "sha256:567784963fd5400feaf92e8951d8dbbbdb4b4c48a76e225d4baa63a2c9d2cd8c"},
+    {file = "django-recaptcha-3.0.0.tar.gz", hash = "sha256:253197051288923cae675d7eff91b619e3775311292a5dbaf27a8a55ffebc670"},
+    {file = "django_recaptcha-3.0.0-py3-none-any.whl", hash = "sha256:1aed69fd6ac8fd9e99e52665392ae6748f8b6339ace656fad779fe0c6c915a52"},
 ]
 
 [package.dependencies]
-django = ">1.11,<4.0"
+django = "*"
 
 [[package]]
 name = "django-registration-redux"
@@ -812,6 +813,18 @@ files = [
 mpmath = ">=0.19"
 
 [[package]]
+name = "tzdata"
+version = "2024.2"
+description = "Provider of IANA time zone data"
+category = "main"
+optional = false
+python-versions = ">=2"
+files = [
+    {file = "tzdata-2024.2-py2.py3-none-any.whl", hash = "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd"},
+    {file = "tzdata-2024.2.tar.gz", hash = "sha256:7d85cc416e9382e69095b7bdf4afd9e3880418a2413feec7069d533d6b4e31cc"},
+]
+
+[[package]]
 name = "urllib3"
 version = "1.26.18"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -861,4 +874,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d3e37be1b45338c17c43a57016ceabd7c5eebc5c275d3e5864ce06b0321359ff"
+content-hash = "a77217e4335cc5f48a73b4eb90f526848605bcbfa329c17dd20ccbb54bca53ef"
