@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
 
 
 class Migration(migrations.Migration):
@@ -22,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='news',
             name='timestamp',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2017, 9, 6, 22, 8, 57, 719011, tzinfo=utc)),
+            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2017, 9, 6, 22, 8, 57, 719011, tzinfo=datetime.timezone.utc)),
             preserve_default=False,
         ),
         migrations.AddField(

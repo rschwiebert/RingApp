@@ -7,10 +7,10 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-asgiref = "3.5.1"
+asgiref = "3.5.2"
 boto3 = "1.24.0"
 dj-database-url = "0.5.0"
-Django = "4.0.10"
+Django = "4.1.13"
 django-mathfilters = "0.4.0"
 django-publications = "1.2.0"
 django-ratelimit = "2.0.0"
