@@ -2,14 +2,14 @@
 
 [[package]]
 name = "asgiref"
-version = "3.5.2"
+version = "3.6.0"
 description = "ASGI specs, helper code, and adapters"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "asgiref-3.5.2-py3-none-any.whl", hash = "sha256:1d2880b792ae8757289136f1db2b7b99100ce959b2aa57fd69dab783d05afac4"},
-    {file = "asgiref-3.5.2.tar.gz", hash = "sha256:4a29362a6acebe09bf1d6640db38c1dc3d9217c68e6f9f6204d72667fc19a424"},
+    {file = "asgiref-3.6.0-py3-none-any.whl", hash = "sha256:71e68008da809b957b7ee4b43dbccff33d1b23519fb8344e33f049897077afac"},
+    {file = "asgiref-3.6.0.tar.gz", hash = "sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506"},
 ]
 
 [package.extras]
@@ -317,19 +317,19 @@ files = [
 
 [[package]]
 name = "django"
-version = "4.1.13"
+version = "4.2.16"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Django-4.1.13-py3-none-any.whl", hash = "sha256:04ab3f6f46d084a0bba5a2c9a93a3a2eb3fe81589512367a75f79ee8acf790ce"},
-    {file = "Django-4.1.13.tar.gz", hash = "sha256:94a3f471e833c8f124ee7a2de11e92f633991d975e3fa5bdd91e8abd66426318"},
+    {file = "Django-4.2.16-py3-none-any.whl", hash = "sha256:1ddc333a16fc139fd253035a1606bb24261951bbc3a6ca256717fa06cc41a898"},
+    {file = "Django-4.2.16.tar.gz", hash = "sha256:6f1616c2786c408ce86ab7e10f792b8f15742f7b7b7460243929cb371e7f1dad"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.5.2,<4"
-sqlparse = ">=0.2.2"
+asgiref = ">=3.6.0,<4"
+sqlparse = ">=0.3.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
@@ -874,4 +874,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "29ee8c0cefe265ff23e9ce12bfada984f274b0432b0d5bb9b0e500566ad2b8e9"
+content-hash = "7fa584f6a676d4a4e0d0b41e802c865fbd4f4424156f8a7aa87e604ee8eb10a1"
