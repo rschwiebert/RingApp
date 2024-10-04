@@ -56,7 +56,7 @@ urlpatterns = [
 
     # Must come before inclusion of registration.backends urls as it overrides one.
     path('accounts/login/', views.RatelimitedLoginView.as_view(), name='auth_login'),
-    re_path(r'^accounts/', include('registration.backends.default.urls')),
+    path('accounts/', include('registration.backends.default.urls')),
     path('register/', CreateView.as_view(template_name='ringapp/register.html',
                                            form_class=UserCreationForm,
                                            success_url='profile/'), name='register'),
