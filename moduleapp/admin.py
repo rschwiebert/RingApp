@@ -20,6 +20,7 @@ class PropertyMetapropertyInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', 'citation']
     inlines = [PropertyMetapropertyInline, ]
@@ -28,6 +29,7 @@ class PropertyAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(ModuleProperty)
 class ModulePropertyAdmin(admin.ModelAdmin):
     model = ModuleProperty
     fields = [('module', 'property'),
@@ -39,6 +41,7 @@ class ModulePropertyAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'notes', 'ring', 'opposite_ring', 'citation']
     list_display = ['name']
@@ -47,6 +50,7 @@ class ModuleAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(Logic)
 class LogicAdmin(admin.ModelAdmin):
     fields = ['hyps',
               'concs',
@@ -65,6 +69,7 @@ class LogicAdmin(admin.ModelAdmin):
         return ' AND '.join(list(map(humanize_souffle, obj.concs.split(' AND '))))
 
 
+@admin.register(PropertyMetaproperty)
 class PropertyMetapropertyAdmin(admin.ModelAdmin):
     fields = ['property', 'metaproperty', 'has_metaproperty', 'example', 'relation', 'citation']
     list_display = ['property', 'metaproperty', 'has_metaproperty']
@@ -74,10 +79,12 @@ class PropertyMetapropertyAdmin(admin.ModelAdmin):
     }
 
 
+@admin.register(Metaproperty)
 class MetapropertyAdmin(admin.ModelAdmin):
     fields = ['name', 'definition', 'relation_type']
 
 
+@admin.register(Citation)
 class CitationAdmin(admin.ModelAdmin):
     fields = ['publication', 'location']
     list_display = ['publication', 'location']
@@ -85,16 +92,9 @@ class CitationAdmin(admin.ModelAdmin):
     ordering = ('publication__authors',)
 
 
+@admin.register(Relation)
 class RelationAdmin(admin.ModelAdmin):
     fields = ['first', 'relation_type', 'second', 'note']
     list_display = ['first', 'relation_type', 'second']
 
 
-admin.site.register(Module, ModuleAdmin)
-admin.site.register(Property, PropertyAdmin)
-admin.site.register(Logic, LogicAdmin)
-admin.site.register(Metaproperty, MetapropertyAdmin)
-admin.site.register(ModuleProperty, ModulePropertyAdmin)
-admin.site.register(Citation, CitationAdmin)
-admin.site.register(PropertyMetaproperty, PropertyMetapropertyAdmin)
-admin.site.register(Relation, RelationAdmin)
