@@ -666,7 +666,7 @@ def inspiration_view(request):
 
 @login_required
 def live_unread_notification_count(request):
-    if request.is_ajax:
+    if request.headers.get('x-requested-with') == "XMLHttpRequest":
         unread_notifications = Suggestion.objects.filter(user=request.user, unread=True).count()
         data = {"unread_notifications": unread_notifications}
         json_data = json.dumps(data)
