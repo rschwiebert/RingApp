@@ -35,7 +35,8 @@ ENV S3_BUCKET_NAME=
 ENV EXPORT_ROOT_DIR=/data
 ENV SQLITE_DB_DIR=/checkout/db
 
-ADD requirements.txt requirements.txt
+ADD pyproject.toml pyproject.toml
+ADD poetry.lock poetry.lock
 
 RUN apt update && \
     apt install -y \
@@ -48,7 +49,8 @@ RUN apt update && \
     libpq-dev && \
     python3 -m venv /venv && \
     . /venv/bin/activate && \
-    pip install -r /requirements.txt
+    pip install poetry && \
+    poetry install
 
 WORKDIR /checkout
 
