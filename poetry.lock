@@ -317,8 +317,8 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/rschwiebert/dart_data.git"
-reference = "91c5ba9a0c6255c261baf686f18f41b023049dc4"
-resolved_reference = "91c5ba9a0c6255c261baf686f18f41b023049dc4"
+reference = "50217c1d88853e152f1bb97995114fc12c0157a3"
+resolved_reference = "50217c1d88853e152f1bb97995114fc12c0157a3"
 
 [[package]]
 name = "dj-database-url"
@@ -879,4 +879,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "10bb376cb3a5e98560e0a60f66c756c753e6ad22e7ef1270a662bf93225b74f6"
+content-hash = "052ee02e822c70a79231a6580ca9cec9e8e7c35ab0643c11a7584928e6cd361e"
