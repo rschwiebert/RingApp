@@ -1,9 +1,14 @@
-[tool.poetry]
+[project]
 name = "ringapp"
-version = "1.0.0"
 description = "Website app for the Database of Ring Theory"
-authors = ["rschwiebert <databaseofringtheory@gmail.com>"]
+version = "1.0.0"
+authors = [
+    { name = "Ryan Schwiebert", email = "databaseofringtheory@gmail.com" }
+]
+dynamic = ["dependencies"]
 license = "MIT"
+requires-python = ">=3.10"
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -26,7 +31,7 @@ six = "1.11.0"
 sqlparse = "0.5.0"
 sympy = "1.12"
 whitenoise = "5.0.1"
-dart-data = {git = "https://github.com/rschwiebert/dart_data.git", rev = "50217c1d88853e152f1bb97995114fc12c0157a3"}
+dart-data = {git = "https://github.com/rschwiebert/dart_data.git", rev = "1bffd0624830d0bcc456a8f7280ac59acafae01d"}
 psycopg2 = "2.9.3"
 django-heroku = "0.3.1"
 requests = "^2.32.2"
@@ -38,7 +43,6 @@ urllib3 = "1.26.19"
 tzdata = "^2024.2"
 setuptools = "70.0.0"
 
-[tool.poetry.dev-dependencies]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

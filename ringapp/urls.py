@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, RedirectView, CreateView
 from ringapp import views
 import web.views
 from ringapp.sitemaps import sitemapdict
-
+from ringapp.views import misfitlist
 
 urlpatterns = [
     path('login/', RedirectView.as_view(pattern_name='auth_login', permanent=True)),
@@ -107,6 +107,7 @@ urlpatterns = [
                              permanent=True)),
 
     path('modules/', include('moduleapp.urls')),
+    path('misfits/', misfitlist, name='misfits'),
 
     path('notifications/unread_count/', views.live_unread_notification_count, name='live_unread_notification_count'),
     re_path(r'^notifications/toggle_read/', views.toggle_read, name='toggle_read_flag'),

@@ -1,4 +1,7 @@
 import json
+import site
+from pathlib import Path
+
 import time
 import logging
 from collections import OrderedDict
@@ -566,6 +569,15 @@ class CitationList(ListView):
 
 def ringmaplist(request):
     return render(request, 'ringapp/ringmaps.html', {})
+
+
+def misfitlist(request):
+    site_dir = Path(site.getsitepackages()[0])
+    misfit_template_dir = site_dir / 'dart_data' / 'templates' / 'dart_data' / 'misfits'
+    template_names = [str(name) for name in sorted(misfit_template_dir.rglob("*.html"))]
+    return render(request, 'ringapp/misfits.html', {
+        'template_names': template_names
+    })
 
 
 def svgview(request, filename):
