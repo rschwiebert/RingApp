@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Misfits{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <h2>Misfit examples</h2>
+  <p>This page lists notable examples which don't quite work in the database, for one reason or another.</p>
+</div>
+
+<div class="container">
+  {% for template_name in template_names %}{% include template_name %}{% endfor %}
+</div>
+
+{% endblock %}
