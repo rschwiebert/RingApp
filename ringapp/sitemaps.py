@@ -1,6 +1,8 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from ringapp.models import Ring, Property, Theorem
+
+from moduleapp import models as modulemodels
+from ringapp import models as ringmodels
 
 
 class StaticViewSitemap(Sitemap):
@@ -8,9 +10,11 @@ class StaticViewSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return ['index', 'search', 'csearch', 'ksearch', 'about',  'faq',
+        return ['index', 'search', 'csearch', 'ksearch', 'about', 'faq',
                 'resources', 'contribute', 'ring-list', 'commring-list',
-                'property-list', 'theorem-list', 'errata-list', 'dimension-list']
+                'property-list', 'theorem-list', 'errata-list', 'dimension-list',
+                'module-list', 'module-property-list', 'module-search',
+                'misfits', 'ring-maps']
 
     def location(self, item):
         return reverse(item)
@@ -21,8 +25,8 @@ class RingMap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Ring.objects.all()
-    
+        return ringmodels.Ring.objects.all()
+
     def location(self, obj):
         return reverse('ring-detail', kwargs={"pk": obj.id})
 
@@ -32,21 +36,43 @@ class CommRingMap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Ring.objects.filter(is_commutative=True)
-    
+        return ringmodels.Ring.objects.filter(is_commutative=True)
+
     def location(self, obj):
         return reverse('ring-detail', kwargs={"pk": obj.id})
 
 
-class PropertyMap(Sitemap):
+class RingPropertyMap(Sitemap):
     changefreq = "monthly"
     priority = 0.5
 
     def items(self):
-        return Property.objects.all()
-    
+        return ringmodels.Property.objects.all()
+
     def location(self, obj):
         return reverse('property-detail', kwargs={"pk": obj.id})
+
+
+class ModuleMap(Sitemap):
+    changefreq = "weekly"
+    priority = 0.5
+
+    def items(self):
+        return modulemodels.Module.objects.all()
+
+    def location(self, obj):
+        return reverse('module-detail', kwargs={"pk": obj.id})
+
+
+class ModulePropertyMap(Sitemap):
+    changefreq = "monthly"
+    priority = 0.5
+
+    def items(self):
+        return modulemodels.Property.objects.all()
+
+    def location(self, obj):
+        return reverse('module-property-detail', kwargs={"pk": obj.id})
 
 
 class TheoremMap(Sitemap):
@@ -54,13 +80,15 @@ class TheoremMap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return Theorem.objects.all()
-    
+        return ringmodels.Theorem.objects.all()
+
     def location(self, obj):
         return reverse('theorem-detail', kwargs={"pk": obj.id})
 
 
 sitemapdict = {'rings': RingMap, 'commrings': CommRingMap,
-               'properties': PropertyMap,
+               'properties': RingPropertyMap,
+               'modules': ModuleMap,
+               'module-properties': ModulePropertyMap,
                'theorems': TheoremMap,
                'static': StaticViewSitemap}
