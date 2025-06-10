@@ -34,7 +34,7 @@ whitenoise = "5.0.1"
 dart-data = {git = "https://github.com/rschwiebert/dart_data.git", rev = "add9b23c9ab4044096c421243f16ff04fd2379a5"}
 psycopg2 = "2.9.3"
 django-heroku = "0.3.1"
-requests = "^2.32.2"
+requests = "^2.32.4"
 cryptography = "44.0.1"
 pyopenssl = "25.0.0"
 wheel = "0.38.1"
