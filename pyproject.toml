@@ -41,7 +41,7 @@ wheel = "0.38.1"
 certifi = "2024.7.4"
 urllib3 = "1.26.19"
 tzdata = "^2024.2"
-setuptools = "70.0.0"
+setuptools = "78.1.1"
 
 
 [build-system]
