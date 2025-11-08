@@ -14,6 +14,7 @@ import os
 import boto3
 import django_heroku
 import django
+from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from django.utils.translation import gettext
 django.utils.translation.ugettext = gettext
 
@@ -126,12 +127,12 @@ USE_I18N = True
 USE_TZ = True
 
 # Email settings
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 EMAIL_HOST = os.environ['EMAIL_HOST']
 EMAIL_PORT = os.environ['EMAIL_PORT']
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Registration-redux specific settings
 ACCOUNT_ACTIVATION_DAYS = 2
