@@ -39,7 +39,7 @@ cryptography = "44.0.1"
 pyopenssl = "25.0.0"
 wheel = "0.46.2"
 certifi = "2024.7.4"
-urllib3 = "2.6.0"
+urllib3 = "2.6.3"
 tzdata = "^2024.2"
 setuptools = "78.1.1"
 
