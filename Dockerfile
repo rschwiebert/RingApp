@@ -17,7 +17,7 @@
 #    revert DISABLE_ENGINE to False, before starting the container again.
 
 
-FROM ubuntu:22.04
+FROM --platform=linux/amd64 ubuntu:22.04
 EXPOSE 8000
 
 VOLUME /checkout
@@ -26,6 +26,7 @@ VOLUME /data
 ENV SECRET_KEY=verysecretkeyyoushouldchange
 ENV EMAIL_HOST=smtp.gmail.com
 ENV EMAIL_PORT=587
+ENV EMAIL_HOST_USER=
 ENV REGISTRATION_DEFAULT_FROM_EMAIL=$EMAIL_HOST_USER
 ENV EMAIL_HOST_PASSWORD=
 ENV EMAIL_USE_TLS=true
@@ -36,7 +37,7 @@ ENV EXPORT_ROOT_DIR=/data
 ENV SQLITE_DB_DIR=/checkout/db
 
 ADD pyproject.toml pyproject.toml
-ADD poetry.lock poetry.lock
+ADD uv.lock uv.lock
 
 RUN apt update && \
     apt install -y \
@@ -47,10 +48,8 @@ RUN apt update && \
     python3-venv \
     python3-wheel \
     libpq-dev && \
-    python3 -m venv /venv && \
-    . /venv/bin/activate && \
-    pip install poetry && \
-    poetry install
+    python3 -m pip install uv && \
+    uv sync
 
 WORKDIR /checkout
 
@@ -59,7 +58,7 @@ RUN wget https://souffle-lang.github.io/ppa/souffle-key.public -O /usr/share/key
     apt update && \
     apt install -y souffle
 
-ENTRYPOINT . /venv/bin/activate && \
+ENTRYPOINT . /.venv/bin/activate && \
 python manage.py migrate --settings=ringapp.local_settings && \
 python manage.py migrate --settings=ringapp.local_settings --database ringapp_data && \
 python manage.py runserver --settings=ringapp.local_settings 0:8000

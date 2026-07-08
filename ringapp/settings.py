@@ -127,16 +127,16 @@ USE_I18N = True
 USE_TZ = True
 
 # Email settings
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_PORT = os.environ['EMAIL_PORT']
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '587')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Registration-redux specific settings
 ACCOUNT_ACTIVATION_DAYS = 2
-REGISTRATION_DEFAULT_FROM_EMAIL = os.environ['REGISTRATION_DEFAULT_FROM_EMAIL']
+REGISTRATION_DEFAULT_FROM_EMAIL = os.environ.get('REGISTRATION_DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 REGISTRATION_FORM = 'registration.forms.RegistrationFormUniqueEmail'
 
 # Recaptcha settings
