@@ -8,7 +8,8 @@ from django.contrib.auth.models import User
 
 
 class EndpointTestCase(TestCase):
-    databases = {'default', 'ringapp_data',}
+    databases = {'default', 'ringapp_data', }
+
     # fixtures = ['properties.json']
 
     def test_gets(self):
@@ -26,26 +27,26 @@ class EndpointTestCase(TestCase):
         mommy.make(User)
         mommy.make(models.Theorem)
 
-        two_hundreds = ['index', 'about', 'auth_login',
-                        'auth_password_reset', 'registration_register', 'bibliography',
+        two_hundreds = ['index', 'about',
+                        'bibliography',
                         'commring-list', 'csearch', 'contribute',
                         'ksearch', 'kresults',
                         'people', 'property-list', 'commproperty-list',
-                        'register', 'resources', 'ring-list',
+                        'resources', 'ring-list',
                         'search', 'results', 'theorem-list', 'inspiration']
 
         for item in two_hundreds:
             resp = self.client.get(reverse(item), follow=True)
             self.assertEqual(resp.status_code, 200, item)
 
-        three_hundreds = ['auth_password_change', 'cresults', 'profile', 'newsfeed']
+        three_hundreds = ['cresults', 'newsfeed']
         for item in three_hundreds:
             resp = self.client.get(reverse(item))
             self.assertLessEqual(resp.status_code, 302, item)
             self.assertGreaterEqual(resp.status_code, 301, item)
 
         details = ['property-detail', 'theorem-detail',
-                   'keyword-detail',  'ring-detail', 'expanded-detail', ]
+                   'keyword-detail', 'ring-detail', 'expanded-detail', ]
         for item in details:
             resp = self.client.get(reverse(item, kwargs={'pk': 1}), follow=True)
             self.assertEqual(resp.status_code, 200, item)

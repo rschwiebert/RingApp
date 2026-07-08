@@ -1,19 +1,13 @@
-import json
 import site
 from pathlib import Path
 
 import time
 import logging
-from collections import OrderedDict
-from datetime import date
 
-from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.urls import reverse
-from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404, HttpResponseNotModified
+from django.http import HttpResponse, QueryDict, HttpResponseNotAllowed, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET, require_http_methods
@@ -26,7 +20,6 @@ from ratelimit.exceptions import Ratelimited
 from ratelimit.utils import is_ratelimited
 
 from ringapp.models import *
-from web.models import *
 from ringapp import forms
 from ringapp.constants import PROPSV1_TO_TERMSV2, PROPSV1COMM_TO_TERMSV2
 from ringapp.management.commands.db_to_data import tag
@@ -454,26 +447,6 @@ class PropertyView(DetailView):
         return context
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'ringapp/profile.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(ProfileView, self).get_context_data(**kwargs)
-        suggestions = Suggestion.objects.filter(user=self.request.user).order_by('-id')
-        stats = {
-            "accepted": suggestions.filter(status=1).count(),
-            "declined": suggestions.filter(status=-1).count(),
-            "pending": suggestions.filter(status=0).count(),
-            "info": suggestions.filter(status=-2).count(),
-        }
-
-        context['unread_suggestions'] = suggestions.filter(unread=True)
-        context['old_suggestions'] = suggestions.filter(unread=False)
-        context['stats'] = stats
-
-        return context
-
-
 class DetailTemplateView(TemplateView):
     template_name = None
 
@@ -635,24 +608,6 @@ def processor(request):
     return render(request, 'admin/processor.html', context)
 
 
-class RatelimitedLoginView(LoginView):
-    @ratelimit(key='header:x-forwarded-for', rate='5/d', block=False)
-    @ratelimit(key='post:username', rate='5/d', block=False)
-    @ratelimit(key='post:password', rate='10/d', block=False)
-    def post(self, request, *args, **kwargs):
-        """
-        Choose the right form based on ratelimiting
-        """
-        was_limited = getattr(request, 'limited', False)
-        if not was_limited:
-            form = self.get_form(forms.AuthenticationForm)
-        else:
-            form = self.get_form(forms.RatelimitedAuthenticationForm)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
 
 def ratelimited_view(request, exception):
     vlogger.error('Request was ratelimited: {}'.format(request))
@@ -674,31 +629,3 @@ def inspiration_view(request):
                'simple_sugg': simple_irreversible}
 
     return render(request, 'ringapp/inspiration.html', context)
-
-
-@login_required
-def live_unread_notification_count(request):
-    if request.headers.get('x-requested-with') == "XMLHttpRequest":
-        unread_notifications = Suggestion.objects.filter(user=request.user, unread=True).count()
-        data = {"unread_notifications": unread_notifications}
-        json_data = json.dumps(data)
-        return HttpResponse(json_data, content_type='application/json')
-    else:
-        return HttpResponseNotModified(content_type='application/json')
-
-
-@login_required
-@ratelimit(key='user', rate='50/h', block=True)
-def toggle_read(request, *args, **kwargs):
-    if request.is_ajax:
-        # logic which toggles the field on the object
-        sugg_id = request.GET['suggestion_id']
-        try:
-            sugg = Suggestion.objects.filter(user=request.user).get(id=sugg_id)
-        except Suggestion.ObjectDoesNotExist:
-            return Http404('No modifiable entry found for this request.')
-        sugg.unread = True if request.GET['unread'] == 'true' else False
-        sugg.save()
-        return HttpResponse()
-    else:
-        return HttpResponseNotModified()

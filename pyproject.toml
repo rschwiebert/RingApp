@@ -1,7 +1,7 @@
 [project]
 name = "ringapp"
 description = "Website app for the Database of Ring Theory"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
     { name = "Ryan Schwiebert", email = "databaseofringtheory@gmail.com" }
 ]
@@ -15,8 +15,6 @@ dependencies = [
     "django-mathfilters==0.4.0",
     "django-publications==1.2.0",
     "django-ratelimit==2.0.0",
-    "django-recaptcha==3.0.0",
-    "django-registration-redux==2.13",
     "gunicorn==23.0.0",
     "model-mommy==1.6.0",
     "mpmath==1.3.0",

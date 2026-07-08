@@ -1,5 +1,4 @@
 import re
-from captcha.fields import ReCaptchaField
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms.models import formset_factory
@@ -150,6 +149,3 @@ class KeywordSearchForm(forms.Form):
 class DimensionSelector(forms.Form):
     dimension_type = forms.ModelChoiceField(queryset=Dimension.objects.all().order_by('name'))
 
-
-class RatelimitedAuthenticationForm(AuthenticationForm):
-    captcha = ReCaptchaField()

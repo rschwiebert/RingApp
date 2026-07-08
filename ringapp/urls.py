@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sitemaps.views import sitemap
 from django.urls import reverse_lazy, path, include, re_path
 from django.http import HttpResponse
@@ -11,8 +10,6 @@ from ringapp.sitemaps import sitemapdict
 from ringapp.views import misfitlist
 
 urlpatterns = [
-    path('login/', RedirectView.as_view(pattern_name='auth_login', permanent=True)),
-    path('logout/', RedirectView.as_view(pattern_name='auth_logout', permanent=True)),
     path('admin/utilities/', TemplateView.as_view(template_name='admin/utilities.html'), name='utilities'),
     path('admin/guides/', TemplateView.as_view(template_name='admin/guides.html'), name='guides'),
     path('admin/processor/', views.processor, name='processor'),
@@ -53,14 +50,6 @@ urlpatterns = [
     path('faq/', TemplateView.as_view(template_name='ringapp/faq.html'), name='faq'),
     path('maps/', views.ringmaplist, name='ring-maps'),
     re_path(r'^maps/(?P<filename>\w+)/$', views.svgview, name='ring-map'),
-
-    # Must come before inclusion of registration.backends urls as it overrides one.
-    path('accounts/login/', views.RatelimitedLoginView.as_view(), name='auth_login'),
-    path('accounts/', include('registration.backends.default.urls')),
-    path('register/', CreateView.as_view(template_name='ringapp/register.html',
-                                           form_class=UserCreationForm,
-                                           success_url='profile/'), name='register'),
-    path('profile/', views.ProfileView.as_view(), name='profile'),
 
     re_path(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
@@ -109,6 +98,4 @@ urlpatterns = [
     path('modules/', include('moduleapp.urls')),
     path('misfits/', misfitlist, name='misfits'),
 
-    path('notifications/unread_count/', views.live_unread_notification_count, name='live_unread_notification_count'),
-    re_path(r'^notifications/toggle_read/', views.toggle_read, name='toggle_read_flag'),
 ]

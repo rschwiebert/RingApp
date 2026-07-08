@@ -10,32 +10,9 @@
           <a class="navbar-brand" href="/">{#% SITE_NAME %#} </a>
     </div>
         <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-
-
-
-                {% if user.is_authenticated  %}
-                <li class="">
-
-                </li>
-                {% else %}
-
-                {% endif %}
-            </ul>
 
             {% if user.is_authenticated  %}
-            <ul class="nav navbar-nav pull-right">
-                <li class="dropdown">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">
-                        <i class="halflings-icon white user"></i>{{ user }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'auth_login' %}"><i class="halflings-icon white user"></i> Settings</a></li>
-                        <li><a href="{% url 'auth_logout' %}"><i class="halflings-icon white off"></i> Logout</a></li>
-                    </ul>
-                </li>
-             </ul>
+
             {% else %}
             <ul class="nav navbar-nav pull-right">
                 <li class="">
@@ -46,17 +23,6 @@
                 </li>
                 <li class="">
                     <a href="">Contact</a>
-                </li>
-
-                <li class="{% ifequal request.path '/accounts/register/'%}active{% endifequal%}">
-                    <a href="{% url 'registration_register' %}">Signup</a>
-                </li>
-
-                <li >
-                    <a href="{% url 'auth_login' %}"  class="button skeleton">
-                    <i class="halflings-icon white user"></i>
-                    Login
-                </a>
                 </li>
             </ul>
             {% endif %}

@@ -3,10 +3,10 @@ from django.urls import reverse
 from django.db.models import Count
 from django.db.models.functions import Lower
 from django.views.decorators.http import require_http_methods, require_GET
-from django.views.generic import DetailView, ListView, TemplateView, RedirectView
+from django.views.generic import DetailView, ListView
 from ratelimit.decorators import ratelimit
 
-from moduleapp.models import Property, Module, ModuleProperty, PropertyMetaproperty
+from moduleapp.models import Property, Module, PropertyMetaproperty
 from django.shortcuts import render, redirect
 from moduleapp import forms
 

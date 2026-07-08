@@ -14,7 +14,6 @@ import os
 import boto3
 import django_heroku
 import django
-from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from django.utils.translation import gettext
 django.utils.translation.ugettext = gettext
 
@@ -48,7 +47,6 @@ INSTALLED_APPS = [
     'ringapp',
     'web',
     'dart_data',
-    'registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,7 +57,6 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'mathfilters',
     'publications',
-    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -134,16 +131,6 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# Registration-redux specific settings
-ACCOUNT_ACTIVATION_DAYS = 2
-REGISTRATION_DEFAULT_FROM_EMAIL = os.environ.get('REGISTRATION_DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-REGISTRATION_FORM = 'registration.forms.RegistrationFormUniqueEmail'
-
-# Recaptcha settings
-NOCAPTCHA = True
-RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
-RECAPTCHA_PRIVATE_KEY = os.environ['RECAPTCHA_PRIVATE_KEY']
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -151,7 +138,7 @@ CACHES = {
     }
 }
 
-ADMINS = [('webmaster', os.environ['REGISTRATION_DEFAULT_FROM_EMAIL'])]
+ADMINS = [('webmaster', )]
 
 DATABASES = {
     'default': {

@@ -370,27 +370,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-recaptcha"
-version = "3.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/06/0e/b124478374ec4607c65936bec9da4705ca2b7116af399f6836e22a1d7248/django-recaptcha-3.0.0.tar.gz", hash = "sha256:253197051288923cae675d7eff91b619e3775311292a5dbaf27a8a55ffebc670", size = 22063, upload-time = "2022-02-07T21:44:22.724Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/dd/b266aa9e695e4b0fc13a2bd06533cd671a71be46f72342c2222fa3d5b290/django_recaptcha-3.0.0-py3-none-any.whl", hash = "sha256:1aed69fd6ac8fd9e99e52665392ae6748f8b6339ace656fad779fe0c6c915a52", size = 22080, upload-time = "2022-02-07T21:44:21.009Z" },
-]
-
-[[package]]
-name = "django-registration-redux"
-version = "2.13"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f6/47/960fb3f88d0080a94fffb6fc98ff986012d3a968c030036cf79abdd40242/django-registration-redux-2.13.tar.gz", hash = "sha256:9793a05b32b1d7342c6ef3e0140b2951b7dbde058b3ba6e8a232b534928279f9", size = 125883, upload-time = "2023-10-27T02:41:46.863Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/32/7f/715af6a1322a1bc8fc84befa469a048dd5983eeac49f464ffa01bff33f00/django_registration_redux-2.13-py2.py3-none-any.whl", hash = "sha256:547c86ad9b951cf743075b5486f304e51e450b45d04e5ef04392838a9cff3da8", size = 218441, upload-time = "2023-10-27T02:41:44.565Z" },
-]
-
-[[package]]
 name = "gunicorn"
 version = "23.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -641,7 +620,7 @@ wheels = [
 
 [[package]]
 name = "ringapp"
-version = "1.0.0"
+version = "1.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "asgiref" },
@@ -655,8 +634,6 @@ dependencies = [
     { name = "django-mathfilters" },
     { name = "django-publications" },
     { name = "django-ratelimit" },
-    { name = "django-recaptcha" },
-    { name = "django-registration-redux" },
     { name = "gunicorn" },
     { name = "model-mommy" },
     { name = "mpmath" },
@@ -689,8 +666,6 @@ requires-dist = [
     { name = "django-mathfilters", specifier = "==0.4.0" },
     { name = "django-publications", specifier = "==1.2.0" },
     { name = "django-ratelimit", specifier = "==2.0.0" },
-    { name = "django-recaptcha", specifier = "==3.0.0" },
-    { name = "django-registration-redux", specifier = "==2.13" },
     { name = "gunicorn", specifier = "==23.0.0" },
     { name = "model-mommy", specifier = "==1.6.0" },
     { name = "mpmath", specifier = "==1.3.0" },

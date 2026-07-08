@@ -20,37 +20,28 @@
     <div class="row">
         <div class="col-md-6 content">
             <h1>How to contribute</h1>
-            <p>You can use a GitHub account or else will need to register here on this site.</p>
+            <p>You can use a GitHub account to create issues for either the site or its data.</p>
             <p>If you'd like to report a bug, request a feature, or contribute to <b>the website's code</b>,
                 use the detailed instructions at this
                 <a href="https://github.com/rschwiebert/RingApp/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
             <p>For additions or corrections to <b>the database content</b>, use the detailed instructions at this other
                  <a href="https://github.com/rschwiebert/dart_data/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
 
-            <p>Working via GitHub is preferred, but if you <i>really</i> can't, you can always use the form below
-                to make any suggestion.</p>
+            <p>Working via GitHub is preferred, but here are some alternatives:</p>
+            <ul>
+            <li><a href="https://databaseofringtheory.wordpress.com/contact/">The WordPress blog contact form</a></li>
+            <li><a href="https://chat.stackexchange.com/rooms/91076/dart-dome">Math Stackexchange Chat</a></li>
 
-            <h2>Make a quick suggestion</h2>
-
-            {% if user.is_authenticated %}
-            <form action="" method="post">{% csrf_token %}
-                {{ form.as_p }}
-                <input type="submit" value="Submit suggestion"/>
-            </form>
-            {% else %}
-            <p>(When you <a href="{% url 'auth_login' %}?next=/contribute/">log in</a> the submission form appears
-                here.)
-            </p>
-            {% endif %}
-
-        </div>
-        <div class="col-md-6 content">
+            </ul>
             <h2>Need inspiration?</h2>
 
             <p><a href="{% url 'inspiration' %}">Here is a list outlining several gaps
                 that remain to be filled.</a></p>
             <h2>Relevant open questions</h2>
             {% include 'dart_data/unknown_list.html' %}
+        </div>
+        <div class="col-md-6 content">
+
 
             <h2>Tips</h2>
             <p>To help maintain the quality of content and integrity of the database, please keep these points in
