@@ -94,7 +94,7 @@ urlpatterns = [
     path('expanded-details/bergmans-unit-regular-ring/',
         RedirectView.as_view(url=reverse_lazy('expanded-detail', kwargs={'pk': 81}),
                              permanent=True)),
-
+    path('rings/logics', views.LogicList.as_view(), name='ring-logic-list'),
     path('modules/', include('moduleapp.urls')),
     path('misfits/', misfitlist, name='misfits'),
 

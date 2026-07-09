@@ -3,23 +3,34 @@
 {% block title %}Ring implications{% endblock %}
 
 {% block content %}
-
-<h1>Ring implications</h1>
-
-This is a listing of the implications used by the database.
-<br><br>
-<a href="{% url 'commlogic-list' %}">Switch to list of commutative ring implications</a>
-
-<br><br>
-
-{% if object_list %}
-    <ul>
-    {% for item in object_list %}
-     <li><a href="{% url 'logic-detail' item.id %}/">{{ item.readable }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No implications were retrieved.</p>
-{% endif %}
-
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h1>Ring implications</h1>
+      <p>This is a listing of the implications used by the database.</p>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Implication</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if object_list %}
+          {% for logic_id, logic_display in object_list %}
+          <tr>
+            <td>{{ logic_id }}</td>
+            <td>{{ logic_display }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="2">(No implications were retrieved.)</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

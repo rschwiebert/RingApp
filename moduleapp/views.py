@@ -6,11 +6,12 @@ from django.views.decorators.http import require_http_methods, require_GET
 from django.views.generic import DetailView, ListView
 from ratelimit.decorators import ratelimit
 
-from moduleapp.models import Property, Module, PropertyMetaproperty
+from moduleapp.models import Property, Module, PropertyMetaproperty, Logic
 from django.shortcuts import render, redirect
 from moduleapp import forms
 
 from ringapp.SearchUtils import module_search
+from ringapp.SuggestionUtils import humanize_souffle
 
 
 class ModuleList(ListView):
@@ -126,6 +127,17 @@ class PropertyView(DetailView):
         context['mod_join'] = mod_join
         return context
 
+class LogicList(ListView):
+    model = Logic
+    template_name = 'moduleapp/logic_list.html'
+
+    def humanize(self, logic):
+        pieces = list(map(humanize_souffle, logic.hyps.split(' AND '))) + [logic.get_variety_display()] + list(
+            map(humanize_souffle, logic.concs.split(' AND ')))
+        return ' '.join(pieces)
+
+    def get_queryset(self):
+        return [(obj.pk, self.humanize(obj)) for obj in Logic.objects.filter(active=True)]
 
 @require_http_methods(['GET', 'POST'])
 def searchpage(request):

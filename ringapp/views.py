@@ -29,7 +29,7 @@ from ringapp.SearchUtils import (mirror_search_terms,
                                  ring_search,
                                  completeness_scores,
                                  property_completeness_scores)
-from ringapp.SuggestionUtils import simple_irreversible_ring_logics, suggest_asymm_examples
+from ringapp.SuggestionUtils import simple_irreversible_ring_logics, suggest_asymm_examples, humanize_souffle
 
 from ringapp.LogicUtils import LogicEngine
 
@@ -297,13 +297,16 @@ class CommPropertyRedirect(RedirectView):
         return reverse('property-detail', kwargs=kwargs)
 
 
-# TODO: make this available as a special privilege
-# class LogicList(ListView):
-#     model = Logic
-#
-#     def get_queryset(self):
-#         Logic.objects.filter(option='on')
-#
+class LogicList(ListView):
+    model = Logic
+    template_name = 'ringapp/logic_list.html'
+
+    def humanize(self, logic):
+        pieces = list(map(humanize_souffle, logic.hyps.split(' AND '))) + [logic.get_variety_display()] + list(map(humanize_souffle, logic.concs.split(' AND ')))
+        return ' '.join(pieces)
+
+    def get_queryset(self):
+        return [(obj.pk, self.humanize(obj)) for obj in Logic.objects.filter(active=True)]
 
 
 class RingDetail(DetailView):
