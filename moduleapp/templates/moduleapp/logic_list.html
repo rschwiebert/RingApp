@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Module implications{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h1>Module implications</h1>
+      <p>This is a listing of the implications used by the module database.</p>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Implication</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if object_list %}
+          {% for logic_id, logic_display in object_list %}
+          <tr>
+            <td>{{ logic_id }}</td>
+            <td>{{ logic_display }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="2">(No implications were retrieved.)</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
