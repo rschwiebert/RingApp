@@ -132,9 +132,9 @@ class LogicList(ListView):
     template_name = 'moduleapp/logic_list.html'
 
     def humanize(self, logic):
-        pieces = list(map(humanize_souffle, logic.hyps.split(' AND '))) + [logic.get_variety_display()] + list(
-            map(humanize_souffle, logic.concs.split(' AND ')))
-        return ' '.join(pieces)
+        hyps = " + ".join(list(map(humanize_souffle, logic.hyps.split(' AND '))))
+        concs = " + ".join(list(map(humanize_souffle, logic.concs.split(' AND '))))
+        return f'{hyps} {logic.get_variety_display()} {concs}'
 
     def get_queryset(self):
         return [(obj.pk, self.humanize(obj)) for obj in Logic.objects.filter(active=True)]
