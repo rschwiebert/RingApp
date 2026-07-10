@@ -35,7 +35,7 @@ def symmetrize_sides(rp):
 
 class Keyword(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    description = models.TextField(max_length=2000, null=True, blank=True)
 
     class Meta:
         ordering = ('name', )

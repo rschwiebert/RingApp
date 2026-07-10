@@ -7,7 +7,7 @@
 # Run `docker run -d --name ringapp -v <absolute path to repository directory>:/checkout -v <absolute path to dart-data/db>:/data -p 8000:8000  ringapp`
 # The server should be available at http://localhost:8000
 # Connect to the running container with `docker exec -it ringapp /bin/bash`
-# Sourcing /venv/bin/activate to gain access to management commands
+# Sourcing /.venv/bin/activate to gain access to management commands
 # Running `python manage.py db_to_data --settings=ringapp.local_settings import` will attempt to build the database up from
 #   the format stored in dart-data.
 

@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('properties/', views.PropertyList.as_view(), name='module-property-list'),
     path('properties/<int:pk>/', views.PropertyView.as_view(), name='module-property-detail'),
+    path('logics', views.LogicList.as_view(), name='module-logic-list'),
 
     # path('dimensions/', views.DimensionView.as_view(), name='dimension-list'),
 ]

@@ -3,14 +3,15 @@ from django.urls import reverse
 from django.db.models import Count
 from django.db.models.functions import Lower
 from django.views.decorators.http import require_http_methods, require_GET
-from django.views.generic import DetailView, ListView, TemplateView, RedirectView
+from django.views.generic import DetailView, ListView
 from ratelimit.decorators import ratelimit
 
-from moduleapp.models import Property, Module, ModuleProperty, PropertyMetaproperty
+from moduleapp.models import Property, Module, PropertyMetaproperty, Logic
 from django.shortcuts import render, redirect
 from moduleapp import forms
 
 from ringapp.SearchUtils import module_search
+from ringapp.SuggestionUtils import humanize_souffle
 
 
 class ModuleList(ListView):
@@ -126,6 +127,17 @@ class PropertyView(DetailView):
         context['mod_join'] = mod_join
         return context
 
+class LogicList(ListView):
+    model = Logic
+    template_name = 'moduleapp/logic_list.html'
+
+    def humanize(self, logic):
+        hyps = " + ".join(list(map(humanize_souffle, logic.hyps.split(' AND '))))
+        concs = " + ".join(list(map(humanize_souffle, logic.concs.split(' AND '))))
+        return f'{hyps} {logic.get_variety_display()} {concs}'
+
+    def get_queryset(self):
+        return [(obj.pk, self.humanize(obj)) for obj in Logic.objects.filter(active=True)]
 
 @require_http_methods(['GET', 'POST'])
 def searchpage(request):
