@@ -22,7 +22,7 @@ dependencies = [
     "pytz==2021.3",
     "PyYAML==6.0",
     "six==1.11.0",
-    "sqlparse==0.5.4",
+    "sqlparse==0.6.0",
     "sympy==1.12",
     "whitenoise==5.0.1",
     "dart-data @ git+https://github.com/rschwiebert/dart_data.git@add9b23c9ab4044096c421243f16ff04fd2379a5",
