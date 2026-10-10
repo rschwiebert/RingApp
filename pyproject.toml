@@ -25,7 +25,7 @@ dependencies = [
     "sqlparse==0.6.0",
     "sympy==1.12",
     "whitenoise==5.0.1",
-    "dart-data @ git+https://github.com/rschwiebert/dart_data.git@add9b23c9ab4044096c421243f16ff04fd2379a5",
+    "dart-data",
     "psycopg2==2.9.3",
     "django-heroku==0.3.1",
     "requests>=2.33.0",
@@ -44,6 +44,9 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["ringapp", "moduleapp"]
+
+[tool.uv.sources]
+dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "cec3c73df8cfdf71379ab866ae424c1cc3677149" }
 
 [build-system]
 requires = ["hatchling"]

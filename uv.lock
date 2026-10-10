@@ -295,7 +295,7 @@ wheels = [
 [[package]]
 name = "dart-data"
 version = "0.0.1"
-source = { git = "https://github.com/rschwiebert/dart_data.git?rev=add9b23c9ab4044096c421243f16ff04fd2379a5#add9b23c9ab4044096c421243f16ff04fd2379a5" }
+source = { git = "https://github.com/rschwiebert/dart_data.git?rev=cec3c73df8cfdf71379ab866ae424c1cc3677149#cec3c73df8cfdf71379ab866ae424c1cc3677149" }
 
 [[package]]
 name = "dj-database-url"
@@ -652,7 +652,7 @@ requires-dist = [
     { name = "boto3", specifier = "==1.42.33" },
     { name = "certifi", specifier = "==2024.7.4" },
     { name = "cryptography", specifier = "==50.0.0" },
-    { name = "dart-data", git = "https://github.com/rschwiebert/dart_data.git?rev=add9b23c9ab4044096c421243f16ff04fd2379a5" },
+    { name = "dart-data", git = "https://github.com/rschwiebert/dart_data.git?rev=cec3c73df8cfdf71379ab866ae424c1cc3677149" },
     { name = "dj-database-url", specifier = "==0.5.0" },
     { name = "django", specifier = "==4.2.30" },
     { name = "django-heroku", specifier = "==0.3.1" },

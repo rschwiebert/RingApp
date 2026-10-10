@@ -87,7 +87,9 @@ class Command(BaseCommand):
         with open(DL_DIR / 'inputs' / 'ring_property.facts', 'w') as f:
             for prp in ringapp.models.RingProperty.objects.all():
                 if prp.property.symmetric:
-                    if prp.has_on_left:
+                    if prp.has_on_left is None:
+                        pass
+                    elif prp.has_on_left:
                         f.write(f'{prp.ring_id}\thas\t{prp.property_id}\t0\t0\t\n')
                     else:
                         f.write(f'{prp.ring_id}\tlacks\t{prp.property_id}\t0\t0\t\n')
