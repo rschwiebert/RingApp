@@ -250,3 +250,73 @@ class RelationTest(TestCase):
         self.assertFalse(RingProperty.objects.filter(ring=self.ring_2, property=self.P2, has_on_left=True).exists())
         rp.delete()
         fakerp.delete()
+
+
+from unittest.mock import patch
+
+
+class SpecializationTest(TestCase):
+    databases = ['default', 'ringapp_data']
+
+    def setUp(self) -> None:
+        self.ring_S = Ring.objects.create()  # General case
+        self.ring_R = Ring.objects.create()  # Special case (specializes S)
+        self.P1 = Property.objects.create(symmetric=False)
+        self.P2 = Property.objects.create(symmetric=False)
+
+    def test_inheritance_from_general_to_special(self):
+        """
+        1. R specializes S, S has property 1, S lacks property 2.
+        Run processing, confirm R has property 1 and R lacks property 2.
+        """
+        RingProperty.objects.create(ring=self.ring_S, property=self.P1, has_on_left=True, has_on_right=True)
+        RingProperty.objects.create(ring=self.ring_S, property=self.P2, has_on_left=False, has_on_right=False)
+
+        with patch(
+            'ringapp.management.commands.process_specializations.Command._load_pairs',
+            return_value=[(self.ring_S.id, self.ring_R.id)]
+        ):
+            call_command('process_specializations', record=True)
+
+        rp1 = RingProperty.objects.get(ring=self.ring_R, property=self.P1)
+        self.assertTrue(rp1.has_on_left)
+        self.assertTrue(rp1.has_on_right)
+
+        rp2 = RingProperty.objects.get(ring=self.ring_R, property=self.P2)
+        self.assertFalse(rp2.has_on_left)
+        self.assertFalse(rp2.has_on_right)
+
+    def test_no_conclusions_from_special_to_general(self):
+        """
+        2. R specializes S, R has property 1, R lacks property 2.
+        Run processing. No conclusions discovered for S.
+        """
+        RingProperty.objects.create(ring=self.ring_R, property=self.P1, has_on_left=True, has_on_right=True)
+        RingProperty.objects.create(ring=self.ring_R, property=self.P2, has_on_left=False, has_on_right=False)
+
+        with patch(
+            'ringapp.management.commands.process_specializations.Command._load_pairs',
+            return_value=[(self.ring_S.id, self.ring_R.id)]
+        ):
+            call_command('process_specializations', record=True)
+
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_S, property=self.P1).exists())
+        self.assertFalse(RingProperty.objects.filter(ring=self.ring_S, property=self.P2).exists())
+
+    def test_contradictions_detected(self):
+        """
+        3. R specializes S. S has property 1, S lacks property 2,
+        R lacks property 1, R has property 2.
+        Run processing. Check that contradictions are recorded (CommandError raised).
+        """
+        RingProperty.objects.create(ring=self.ring_S, property=self.P1, has_on_left=True, has_on_right=True)
+        RingProperty.objects.create(ring=self.ring_S, property=self.P2, has_on_left=False, has_on_right=False)
+        RingProperty.objects.create(ring=self.ring_R, property=self.P1, has_on_left=False, has_on_right=False)
+        RingProperty.objects.create(ring=self.ring_R, property=self.P2, has_on_left=True, has_on_right=True)
+
+        with patch(
+            'ringapp.management.commands.process_specializations.Command._load_pairs',
+            return_value=[(self.ring_S.id, self.ring_R.id)]
+        ):
+            with self.assertRaises(CommandError):
+                call_command('process_specializations', record=True)

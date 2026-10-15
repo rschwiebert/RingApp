@@ -1,0 +1,18 @@
+.decl ring_property(ring: number,mode: symbol,side: number,property: number, second_ring: number)
+.decl output_ring_property(ring: number,mode: symbol,side: number,property: number, general_ring: number)
+.decl ring_property_contradictions(ring: number,property: number)
+.decl specrings(specializes: number, specialized: number)
+.decl specrings_tc(specializes: number, specialized: number)
+
+.input ring_property
+.input specrings
+.output output_ring_property
+.output ring_property_contradictions
+
+specrings_tc(R, S) :- specrings(R, S).
+specrings_tc(R, S) :- specrings(R, X), specrings_tc(X, S).
+
+ring_property(R, M, N, P, S) :- specrings_tc(R, S), ring_property(S, M, N, P, _).
+
+output_ring_property(R, M, N, P, S) :- ring_property(R, M, N, P, S), !ring_property(R, M, N, P, 0), R != S, R != 0, S != 0.
+ring_property_contradictions(R, P) :- ring_property(R, "has", N, P, _), ring_property(R, "lacks", N, P, _).
