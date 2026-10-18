@@ -46,7 +46,7 @@ allow-direct-references = true
 packages = ["ringapp", "moduleapp"]
 
 [tool.uv.sources]
-dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "cec3c73df8cfdf71379ab866ae424c1cc3677149" }
+dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "7c24946e4380ef745d3cd31ef04315cc001b7dc1" }
 
 [build-system]
 requires = ["hatchling"]
