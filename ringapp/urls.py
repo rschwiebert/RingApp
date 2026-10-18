@@ -51,9 +51,9 @@ urlpatterns = [
     path('maps/', views.ringmaplist, name='ring-maps'),
     re_path(r'^maps/(?P<filename>\w+)/$', views.svgview, name='ring-map'),
 
-    re_path(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemapdict},
+    path('sitemap.xml', sitemap, {'sitemaps': sitemapdict},
         name='django.contrib.sitemaps.views.sitemap'),
-    re_path(r'^robots\.txt$',
+    path('robots.txt',
         lambda r: HttpResponse("User-agent: *\nDisallow: /search/results/"
                                "\nDisallow: /commsearch/commresults/"
                                "\nDisallow: /keywordsearch/results/"
@@ -67,7 +67,7 @@ urlpatterns = [
                                "\nDisallow: /",
                                content_type="text/plain"),
         name='robots'),
-    re_path(r'^favicon\.ico$', lambda r: redirect(r'static/favicon/favicon.ico'), name='favicon'),
+    path('favicon.ico', lambda r: redirect(r'static/favicon/favicon.ico'), name='favicon'),
 
     path('latest/feed/',
         RedirectView.as_view(url='https://databaseofringtheory.wordpress.com/feed/', permanent=True),

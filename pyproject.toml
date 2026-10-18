@@ -1,17 +1,17 @@
 [project]
 name = "ringapp"
 description = "Website app for the Database of Ring Theory"
-version = "1.1.0"
+version = "2.0.0"
 authors = [
     { name = "Ryan Schwiebert", email = "databaseofringtheory@gmail.com" }
 ]
 license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 dependencies = [
-    "asgiref==3.6.0",
+    "asgiref==3.8.1",
     "boto3==1.42.33",
     "dj-database-url==0.5.0",
-    "Django==4.2.30",
+    "django==5.2",
     "django-mathfilters==0.4.0",
     "django-publications==1.2.0",
     "django-ratelimit==2.0.0",
@@ -20,14 +20,12 @@ dependencies = [
     "mpmath==1.3.0",
     "pillow==12.3.0",
     "pytz==2021.3",
-    "PyYAML==6.0",
-    "six==1.11.0",
+    "pyyaml==6.0.2",
+    "six==1.17.0",
     "sqlparse==0.6.0",
     "sympy==1.12",
-    "whitenoise==5.0.1",
+    "whitenoise==6.12.0",
     "dart-data",
-    "psycopg2==2.9.3",
-    "django-heroku==0.3.1",
     "requests>=2.33.0",
     "cryptography==50.0.0",
     "pyopenssl==26.4.0",
@@ -36,6 +34,7 @@ dependencies = [
     "urllib3==2.8.0",
     "tzdata>=2024.2",
     "setuptools==83.0.0",
+    "psycopg2==2.9.10",
 ]
 
 
@@ -47,7 +46,13 @@ packages = ["ringapp", "moduleapp"]
 
 [tool.uv.sources]
 dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "7c24946e4380ef745d3cd31ef04315cc001b7dc1" }
+django-publications = { git = "https://github.com/rschwiebert/django-publications", rev = "develop" }
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pexpect>=4.9.0",
+]
