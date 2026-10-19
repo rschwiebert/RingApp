@@ -4,10 +4,8 @@ venv
 staticfiles
 local_config.py
 *.*~
-settings.py
 .env
 db.sqlite3
 *~
 .idea
 /db
-ringapp/local_settings.py
