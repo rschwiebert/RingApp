@@ -33,7 +33,7 @@ dependencies = [
     "certifi==2024.7.4",
     "urllib3==2.8.0",
     "tzdata>=2024.2",
-    "setuptools==83.0.0",
+    "setuptools==84.1.0",
     "psycopg2==2.9.10",
 ]
 
