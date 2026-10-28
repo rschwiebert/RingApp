@@ -18,7 +18,7 @@ dependencies = [
     "gunicorn==23.0.0",
     "model-mommy==1.6.0",
     "mpmath==1.3.0",
-    "pillow==12.3.0",
+    "pillow==13",
     "pytz==2021.3",
     "pyyaml==6.0.2",
     "six==1.17.0",
@@ -45,7 +45,7 @@ allow-direct-references = true
 packages = ["ringapp", "moduleapp"]
 
 [tool.uv.sources]
-dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "7c24946e4380ef745d3cd31ef04315cc001b7dc1" }
+dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "d425d873f8fcf6447e63d8c076e2a2467850c115" }
 django-publications = { git = "https://github.com/rschwiebert/django-publications", rev = "develop" }
 
 [build-system]
