@@ -175,7 +175,7 @@ wheels = [
 [[package]]
 name = "dart-data"
 version = "0.0.1"
-source = { git = "https://github.com/rschwiebert/dart_data.git?rev=d425d873f8fcf6447e63d8c076e2a2467850c115#d425d873f8fcf6447e63d8c076e2a2467850c115" }
+source = { git = "https://github.com/rschwiebert/dart_data.git?rev=2abf5d3335ae0120a1d9c18a6b73db46ec06cc44#2abf5d3335ae0120a1d9c18a6b73db46ec06cc44" }
 
 [[package]]
 name = "dj-database-url"
@@ -473,7 +473,7 @@ requires-dist = [
     { name = "boto3", specifier = "==1.42.33" },
     { name = "certifi", specifier = "==2026.10.18" },
     { name = "cryptography", specifier = "==50.0.0" },
-    { name = "dart-data", git = "https://github.com/rschwiebert/dart_data.git?rev=d425d873f8fcf6447e63d8c076e2a2467850c115" },
+    { name = "dart-data", git = "https://github.com/rschwiebert/dart_data.git?rev=2abf5d3335ae0120a1d9c18a6b73db46ec06cc44" },
     { name = "dj-database-url", specifier = "==0.5.0" },
     { name = "django", specifier = "==5.2.18" },
     { name = "django-mathfilters", specifier = "==0.4.0" },
