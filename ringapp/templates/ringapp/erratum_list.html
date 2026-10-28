@@ -4,46 +4,59 @@
 {% block title %}Errata{% endblock %}
 {% block content %}
 <div class="container">
+	<div class="page-header">
+		<h1>Errata for ring theory literature</h1>
+	</div>
+
 	<div class="row">
-		<div class="col-md-6">
-			<h1>Errata for ring theory literature</h1>
-			<p>Below is a list of errors in the literature about rings. This list will probably not contain things
+		<div class="col-md-7">
+			<p class="lead">Below is a list of errors in the literature about rings. This list will probably not contain things
 				as trivial as typos, but rather mistaken claims or serious gaps in proofs.</p>
 
-			<p>Please submit your additions or corrections to <a href="{% url 'contribute' %}">the suggestion form!</a>
-			</p>
+			<p>Please submit your additions or corrections to <a href="{% url 'contribute' %}">the suggestion form!</a></p>
 		</div>
-		<div class="col-md-6">
-			<h2><i>Examples of Commutative Rings</i></h2>
-			<p>Since we like <i>Examples of Commutative rings</i> so much, we plan to maintain a
-				<a href="{% static 'img/correction-sheet-examples.pdf' %}"><b>dedicated
-					errata page</b></a> for it. Thanks to the author H. C. Hutchins for providing the original errata.
-			</p>
+		<div class="col-md-5">
+			<div class="well">
+				<h4><span class="glyphicon glyphicon-book"></span> <i>Examples of Commutative Rings</i></h4>
+				<p>Since we like <i>Examples of Commutative Rings</i> so much, we plan to maintain a
+					<a href="{% static 'img/correction-sheet-examples.pdf' %}"><b>dedicated
+						errata page</b></a> for it. Thanks to the author H. C. Hutchins for providing the original errata.
+				</p>
+				<p>
+					<a class="btn btn-primary btn-sm" href="{% static 'img/correction-sheet-examples.pdf' %}" target="_blank">
+						<span class="glyphicon glyphicon-file"></span> View Hutchins Errata Sheet (PDF)
+					</a>
+				</p>
+			</div>
 		</div>
 	</div>
-</div>
 
-<div class="container">
-	<div id="accordion">
+	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		{% for errata in object_list %}
-		<div class="card">
-			<div class="card-header" id="heading{{ errata.id }}">
-				<h5 class="mb-0">
-					<button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ errata.id }}" aria-expanded="true"
-							aria-controls="collapseOne">
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="heading{{ errata.id }}">
+				<h4 class="panel-title">
+					<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ errata.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ errata.id }}" {% if not forloop.first %}class="collapsed"{% endif %} style="display: block;">
 						{{ errata.error_location }}
-					</button>
-				</h5>
+					</a>
+				</h4>
 			</div>
 
-			<div id="collapse{{ errata.id }}" class="collapse show" aria-labelledby="heading{{ errata.id }}" data-parent="#accordion">
-				<div class="card-body">
+			<div id="collapse{{ errata.id }}" class="panel-collapse collapse {% if forloop.first %}in{% endif %}" role="tabpanel" aria-labelledby="heading{{ errata.id }}">
+				<div class="panel-body">
+					{% if errata.description %}
 					<p>{{ errata.description }}</p>
-					{% if errata.example %}
-					<p>Example: <a href="{% url 'ring-detail' errata.example.id %}">{{ errata.example }}</a></p>
 					{% endif %}
+
+					{% if errata.example %}
+					<div class="alert alert-warning" role="alert">
+						<strong>Counterexample ring:</strong>
+						<a href="{% url 'ring-detail' errata.example.id %}" class="alert-link">{{ errata.example }}</a>
+					</div>
+					{% endif %}
+
 					{% if errata.corrected_location.exists %}
-					Corrected in
+					<p><strong>Corrected in:</strong></p>
 					<ul>
 						{% for entry in errata.corrected_location.all %}
 						<li>{{ entry }}</li>
@@ -53,9 +66,13 @@
 				</div>
 			</div>
 		</div>
+		{% empty %}
+		<div class="alert alert-info">
+			No errata items currently listed.
+		</div>
 		{% endfor %}
 	</div>
-
-
 </div>
 {% endblock %}
+
+
