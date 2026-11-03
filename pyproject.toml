@@ -45,7 +45,7 @@ allow-direct-references = true
 packages = ["ringapp", "moduleapp"]
 
 [tool.uv.sources]
-dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "2abf5d3335ae0120a1d9c18a6b73db46ec06cc44" }
+dart-data = { git = "https://github.com/rschwiebert/dart_data.git", rev = "1e53947004fde37bd77a54327c955467b84668ca" }
 django-publications = { git = "https://github.com/rschwiebert/django-publications", rev = "develop" }
 
 [build-system]
