@@ -35,11 +35,15 @@ ENV RECAPTCHA_PRIVATE_KEY=
 ENV S3_BUCKET_NAME=
 ENV EXPORT_ROOT_DIR=/data
 ENV SQLITE_DB_DIR=/checkout/db
+ENV TZ=America/New_York
+ENV DEBIAN_FRONTEND=noninteractive
 
 ADD pyproject.toml pyproject.toml
 ADD uv.lock uv.lock
 
-RUN apt update && \
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    apt update && \
     apt install -y \
     git \
     wget \
@@ -47,9 +51,11 @@ RUN apt update && \
     python3-pip \
     python3-venv \
     python3-wheel \
-    libpq-dev && \
-    python3 -m pip install uv && \
-    uv sync
+    libpq-dev \
+    libffi-dev \
+    curl
+RUN    curl -LsSf https://astral.sh/uv/install.sh | sh  && \
+    ~/.local/bin/uv sync
 
 WORKDIR /checkout
 

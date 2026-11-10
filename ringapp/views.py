@@ -560,7 +560,7 @@ def misfitlist(request):
 def svgview(request, filename):
     if filename in ('allprops', 'commrings', 'domain', 'local', 'selfinjective',
                     'noetherian', 'artinian', 'allmoduleprops'):
-        context = {'template_ref': 'img/ring_maps/{}.svg'.format(filename)}
+        context = {'template_ref': 'img/{}.svg'.format(filename)}
         return render(request, 'ringapp/svgdiv.html', context)
     else:
         raise Http404
