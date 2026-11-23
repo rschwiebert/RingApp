@@ -166,6 +166,30 @@ class RingSubsetTest(TestCase):
         rs1 = RingSubset.objects.get(ring=self.ring, subset_type=self.S1)
         self.assertEqual(rs1.subset, '1')
 
+    def test_subset_logic_reason_escaped_characters(self):
+        """
+        When a subset logic rule contains escaped characters (such as $\\{0\\}$),
+        souffle's explain output does not preserve the escape slashes, causing
+        logic_enumeration lookup to fail and emit 'Logic (rings) ?: ...'.
+        """
+        P_reduced = Property.objects.create(name="reduced", symmetric=True)
+        S_nilp = Subset.objects.create(name="nilpotents")
+        # Logic 482 style: ring_subset_deduced("$\\{0\\}$", S_nilp.id) <== ring_deduced("has", 0, P_reduced.id)
+        # Note: in Logic.concs, it stores: ring_subset_deduced("$\\{0\\}$", ...)
+        concs = 'ring_subset_deduced("$\\\\{0\\\\}$",' + str(S_nilp.id) + ')'
+        L_escaped = Logic.objects.create(
+            hyps=f'ring_deduced("has",0,{P_reduced.id})',
+            concs=concs,
+            variety=0,
+            symmetric=True,
+            active=True
+        )
+        RP_reduced = RingProperty.objects.create(ring=self.ring, property=P_reduced, has_on_left=True, has_on_right=True)
+        call_command('process_ring', self.ring.id, record=True, reload_logic=True)
+        rs = RingSubset.objects.get(ring=self.ring, subset_type=S_nilp)
+        self.assertNotIn('Logic (rings) ?', rs.reason)
+        self.assertIn(f'Logic (rings) {L_escaped.id}', rs.reason)
+
     def test_L1_subset_conflict(self):
         self.RP1.has_on_left = True
         self.RP1.save()

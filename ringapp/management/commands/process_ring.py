@@ -33,6 +33,13 @@ class Command(BaseCommand):
         parser.add_argument('--record', action='store_true')
         parser.add_argument('--reload-logic', action='store_true')
 
+    def rule_key(self, rule: str) -> str:
+        """Normalize a souffle rule for lookup in logic_enumeration.
+        Spaces and backslashes are dropped: souffle's `explain` output does not reproduce the
+        escaping of string constants such as "$\\{0\\}" in ringlogic.dl, so an exact match fails.
+        """
+        return rule.replace(' ', '').replace('\\', '')
+
     def handle(self, *args, **options):
         t0 = time.time()
         if options['reload_logic']:
@@ -84,10 +91,10 @@ class Command(BaseCommand):
             for line in f.readlines():
                 if '  // logic ' in line:
                     key, value = line.split('  // logic ')
-                    logic_enumeration[key.replace(' ', '')] = value.strip()
+                    logic_enumeration[self.rule_key(key)] = value.strip()
                 elif '// ' in line:
                     key, value = line.split('// ')
-                    logic_enumeration[key.replace(' ', '')] = value.strip()
+                    logic_enumeration[self.rule_key(key)] = value.strip()
 
         with open(DL_DIR / 'outputs' / 'ring_discovered.csv') as f:
             reader = csv.reader(f, delimiter='\t')
@@ -160,7 +167,7 @@ class Command(BaseCommand):
                 number = reasons[f'ring_deduced("{triple[0]}", {triple[1]}, {triple[2]})']
                 rule = rule_lookup['ring_deduced'][number]
                 try:
-                    logic_id = logic_enumeration[rule.replace(' ', '')]
+                    logic_id = logic_enumeration[self.rule_key(rule)]
                 except KeyError:
                     logger.error(f"key {rule.replace(' ', '')} not found in logic_enumeration")
                     logic_id = '?'
@@ -194,7 +201,7 @@ class Command(BaseCommand):
                 number = reasons[f'ring_dim_deduced("{triple[0]}", {triple[1]}, {triple[2]})']
                 rule = rule_lookup['ring_dim_deduced'][number]
                 try:
-                    logic_id = logic_enumeration[rule.replace(' ', '')]
+                    logic_id = logic_enumeration[self.rule_key(rule)]
                 except KeyError:
                     logger.error(f"key {rule.replace(' ', '')} not found in logic_enumeration")
                     logic_id = '?'
@@ -208,7 +215,7 @@ class Command(BaseCommand):
                 number = reasons[f'ring_subset_deduced("{pair[0]}", {pair[1]})']
                 rule = rule_lookup['ring_subset_deduced'][number]
                 try:
-                    logic_id = logic_enumeration[rule.replace(' ', '')]
+                    logic_id = logic_enumeration[self.rule_key(rule)]
                 except KeyError:
                     logger.error(f"key {rule.replace(' ', '')} not found in logic_enumeration")
                     logic_id = '?'
